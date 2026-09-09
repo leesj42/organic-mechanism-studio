@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>유기화학 메커니즘 스튜디오</title>
+<style>
+  :root {
+    --bg: #faf8f4;
+    --bg-panel: #ffffff;
+    --ink: #2a2620;
+    --ink-muted: #756e60;
+    --border: #ddd6c8;
+    --accent: #2b6ca3;
+    --accent-ink: #ffffff;
+    --accent-soft: #e8f0f7;
+    --editor-accent: #b3572d;
+    --play-accent: #2f7d55;
+    --danger: #b3261e;
+    --danger-soft: #fbe9e7;
+    --radius: 10px;
+    --shadow: 0 1px 3px rgba(40, 30, 10, 0.08), 0 1px 2px rgba(40, 30, 10, 0.06);
+
+    /* 원소별 관례 색상 (캔버스 렌더링에 사용) */
+    --el-C: #2a2620;
+    --el-H: #8a8375;
+    --el-O: #c53030;
+    --el-N: #2b6ca3;
+    --el-Br: #8a4b28;
+    --el-Cl: #2f7d55;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Pretendard", "Noto Sans KR", "Segoe UI", system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  a { color: var(--accent); }
+
+  /* ---------- 헤더 ---------- */
+  header.app-header {
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 700;
+    font-size: 1.05rem;
+    white-space: nowrap;
+  }
+
+  .brand-mark {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+  }
+
+  /* ---------- 메인 레이아웃 ---------- */
+  main {
+    flex: 1;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.75rem 1.25rem 3rem;
+  }
+
+  main > section[hidden] { display: none; }
+
+  /* ---------- 홈 화면 ---------- */
+  .hero {
+    text-align: center;
+    padding: 2.5rem 1rem 3rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    margin: 0 0 0.75rem;
+  }
+
+  .hero p {
+    color: var(--ink-muted);
+    font-size: 1.05rem;
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  .hero-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1rem;
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+  }
+
+  .hero-legend span.dot {
+    display: inline-block;
+    width: 0.65em;
+    height: 0.65em;
+    border-radius: 50%;
+    margin-right: 0.35em;
+    vertical-align: middle;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 700px) {
+    .cards { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: left;
+  }
+
+  .card .icon-wrap {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card.editor .icon-wrap { background: #f6e6da; }
+  .card.play .icon-wrap { background: #dcefe3; }
+
+  .card h2 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+
+  .card p {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 0.94rem;
+    flex: 1;
+  }
+
+  .card-cta {
+    align-self: flex-start;
+    appearance: none;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.1rem;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #fff;
+  }
+
+  .card.editor .card-cta { background: var(--editor-accent); }
+  .card.play .card-cta { background: var(--play-accent); }
+
+  .card-cta:hover { filter: brightness(1.08); }
+  .card-cta:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  /* ---------- 공용: 서브페이지 상단바 ---------- */
+  .subpage-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
+
+  .btn-back {
+    appearance: none;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .btn-back:hover { background: var(--accent-soft); border-color: var(--accent); }
+  .btn-back:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .subpage-bar h1 {
+    font-size: 1.3rem;
+    margin: 0;
+    flex: 1;
+  }
+
+  .badge-soon {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: 999px;
+    padding: 0.2rem 0.6rem;
+  }
+
+  /* ---------- 에디터 스켈레톤 ---------- */
+  .editor-toolbar {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .editor-toolbar input[type="text"] {
+    flex: 1;
+    min-width: 180px;
+    padding: 0.55rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.92rem;
+    background: var(--bg-panel);
+    color: var(--ink);
+  }
+
+  .editor-toolbar input[type="text"]::placeholder {
+    color: var(--ink-muted);
+  }
+
+  .editor-toolbar input[type="text"]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  .editor-toolbar button {
+    padding: 0.55rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-panel);
+    color: var(--ink-muted);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: not-allowed;
+  }
+
+  .editor-grid {
+    display: grid;
+    grid-template-columns: 190px 1fr 240px;
+    gap: 1rem;
+  }
+
+  @media (max-width: 860px) {
+    .editor-grid { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    box-shadow: var(--shadow);
+  }
+
+  .panel h3 {
+    margin: 0 0 0.75rem;
+    font-size: 0.95rem;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .element-palette {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .element-chip {
+    appearance: none;
+    border: 1.5px solid var(--chip-color, var(--border));
+    background: var(--bg-panel);
+    color: var(--chip-color, var(--ink));
+    font-weight: 700;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    padding: 0.55rem 0;
+    cursor: grab;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+
+  .element-chip:hover {
+    background: var(--accent-soft);
+  }
+
+  .element-chip:active {
+    cursor: grabbing;
+    transform: scale(0.96);
+  }
+
+  .element-chip:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .element-chip.dragging {
+    opacity: 0.4;
+  }
+
+  .palette-hint {
+    margin: 0.6rem 0 0;
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+  }
+
+  .tool-list-heading {
+    margin: 1.1rem 0 0.75rem;
+    font-size: 0.95rem;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .tool-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .tool-btn {
+    appearance: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: left;
+    color: var(--ink);
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .tool-btn:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+  }
+
+  .tool-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  .tool-btn[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .tool-list .swatch {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+    border: 1px dashed var(--border);
+  }
+
+  .tool-list .swatch .dot {
+    width: 0.85em;
+    height: 0.85em;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .canvas-placeholder {
+    min-height: 360px;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--ink-muted);
+    text-align: center;
+    padding: 1.5rem;
+  }
+
+  .canvas-placeholder svg {
+    width: 56px;
+    height: 56px;
+    opacity: 0.5;
+  }
+
+  .editor-canvas-wrap {
+    min-height: 360px;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    background: var(--bg-panel);
+    transition: border-color 0.15s ease, background 0.15s ease;
+    overflow: hidden;
+  }
+
+  .editor-canvas-wrap.drag-over {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .editor-canvas-wrap svg {
+    display: block;
+    width: 100%;
+    height: 360px;
+  }
+
+  .canvas-hint {
+    fill: var(--ink-muted);
+    font-size: 15px;
+  }
+
+  .atom {
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .atom:focus-visible {
+    outline: none;
+  }
+
+  .atom.dragging {
+    cursor: grabbing;
+  }
+
+  /* 히트 영역: 화면엔 보이지 않는 드래그/클릭 판정용 원 */
+  .atom-hit {
+    fill: transparent;
+  }
+
+  /* 탄소: 골격 구조식 규칙상 원소 기호를 쓰지 않고 결합 정점으로만 존재.
+     평소엔 옅게, 조작 중(hover/focus/drag)일 때만 눈에 띄게 */
+  .carbon-vertex-dot {
+    fill: var(--el-C);
+    opacity: 0.3;
+    transition: opacity 0.15s ease, r 0.15s ease;
+  }
+
+  .atom:hover .carbon-vertex-dot {
+    opacity: 0.6;
+  }
+
+  .atom:focus-visible .carbon-vertex-dot,
+  .atom.dragging .carbon-vertex-dot {
+    fill: var(--accent);
+    opacity: 1;
+    r: 4;
+  }
+
+  /* 이종원자(O, N, Br, Cl)·명시적 H: 원소 기호를 색으로 직접 표기.
+     결합선이 겹쳐도 읽히도록 옅은 배경만 깔고 테두리는 넣지 않음 */
+  .atom-halo {
+    fill: var(--bg-panel);
+    transition: fill 0.15s ease;
+  }
+
+  .atom:focus-visible .atom-halo,
+  .atom.dragging .atom-halo {
+    fill: var(--accent-soft);
+  }
+
+  .atom-label {
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  /* 도구별 캔버스 커서 */
+  .editor-canvas-wrap.tool-bond .atom,
+  .editor-canvas-wrap.tool-delete .atom,
+  .editor-canvas-wrap.tool-bond .bond,
+  .editor-canvas-wrap.tool-delete .bond {
+    cursor: pointer;
+  }
+
+  /* 결합(선) */
+  .bond-hit {
+    stroke: transparent;
+    stroke-width: 14px;
+    fill: none;
+  }
+
+  .bond-line {
+    stroke: var(--ink);
+    stroke-width: 2;
+  }
+
+  .bond:focus-visible {
+    outline: none;
+  }
+
+  .bond:focus-visible .bond-line {
+    stroke: var(--accent);
+  }
+
+  /* 결합 도구: 클릭 대상 원자/결합에 강조색 */
+  .editor-canvas-wrap.tool-bond .atom:hover .carbon-vertex-dot {
+    fill: var(--accent);
+    opacity: 0.9;
+  }
+
+  .editor-canvas-wrap.tool-bond .atom:hover .atom-halo {
+    fill: var(--accent-soft);
+  }
+
+  .editor-canvas-wrap.tool-bond .bond:hover .bond-line {
+    stroke: var(--accent);
+  }
+
+  /* 결합 도구로 첫 번째 원자를 선택해 다음 클릭을 기다리는 상태 */
+  .atom.bond-pending .carbon-vertex-dot {
+    fill: var(--accent);
+    opacity: 1;
+    r: 4;
+  }
+
+  .atom.bond-pending .atom-halo {
+    fill: var(--accent-soft);
+  }
+
+  /* 삭제 도구: 클릭 대상에 위험색 강조 */
+  .editor-canvas-wrap.tool-delete .atom:hover .carbon-vertex-dot {
+    fill: var(--danger);
+    opacity: 1;
+  }
+
+  .editor-canvas-wrap.tool-delete .atom:hover .atom-halo {
+    fill: var(--danger-soft);
+  }
+
+  .editor-canvas-wrap.tool-delete .bond:hover .bond-line {
+    stroke: var(--danger);
+  }
+
+  .steps-placeholder {
+    color: var(--ink-muted);
+    font-size: 0.88rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .step-stub {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 0.7rem;
+  }
+
+  .step-stub strong {
+    display: block;
+    color: var(--ink);
+    font-size: 0.85rem;
+    margin-bottom: 0.2rem;
+  }
+
+  /* ---------- 학습 모드 스켈레톤 ---------- */
+  .play-toolbar {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .play-toolbar select {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.55rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.92rem;
+    background: var(--bg-panel);
+    color: var(--ink-muted);
+  }
+
+  .play-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .play-controls button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg-panel);
+    color: var(--ink-muted);
+    font-size: 1rem;
+    cursor: not-allowed;
+  }
+
+  .play-controls .speed-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--ink-muted);
+    font-size: 0.85rem;
+    margin-left: auto;
+  }
+
+  .play-controls input[type="range"] {
+    width: 120px;
+  }
+
+  .step-status {
+    margin-top: 0.9rem;
+    color: var(--ink-muted);
+    font-size: 0.9rem;
+  }
+
+  .step-status .step-num {
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  footer.app-footer {
+    text-align: center;
+    padding: 1.25rem;
+    color: var(--ink-muted);
+    font-size: 0.8rem;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <circle cx="9" cy="10" r="4" fill="var(--el-C)"/>
+        <circle cx="22" cy="9" r="3.4" fill="var(--el-O)"/>
+        <circle cx="16" cy="21" r="3.4" fill="var(--el-N)"/>
+        <line x1="9" y1="10" x2="22" y2="9" stroke="var(--ink)" stroke-width="1.6"/>
+        <line x1="9" y1="10" x2="16" y2="21" stroke="var(--ink)" stroke-width="1.6"/>
+      </svg>
+      <span>유기화학 메커니즘 스튜디오</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ================= 홈 화면 ================= -->
+  <section id="panel-home" tabindex="0">
+    <div class="hero">
+      <h1>화살표 하나하나로 반응 메커니즘을 이해하기</h1>
+      <p>원자와 결합을 직접 그리고, 전자쌍 이동 화살표로 메커니즘을 표현해보세요.
+         만든 반응은 단계별 애니메이션으로 다시 재생하며 학습할 수 있습니다.</p>
+      <div class="hero-legend" aria-hidden="true">
+      </div>
+    </div>
+
+    <div class="cards">
+      <div class="card editor">
+        <div class="icon-wrap">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 20l4-1 11-11-3-3L5 16l-1 4z" stroke="var(--editor-accent)" stroke-width="1.6" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2>반응 만들기</h2>
+        <p>원소를 배치하고 결합과 화살표를 그려서 나만의 반응 메커니즘 단계를 직접 만들어보세요.</p>
+        <button class="card-cta" type="button" data-goto="editor">에디터 열기</button>
+      </div>
+
+      <div class="card play">
+        <div class="icon-wrap">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" stroke="var(--play-accent)" stroke-width="1.6"/>
+            <path d="M10 8l6 4-6 4V8z" fill="var(--play-accent)"/>
+          </svg>
+        </div>
+        <h2>학습 모드</h2>
+        <p>저장된 반응을 선택해 단계별로 넘겨보거나 자동재생으로 화살표가 그려지는 과정을 감상하세요.</p>
+        <button class="card-cta" type="button" data-goto="play">학습 모드 열기</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 에디터 모드 (스켈레톤) ================= -->
+  <section id="panel-editor" tabindex="0" hidden>
+    <div class="subpage-bar">
+      <button class="btn-back" type="button" data-goto="home">← 홈으로</button>
+      <h1>반응 만들기</h1>
+      <span class="badge-soon">화살표·형식전하 준비 중</span>
+    </div>
+
+    <div class="editor-toolbar">
+      <input type="text" id="reaction-name-input" placeholder="반응 이름을 입력하세요 (예: SN2 반응)" aria-label="반응 이름">
+      <button type="button" disabled>새 반응</button>
+      <button type="button" disabled>저장</button>
+    </div>
+
+    <div class="editor-grid">
+      <div class="panel" aria-label="도구 팔레트">
+        <h3>원소</h3>
+        <div class="element-palette">
+          <button type="button" class="element-chip" draggable="true" data-element="C" style="--chip-color:var(--el-C)" aria-label="탄소(C) 원자 추가">C</button>
+          <button type="button" class="element-chip" draggable="true" data-element="H" style="--chip-color:var(--el-H)" aria-label="수소(H) 원자 추가">H</button>
+          <button type="button" class="element-chip" draggable="true" data-element="O" style="--chip-color:var(--el-O)" aria-label="산소(O) 원자 추가">O</button>
+          <button type="button" class="element-chip" draggable="true" data-element="N" style="--chip-color:var(--el-N)" aria-label="질소(N) 원자 추가">N</button>
+          <button type="button" class="element-chip" draggable="true" data-element="Br" style="--chip-color:var(--el-Br)" aria-label="브롬(Br) 원자 추가">Br</button>
+          <button type="button" class="element-chip" draggable="true" data-element="Cl" style="--chip-color:var(--el-Cl)" aria-label="염소(Cl) 원자 추가">Cl</button>
+        </div>
+        <p class="palette-hint">원소를 캔버스로 드래그하거나 클릭해서 놓아보세요.</p>
+
+        <h3 class="tool-list-heading">도구</h3>
+        <div class="tool-list" role="group" aria-label="편집 도구 선택">
+          <button type="button" class="tool-btn" data-tool="select" aria-pressed="true">선택 · 이동</button>
+          <button type="button" class="tool-btn" data-tool="bond" aria-pressed="false">결합 도구</button>
+          <button type="button" class="tool-btn" data-tool="delete" aria-pressed="false">삭제</button>
+          <div class="swatch">전자쌍 화살표</div>
+          <div class="swatch">형식전하</div>
+        </div>
+        <p class="palette-hint" id="tool-hint">원자를 드래그하면 이동합니다.</p>
+      </div>
+
+      <div class="panel" aria-label="캔버스">
+        <h3>캔버스</h3>
+        <div class="editor-canvas-wrap" id="editor-canvas-wrap">
+          <svg id="editor-canvas" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet" role="img" aria-label="반응 메커니즘을 그리는 캔버스">
+            <rect id="canvas-bg" x="0" y="0" width="600" height="400" fill="transparent"></rect>
+            <text id="canvas-hint" class="canvas-hint" x="300" y="200" text-anchor="middle" dominant-baseline="central">왼쪽 팔레트에서 원소를 드래그해서 여기에 놓으세요</text>
+            <g id="editor-bonds"></g>
+            <g id="editor-atoms"></g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="panel" aria-label="단계 목록">
+        <h3>단계 목록</h3>
+        <div class="steps-placeholder">
+          <div class="step-stub">
+            <strong>1단계</strong>
+            아직 저장된 단계가 없습니다.
+          </div>
+          <button type="button" disabled>+ 단계 추가</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 학습 모드 (스켈레톤) ================= -->
+  <section id="panel-play" tabindex="0" hidden>
+    <div class="subpage-bar">
+      <button class="btn-back" type="button" data-goto="home">← 홈으로</button>
+      <h1>학습 모드</h1>
+      <span class="badge-soon">재생 기능 준비 중</span>
+    </div>
+
+    <div class="play-toolbar">
+      <select disabled aria-label="반응 선택">
+        <option>저장된 반응이 없습니다</option>
+      </select>
+    </div>
+
+    <div class="panel" aria-label="재생 캔버스">
+      <div class="canvas-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M10 8l6 4-6 4V8z" fill="currentColor"/>
+        </svg>
+        <p>반응을 선택하면 단계별 메커니즘이 여기에 표시됩니다.</p>
+      </div>
+
+      <div class="play-controls">
+        <button type="button" disabled aria-label="이전 단계">◀</button>
+        <button type="button" disabled aria-label="자동재생">▶</button>
+        <button type="button" disabled aria-label="다음 단계">▶|</button>
+        <div class="speed-wrap">
+          <label for="speed-range">재생 속도</label>
+          <input id="speed-range" type="range" min="1" max="5" value="3" disabled>
+        </div>
+      </div>
+
+      <p class="step-status"><span class="step-num">0 / 0</span> 단계 — 설명이 여기에 표시됩니다.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="app-footer">
+  유기화학 메커니즘 스튜디오 &middot; 오프라인에서 동작하는 단일 HTML 학습 도구
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var panels = {
+    home: document.getElementById('panel-home'),
+    editor: document.getElementById('panel-editor'),
+    play: document.getElementById('panel-play')
+  };
+
+  function switchView(view, opts) {
+    opts = opts || {};
+    if (!panels[view]) return;
+
+    Object.keys(panels).forEach(function (key) {
+      panels[key].hidden = key !== view;
+    });
+
+    if (opts.focusPanel) {
+      panels[view].focus();
+    }
+
+    if (history.replaceState) {
+      history.replaceState(null, '', '#' + view);
+    }
+  }
+
+  // 홈 카드 / 뒤로가기 버튼의 data-goto
+  document.querySelectorAll('[data-goto]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      switchView(el.dataset.goto, { focusPanel: true });
+    });
+  });
+
+  // 새로고침/직접 진입 시 URL 해시로 초기 화면 결정
+  var initial = (location.hash || '').replace('#', '');
+  if (panels[initial]) {
+    switchView(initial);
+  }
+
+  // ================= 에디터: 반응 이름 =================
+  var currentReaction = { id: null, name: '' };
+  var reactionNameInput = document.getElementById('reaction-name-input');
+  if (reactionNameInput) {
+    reactionNameInput.addEventListener('input', function () {
+      currentReaction.name = reactionNameInput.value;
+    });
+  }
+
+  // ================= 에디터: 원소 배치 =================
+  var atoms = [];
+  var atomIdSeq = 1;
+  var CANVAS_W = 600;
+  var CANVAS_H = 400;
+  var ATOM_R = 17;
+
+  var editorCanvas = document.getElementById('editor-canvas');
+  var editorAtomsLayer = document.getElementById('editor-atoms');
+  var editorBondsLayer = document.getElementById('editor-bonds');
+  var canvasHint = document.getElementById('canvas-hint');
+  var canvasBg = document.getElementById('canvas-bg');
+
+  // ================= 에디터: 도구(선택·결합·삭제) =================
+  var activeTool = 'select'; // 'select' | 'bond' | 'delete'
+  var bondStartAtomId = null; // 결합 도구로 첫 번째 원자를 고른 뒤 두 번째 클릭을 기다리는 중이면 그 원자 id
+  var bonds = [];
+  var bondIdSeq = 1;
+
+  var TOOL_HINTS = {
+    select: '원자를 드래그하면 이동합니다.',
+    bond: '원자 두 개를 순서대로 클릭해서 결합을 만드세요. 이미 결합이 있으면 클릭할 때마다 단일→이중→삼중으로 바뀝니다.',
+    delete: '지우고 싶은 원자나 결합을 클릭하세요.'
+  };
+
+  var toolButtons = Array.prototype.slice.call(document.querySelectorAll('.tool-btn'));
+  var toolHintEl = document.getElementById('tool-hint');
+
+  function setActiveTool(tool) {
+    activeTool = tool;
+    bondStartAtomId = null;
+
+    toolButtons.forEach(function (btn) {
+      btn.setAttribute('aria-pressed', btn.dataset.tool === tool ? 'true' : 'false');
+    });
+
+    if (editorCanvasWrap) {
+      editorCanvasWrap.classList.remove('tool-select', 'tool-bond', 'tool-delete');
+      editorCanvasWrap.classList.add('tool-' + tool);
+    }
+
+    if (toolHintEl) {
+      toolHintEl.textContent = TOOL_HINTS[tool] || '';
+    }
+
+    renderAtoms();
+  }
+
+  toolButtons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      setActiveTool(btn.dataset.tool);
+    });
+  });
+
+  // ================= 에디터: 자동 수소 계산 =================
+  // 원자가(valence): 이 값에서 그려진 결합 차수의 합을 뺀 만큼 수소가 암묵적으로 채워진다.
+  var VALENCE = { C: 4, H: 1, N: 3, O: 2, Br: 1, Cl: 1 };
+
+  function getBondOrderSum(atomId) {
+    var sum = 0;
+    bonds.forEach(function (b) {
+      if (b.atomId1 === atomId || b.atomId2 === atomId) sum += b.order;
+    });
+    return sum;
+  }
+
+  function getImplicitHCount(atom) {
+    var valence = VALENCE[atom.element];
+    if (valence === undefined) return 0;
+    return Math.max(0, valence - getBondOrderSum(atom.id));
+  }
+
+  // <text> 안에 "O", "OH", "NH2"처럼 원소기호+수소 개수를 tspan으로 구성 (숫자는 아래첨자)
+  function buildFormulaLabel(textEl, element, hCount) {
+    var ns = 'http://www.w3.org/2000/svg';
+    textEl.textContent = '';
+
+    var mainSpan = document.createElementNS(ns, 'tspan');
+    mainSpan.textContent = element;
+    textEl.appendChild(mainSpan);
+
+    if (hCount > 0) {
+      var hSpan = document.createElementNS(ns, 'tspan');
+      hSpan.textContent = 'H';
+      textEl.appendChild(hSpan);
+
+      if (hCount > 1) {
+        var subSpan = document.createElementNS(ns, 'tspan');
+        subSpan.setAttribute('dy', '3');
+        subSpan.setAttribute('font-size', '10');
+        subSpan.textContent = String(hCount);
+        textEl.appendChild(subSpan);
+      }
+    }
+  }
+
+  function renderAtoms() {
+    if (!editorAtomsLayer) return;
+    var ns = 'http://www.w3.org/2000/svg';
+    editorAtomsLayer.textContent = '';
+
+    atoms.forEach(function (atom) {
+      var group = document.createElementNS(ns, 'g');
+      group.setAttribute('class', 'atom' + (atom.id === bondStartAtomId ? ' bond-pending' : ''));
+      group.setAttribute('data-atom-id', atom.id);
+      group.setAttribute('tabindex', '0');
+      group.setAttribute('role', 'button');
+
+      // 드래그/클릭을 위한 투명 히트 영역 (탄소는 화면에 아무것도 안 보이므로 필수)
+      var hit = document.createElementNS(ns, 'circle');
+      hit.setAttribute('class', 'atom-hit');
+      hit.setAttribute('cx', atom.x);
+      hit.setAttribute('cy', atom.y);
+      hit.setAttribute('r', ATOM_R);
+      group.appendChild(hit);
+
+      var isCarbon = atom.element === 'C';
+
+      if (isCarbon && !atom.hRevealed) {
+        // 골격 구조식 규칙: 탄소는 원소 기호를 쓰지 않고 결합이 만나는 정점으로만 존재.
+        // 평소엔 옅은 점만 표시하고, 클릭(선택)했을 때만 아래에서 수소 개수를 보여준다.
+        var dot = document.createElementNS(ns, 'circle');
+        dot.setAttribute('class', 'carbon-vertex-dot');
+        dot.setAttribute('cx', atom.x);
+        dot.setAttribute('cy', atom.y);
+        dot.setAttribute('r', 2.5);
+        group.appendChild(dot);
+        group.setAttribute('aria-label', '탄소(결합 정점). 선택 도구에서 클릭하면 수소 개수를 보여줍니다. 드래그하면 이동합니다.');
+      } else {
+        // 이종원자, 명시적으로 배치한 H, 또는 방금 클릭해서 수소 개수를 확인 중인 탄소.
+        // 뒤에 그려질 결합선이 글자와 겹치지 않도록 옅은 배경을 살짝 깔아준다(글자 크기에 맞춰 나중에 조정).
+        var halo = document.createElementNS(ns, 'rect');
+        halo.setAttribute('class', 'atom-halo');
+        halo.setAttribute('rx', 4);
+        halo.setAttribute('ry', 4);
+        group.appendChild(halo);
+
+        var text = document.createElementNS(ns, 'text');
+        text.setAttribute('class', 'atom-label');
+        text.setAttribute('x', atom.x);
+        text.setAttribute('y', atom.y);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('dominant-baseline', 'central');
+        text.setAttribute('fill', 'var(--el-' + atom.element + ')');
+        group.appendChild(text);
+
+        editorAtomsLayer.appendChild(group); // getBBox를 쓰려면 먼저 문서에 붙어 있어야 함
+
+        var hCount = 0;
+        if (atom.element === 'H') {
+          text.textContent = 'H'; // H에 또 H를 붙여 표기하지는 않음
+        } else {
+          hCount = getImplicitHCount(atom);
+          buildFormulaLabel(text, atom.element, hCount);
+        }
+
+        var bbox = text.getBBox();
+        var padX = 3, padY = 2;
+        halo.setAttribute('x', bbox.x - padX);
+        halo.setAttribute('y', bbox.y - padY);
+        halo.setAttribute('width', bbox.width + padX * 2);
+        halo.setAttribute('height', bbox.height + padY * 2);
+        halo.dataset.offsetX = (bbox.x - padX) - atom.x;
+        halo.dataset.offsetY = (bbox.y - padY) - atom.y;
+
+        if (isCarbon) {
+          group.setAttribute('aria-label', '탄소, 수소 ' + hCount + '개. 다시 클릭하면 숨깁니다.');
+        } else {
+          group.setAttribute('aria-label', atom.element + ' 원자' + (hCount > 0 ? ' (수소 ' + hCount + '개 포함)' : '') + ', 드래그해서 이동');
+        }
+      }
+
+      if (!group.isConnected) {
+        editorAtomsLayer.appendChild(group);
+      }
+      bindAtomDrag(group, atom);
+    });
+
+    if (canvasHint) {
+      canvasHint.style.display = atoms.length ? 'none' : '';
+    }
+  }
+
+  // group 안의 모든 위치 속성(circle의 cx/cy, text의 x/y)을 atom.x/atom.y로 갱신
+  function updateAtomDom(atom, group) {
+    Array.prototype.forEach.call(group.children, function (node) {
+      if (node.tagName === 'circle') {
+        node.setAttribute('cx', atom.x);
+        node.setAttribute('cy', atom.y);
+      } else if (node.tagName === 'text') {
+        node.setAttribute('x', atom.x);
+        node.setAttribute('y', atom.y);
+      } else if (node.tagName === 'rect') {
+        // 텍스트 크기에 맞춰 렌더링 시점에 계산해 둔 offset을 그대로 적용
+        var offX = parseFloat(node.dataset.offsetX || '0');
+        var offY = parseFloat(node.dataset.offsetY || '0');
+        node.setAttribute('x', atom.x + offX);
+        node.setAttribute('y', atom.y + offY);
+      }
+    });
+  }
+
+  function bindAtomDrag(group, atom) {
+    var moved = false;
+    var startClientX = 0;
+    var startClientY = 0;
+
+    group.addEventListener('pointerdown', function (e) {
+      e.preventDefault();
+      moved = false;
+      startClientX = e.clientX;
+      startClientY = e.clientY;
+      group.focus({ preventScroll: true });
+      try {
+        group.setPointerCapture(e.pointerId);
+      } catch (err) {
+        // 포인터가 이미 해제됐거나 유효하지 않은 경우 등 — 캡처 없이도 클릭 판정은 계속 동작하므로 무시
+      }
+      if (activeTool === 'select') {
+        group.classList.add('dragging');
+      }
+    });
+
+    group.addEventListener('pointermove', function (e) {
+      if (!group.hasPointerCapture(e.pointerId)) return;
+      if (Math.abs(e.clientX - startClientX) > 3 || Math.abs(e.clientY - startClientY) > 3) {
+        moved = true;
+      }
+      if (activeTool === 'select') {
+        var point = clientToCanvasPoint(editorCanvas, e.clientX, e.clientY);
+        atom.x = point.x;
+        atom.y = point.y;
+        updateAtomDom(atom, group);
+        renderBonds();
+      }
+    });
+
+    function endDrag(e) {
+      if (group.hasPointerCapture(e.pointerId)) {
+        group.releasePointerCapture(e.pointerId);
+      }
+      group.classList.remove('dragging');
+      if (!moved) {
+        if (activeTool === 'select') {
+          toggleCarbonH(atom);
+        } else {
+          handleAtomClick(atom);
+        }
+      }
+    }
+
+    group.addEventListener('pointerup', endDrag);
+    group.addEventListener('pointercancel', function (e) {
+      if (group.hasPointerCapture(e.pointerId)) {
+        group.releasePointerCapture(e.pointerId);
+      }
+      group.classList.remove('dragging');
+    });
+
+    group.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (activeTool === 'select') {
+          toggleCarbonH(atom);
+        } else {
+          handleAtomClick(atom);
+        }
+        return;
+      }
+
+      if (activeTool !== 'select') return;
+
+      // 키보드로도 이동 가능 (방향키, Shift로 크게 이동)
+      var step = e.shiftKey ? 20 : 6;
+      var dx = 0, dy = 0;
+      if (e.key === 'ArrowLeft') dx = -step;
+      else if (e.key === 'ArrowRight') dx = step;
+      else if (e.key === 'ArrowUp') dy = -step;
+      else if (e.key === 'ArrowDown') dy = step;
+      else return;
+      e.preventDefault();
+      atom.x = Math.max(ATOM_R + 6, Math.min(CANVAS_W - ATOM_R - 6, atom.x + dx));
+      atom.y = Math.max(ATOM_R + 6, Math.min(CANVAS_H - ATOM_R - 6, atom.y + dy));
+      updateAtomDom(atom, group);
+      renderBonds();
+    });
+  }
+
+  // 원자를 (드래그 없이) 클릭했을 때 — 현재 도구에 따라 동작이 달라짐
+  // 선택 도구에서 탄소를 (드래그 없이) 클릭 — 그 탄소에 한해서만 수소 개수를 보여주거나 숨김
+  function toggleCarbonH(atom) {
+    if (atom.element !== 'C') return;
+    atom.hRevealed = !atom.hRevealed;
+    renderAtoms();
+  }
+
+  function handleAtomClick(atom) {
+    if (activeTool === 'delete') {
+      deleteAtom(atom.id);
+    } else if (activeTool === 'bond') {
+      if (!bondStartAtomId) {
+        bondStartAtomId = atom.id;
+        renderAtoms();
+      } else if (bondStartAtomId === atom.id) {
+        bondStartAtomId = null; // 같은 원자를 다시 클릭 → 선택 취소
+        renderAtoms();
+      } else {
+        addOrCycleBond(bondStartAtomId, atom.id);
+        bondStartAtomId = null;
+        renderAtoms();
+      }
+    }
+  }
+
+  function deleteAtom(atomId) {
+    atoms = atoms.filter(function (a) { return a.id !== atomId; });
+    bonds = bonds.filter(function (b) { return b.atomId1 !== atomId && b.atomId2 !== atomId; });
+    if (bondStartAtomId === atomId) bondStartAtomId = null;
+    renderAtoms();
+    renderBonds();
+  }
+
+  // ================= 에디터: 결합 =================
+  function addOrCycleBond(atomId1, atomId2) {
+    var existing = bonds.filter(function (b) {
+      return (b.atomId1 === atomId1 && b.atomId2 === atomId2) ||
+             (b.atomId1 === atomId2 && b.atomId2 === atomId1);
+    })[0];
+
+    if (existing) {
+      existing.order = existing.order >= 3 ? 1 : existing.order + 1;
+    } else {
+      bonds.push({ id: 'b' + (bondIdSeq++), atomId1: atomId1, atomId2: atomId2, order: 1 });
+    }
+    renderBonds();
+  }
+
+  function deleteBond(bondId) {
+    bonds = bonds.filter(function (b) { return b.id !== bondId; });
+    renderBonds();
+    renderAtoms(); // 결합이 사라지면 연결된 원자들의 자동 수소 개수도 다시 계산해야 함
+  }
+
+  function handleBondClick(bond) {
+    if (activeTool === 'delete') {
+      deleteBond(bond.id);
+    } else if (activeTool === 'bond') {
+      bond.order = bond.order >= 3 ? 1 : bond.order + 1;
+      renderBonds();
+      renderAtoms(); // 결합 차수가 바뀌면 연결된 원자들의 자동 수소 개수도 다시 계산해야 함
+    }
+  }
+
+  function bindBondInteraction(group, bond) {
+    group.addEventListener('pointerup', function () {
+      handleBondClick(bond);
+    });
+    group.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleBondClick(bond);
+      }
+    });
+  }
+
+  function renderBonds() {
+    if (!editorBondsLayer) return;
+    var ns = 'http://www.w3.org/2000/svg';
+    editorBondsLayer.textContent = '';
+
+    bonds.forEach(function (bond) {
+      var a1 = atoms.filter(function (a) { return a.id === bond.atomId1; })[0];
+      var a2 = atoms.filter(function (a) { return a.id === bond.atomId2; })[0];
+      if (!a1 || !a2) return;
+
+      var group = document.createElementNS(ns, 'g');
+      group.setAttribute('class', 'bond');
+      group.setAttribute('data-bond-id', bond.id);
+      group.setAttribute('tabindex', '0');
+      group.setAttribute('role', 'button');
+      group.setAttribute('aria-label', '결합(' + bond.order + '중 결합)');
+
+      // 클릭 판정용 넓은 투명선 (가는 선은 정확히 클릭하기 어려움)
+      var hitLine = document.createElementNS(ns, 'line');
+      hitLine.setAttribute('class', 'bond-hit');
+      hitLine.setAttribute('x1', a1.x);
+      hitLine.setAttribute('y1', a1.y);
+      hitLine.setAttribute('x2', a2.x);
+      hitLine.setAttribute('y2', a2.y);
+      group.appendChild(hitLine);
+
+      // 결합 차수만큼 평행선을 그린다 (수직 방향으로 offset)
+      var dx = a2.x - a1.x;
+      var dy = a2.y - a1.y;
+      var len = Math.sqrt(dx * dx + dy * dy) || 1;
+      var nx = -dy / len;
+      var ny = dx / len;
+      var gap = 4.5;
+
+      var offsets = [0];
+      if (bond.order === 2) offsets = [-gap / 2, gap / 2];
+      else if (bond.order === 3) offsets = [-gap, 0, gap];
+
+      offsets.forEach(function (off) {
+        var line = document.createElementNS(ns, 'line');
+        line.setAttribute('class', 'bond-line');
+        line.setAttribute('x1', a1.x + nx * off);
+        line.setAttribute('y1', a1.y + ny * off);
+        line.setAttribute('x2', a2.x + nx * off);
+        line.setAttribute('y2', a2.y + ny * off);
+        group.appendChild(line);
+      });
+
+      editorBondsLayer.appendChild(group);
+      bindBondInteraction(group, bond);
+    });
+  }
+
+  function addAtom(element, x, y) {
+    atoms.push({
+      id: 'a' + (atomIdSeq++),
+      element: element,
+      x: x,
+      y: y,
+      charge: 0,
+      hRevealed: false // 탄소일 때만 의미 있음: 클릭해서 수소 개수를 보여주는 중인지
+    });
+    renderAtoms();
+  }
+
+  function clientToCanvasPoint(svg, clientX, clientY) {
+    var pt = svg.createSVGPoint();
+    pt.x = clientX;
+    pt.y = clientY;
+    var ctm = svg.getScreenCTM();
+    if (!ctm) return { x: CANVAS_W / 2, y: CANVAS_H / 2 };
+    var loc = pt.matrixTransform(ctm.inverse());
+    return {
+      x: Math.max(ATOM_R + 6, Math.min(CANVAS_W - ATOM_R - 6, loc.x)),
+      y: Math.max(ATOM_R + 6, Math.min(CANVAS_H - ATOM_R - 6, loc.y))
+    };
+  }
+
+  // 팔레트에서 드래그 시작
+  var elementChips = Array.prototype.slice.call(document.querySelectorAll('.element-chip'));
+  elementChips.forEach(function (chip) {
+    chip.addEventListener('dragstart', function (e) {
+      e.dataTransfer.setData('text/plain', chip.dataset.element);
+      e.dataTransfer.effectAllowed = 'copy';
+      chip.classList.add('dragging');
+    });
+    chip.addEventListener('dragend', function () {
+      chip.classList.remove('dragging');
+    });
+    // 클릭만으로도 배치 가능 (드래그가 어려운 환경 대비)
+    chip.addEventListener('click', function () {
+      var offset = atoms.length % 5;
+      addAtom(chip.dataset.element, CANVAS_W / 2 + (offset - 2) * 45, CANVAS_H / 2);
+    });
+  });
+
+  // 캔버스에 드롭
+  var editorCanvasWrap = document.getElementById('editor-canvas-wrap');
+  if (editorCanvasWrap && editorCanvas) {
+    var dragCounter = 0;
+
+    editorCanvasWrap.addEventListener('dragenter', function (e) {
+      e.preventDefault();
+      dragCounter++;
+      editorCanvasWrap.classList.add('drag-over');
+    });
+
+    editorCanvasWrap.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+    });
+
+    editorCanvasWrap.addEventListener('dragleave', function () {
+      dragCounter = Math.max(0, dragCounter - 1);
+      if (dragCounter === 0) {
+        editorCanvasWrap.classList.remove('drag-over');
+      }
+    });
+
+    editorCanvasWrap.addEventListener('drop', function (e) {
+      e.preventDefault();
+      dragCounter = 0;
+      editorCanvasWrap.classList.remove('drag-over');
+
+      var element = e.dataTransfer.getData('text/plain');
+      if (!element) return;
+
+      var point = clientToCanvasPoint(editorCanvas, e.clientX, e.clientY);
+      addAtom(element, point.x, point.y);
+    });
+  }
+
+  // 빈 캔버스를 클릭하면 결합 도구의 대기 중인 선택을 취소
+  if (canvasBg) {
+    canvasBg.addEventListener('pointerup', function () {
+      if (activeTool === 'bond' && bondStartAtomId) {
+        bondStartAtomId = null;
+        renderAtoms();
+      }
+    });
+  }
+
+  setActiveTool('select');
+  renderBonds();
+})();
+</script>
+
+</body>
+</html>
