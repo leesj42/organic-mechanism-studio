@@ -271,9 +271,24 @@
     border: 1px solid var(--border);
     border-radius: 8px;
     background: var(--bg-panel);
-    color: var(--ink-muted);
+    color: var(--ink);
     font-size: 0.88rem;
     font-weight: 600;
+    cursor: pointer;
+  }
+
+  .editor-toolbar button:hover:not(:disabled) {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+  }
+
+  .editor-toolbar button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  .editor-toolbar button:disabled {
+    color: var(--ink-muted);
     cursor: not-allowed;
   }
 
@@ -804,7 +819,27 @@
     border-radius: 8px;
     font-size: 0.92rem;
     background: var(--bg-panel);
-    color: var(--ink-muted);
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .play-toolbar select:focus-visible {
+    outline: 2px solid var(--play-accent);
+    outline-offset: 1px;
+  }
+
+  .play-canvas-wrap {
+    min-height: 360px;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    background: var(--bg-panel);
+    overflow: hidden;
+  }
+
+  .play-canvas-wrap svg {
+    display: block;
+    width: 100%;
+    height: 360px;
   }
 
   .play-controls {
@@ -823,8 +858,24 @@
     border-radius: 50%;
     border: 1px solid var(--border);
     background: var(--bg-panel);
-    color: var(--ink-muted);
+    color: var(--ink);
     font-size: 1rem;
+    cursor: pointer;
+  }
+
+  .play-controls button:hover:not(:disabled) {
+    background: var(--play-accent);
+    border-color: var(--play-accent);
+    color: #fff;
+  }
+
+  .play-controls button:focus-visible {
+    outline: 2px solid var(--play-accent);
+    outline-offset: 1px;
+  }
+
+  .play-controls button:disabled {
+    color: var(--ink-muted);
     cursor: not-allowed;
   }
 
@@ -932,8 +983,8 @@
 
     <div class="editor-toolbar">
       <input type="text" id="reaction-name-input" placeholder="반응 이름을 입력하세요 (예: SN2 반응)" aria-label="반응 이름">
-      <button type="button" disabled>새 반응</button>
-      <button type="button" disabled>저장</button>
+      <button type="button" id="new-reaction-btn">새 반응</button>
+      <button type="button" disabled title="아직 준비 중인 기능입니다">저장</button>
     </div>
 
     <div class="editor-grid">
@@ -965,7 +1016,7 @@
         <div class="editor-canvas-wrap" id="editor-canvas-wrap">
           <svg id="editor-canvas" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet" role="img" aria-label="반응 메커니즘을 그리는 캔버스">
             <defs>
-              <marker id="arrow-pair-head" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <marker id="arrow-pair-head" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse">
                 <path d="M0,0 L10,5 L0,10 z"></path>
               </marker>
             </defs>
@@ -992,35 +1043,33 @@
     <div class="subpage-bar">
       <button class="btn-back" type="button" data-goto="home">← 홈으로</button>
       <h1>학습 모드</h1>
-      <span class="badge-soon">재생 기능 준비 중</span>
     </div>
 
     <div class="play-toolbar">
-      <select disabled aria-label="반응 선택">
-        <option>저장된 반응이 없습니다</option>
-      </select>
+      <select id="reaction-select" aria-label="반응 선택"></select>
     </div>
 
     <div class="panel" aria-label="재생 캔버스">
-      <div class="canvas-placeholder">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.4"/>
-          <path d="M10 8l6 4-6 4V8z" fill="currentColor"/>
+      <div class="play-canvas-wrap" id="play-canvas-wrap">
+        <svg id="play-canvas" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet" role="img" aria-label="반응 메커니즘 재생 화면">
+          <text id="play-canvas-hint" class="canvas-hint" x="300" y="200" text-anchor="middle" dominant-baseline="central">반응을 선택하면 단계별 메커니즘이 여기에 표시됩니다.</text>
+          <g id="play-bonds"></g>
+          <g id="play-atoms"></g>
+          <g id="play-arrows"></g>
         </svg>
-        <p>반응을 선택하면 단계별 메커니즘이 여기에 표시됩니다.</p>
       </div>
 
       <div class="play-controls">
-        <button type="button" disabled aria-label="이전 단계">◀</button>
-        <button type="button" disabled aria-label="자동재생">▶</button>
-        <button type="button" disabled aria-label="다음 단계">▶|</button>
+        <button type="button" id="play-prev-btn" aria-label="이전 단계">◀</button>
+        <button type="button" id="play-autoplay-btn" aria-label="자동재생">▶</button>
+        <button type="button" id="play-next-btn" aria-label="다음 단계">▶|</button>
         <div class="speed-wrap">
           <label for="speed-range">재생 속도</label>
-          <input id="speed-range" type="range" min="1" max="5" value="3" disabled>
+          <input id="speed-range" type="range" min="1" max="5" value="3">
         </div>
       </div>
 
-      <p class="step-status"><span class="step-num">0 / 0</span> 단계 — 설명이 여기에 표시됩니다.</p>
+      <p class="step-status"><span class="step-num" id="play-step-num">0 / 0</span> 단계 — <span id="play-step-desc">반응을 선택해주세요.</span></p>
     </div>
   </section>
 
@@ -1047,6 +1096,10 @@
     Object.keys(panels).forEach(function (key) {
       panels[key].hidden = key !== view;
     });
+
+    if (view === 'play' && typeof refreshReactionSelect === 'function') {
+      refreshReactionSelect(); // 에디터에서 방금 바뀐 내용을 반영해 목록을 다시 채움
+    }
 
     if (opts.focusPanel) {
       panels[view].focus();
@@ -1835,9 +1888,6 @@
   function cloneBondForStep(b) {
     return { id: b.id, atomId1: b.atomId1, atomId2: b.atomId2, order: b.order };
   }
-  function cloneArrowForStep(ar) {
-    return { id: ar.id, from: ar.from, fromType: ar.fromType, to: ar.to, toType: ar.toType };
-  }
 
   // 지금 캔버스(atoms/bonds/arrows)에 쌓인 편집 내용을 현재 단계 슬롯에 반영해 둔다
   function saveCurrentStepSnapshot() {
@@ -1877,7 +1927,7 @@
       id: 's' + (stepIdSeq++),
       atoms: source.atoms.map(cloneAtomForStep),
       bonds: source.bonds.map(cloneBondForStep),
-      arrows: source.arrows.map(cloneArrowForStep),
+      arrows: [], // 화살표는 "그 단계에서 일어나는 변화"라 다음 단계로 넘어오지 않고 빈 상태로 시작
       description: ''
     };
     steps.splice(currentStepIndex + 1, 0, newStep);
@@ -1976,6 +2026,479 @@
   if (addStepBtn) {
     addStepBtn.addEventListener('click', addStep);
   }
+
+  // ================= 에디터: 새 반응 =================
+  var newReactionBtn = document.getElementById('new-reaction-btn');
+
+  function resetReaction() {
+    var ok = window.confirm('새 반응을 시작하면 지금까지 그린 내용이 모두 사라집니다. 계속할까요?');
+    if (!ok) return;
+
+    currentReaction.name = '';
+    if (reactionNameInput) reactionNameInput.value = '';
+
+    atomIdSeq = 1;
+    bondIdSeq = 1;
+    arrowIdSeq = 1;
+    stepIdSeq = 1;
+
+    steps = [createEmptyStep()];
+    loadStep(0);
+    setActiveTool('select');
+  }
+
+  if (newReactionBtn) {
+    newReactionBtn.addEventListener('click', resetReaction);
+  }
+
+  // ================= 학습 모드 =================
+  // 시드 데이터: 저장 기능이 없어 "저장된 반응 목록"은 만들 수 없지만,
+  // 처음부터 들어있는 예시 반응은 저장과 무관하게 항상 보여줄 수 있다.
+  var SEED_REACTIONS = [
+    {
+      id: 'seed-sn2',
+      name: 'SN2 반응 (OH⁻ + CH₃Br → CH₃OH + Br⁻)',
+      steps: [
+        {
+          description: '친핵체 OH⁻의 비공유 전자쌍이 탄소를 뒤쪽에서 공격하는 동시에, C-Br 결합의 전자쌍이 브로민으로 이동합니다. 두 일이 동시에 일어나는 협동(concerted) 메커니즘입니다.',
+          atoms: [
+            { id: 'sn2-o', element: 'O', x: 130, y: 200, charge: -1, hRevealed: false },
+            { id: 'sn2-c', element: 'C', x: 300, y: 200, charge: 0, hRevealed: false },
+            { id: 'sn2-br', element: 'Br', x: 470, y: 200, charge: 0, hRevealed: false }
+          ],
+          bonds: [
+            { id: 'sn2-b-cbr', atomId1: 'sn2-c', atomId2: 'sn2-br', order: 1 }
+          ],
+          arrows: [
+            { id: 'sn2-a1', from: 'sn2-o', fromType: 'atom', to: 'sn2-c', toType: 'atom' },
+            { id: 'sn2-a2', from: 'sn2-b-cbr', fromType: 'bond', to: 'sn2-br', toType: 'atom' }
+          ]
+        },
+        {
+          description: '생성물: 탄소가 친핵체 쪽에서 새 결합(C-O)을 얻고, 원래 결합(C-Br)의 반대 방향으로 구조가 뒤집혔습니다 — 이를 발덴 반전(Walden inversion)이라고 합니다. Br⁻는 이탈기로 떨어져 나갑니다.',
+          atoms: [
+            { id: 'sn2-o', element: 'O', x: 245, y: 200, charge: 0, hRevealed: false },
+            { id: 'sn2-c', element: 'C', x: 300, y: 200, charge: 0, hRevealed: false },
+            { id: 'sn2-br', element: 'Br', x: 480, y: 290, charge: -1, hRevealed: false }
+          ],
+          bonds: [
+            { id: 'sn2-b-co', atomId1: 'sn2-c', atomId2: 'sn2-o', order: 1 }
+          ],
+          arrows: []
+        }
+      ]
+    },
+    {
+      id: 'seed-sn1',
+      name: 'SN1 반응 ((CH₃)₃C-Br → 카보양이온 → (CH₃)₃C-OH)',
+      steps: [
+        {
+          description: 'C-Br 결합이 이온화되며 끊어져 브로민이 결합 전자쌍을 모두 가지고 이탈합니다. 3차 탄소는 카보양이온이 됩니다.',
+          atoms: [
+            { id: 'sn1-c1', element: 'C', x: 300, y: 200, charge: 0, hRevealed: false },
+            { id: 'sn1-c2', element: 'C', x: 255, y: 140, charge: 0, hRevealed: false },
+            { id: 'sn1-c3', element: 'C', x: 345, y: 140, charge: 0, hRevealed: false },
+            { id: 'sn1-c4', element: 'C', x: 300, y: 280, charge: 0, hRevealed: false },
+            { id: 'sn1-br', element: 'Br', x: 420, y: 200, charge: 0, hRevealed: false }
+          ],
+          bonds: [
+            { id: 'sn1-b1', atomId1: 'sn1-c1', atomId2: 'sn1-c2', order: 1 },
+            { id: 'sn1-b2', atomId1: 'sn1-c1', atomId2: 'sn1-c3', order: 1 },
+            { id: 'sn1-b3', atomId1: 'sn1-c1', atomId2: 'sn1-c4', order: 1 },
+            { id: 'sn1-b4', atomId1: 'sn1-c1', atomId2: 'sn1-br', order: 1 }
+          ],
+          arrows: [
+            { id: 'sn1-a1', from: 'sn1-b4', fromType: 'bond', to: 'sn1-br', toType: 'atom' }
+          ]
+        },
+        {
+          description: '카보양이온의 빈 p 오비탈을 향해 친핵체(OH⁻)의 비공유 전자쌍이 공격합니다.',
+          atoms: [
+            { id: 'sn1-c1', element: 'C', x: 300, y: 200, charge: 1, hRevealed: false },
+            { id: 'sn1-c2', element: 'C', x: 255, y: 140, charge: 0, hRevealed: false },
+            { id: 'sn1-c3', element: 'C', x: 345, y: 140, charge: 0, hRevealed: false },
+            { id: 'sn1-c4', element: 'C', x: 300, y: 280, charge: 0, hRevealed: false },
+            { id: 'sn1-br', element: 'Br', x: 420, y: 200, charge: -1, hRevealed: false },
+            { id: 'sn1-o', element: 'O', x: 300, y: 340, charge: -1, hRevealed: false }
+          ],
+          bonds: [
+            { id: 'sn1-b1', atomId1: 'sn1-c1', atomId2: 'sn1-c2', order: 1 },
+            { id: 'sn1-b2', atomId1: 'sn1-c1', atomId2: 'sn1-c3', order: 1 },
+            { id: 'sn1-b3', atomId1: 'sn1-c1', atomId2: 'sn1-c4', order: 1 }
+          ],
+          arrows: [
+            { id: 'sn1-a2', from: 'sn1-o', fromType: 'atom', to: 'sn1-c1', toType: 'atom' }
+          ]
+        },
+        {
+          description: '생성물: 3차 알코올 (CH₃)₃C-OH와 브로민화 이온(Br⁻)이 만들어졌습니다.',
+          atoms: [
+            { id: 'sn1-c1', element: 'C', x: 300, y: 200, charge: 0, hRevealed: false },
+            { id: 'sn1-c2', element: 'C', x: 255, y: 140, charge: 0, hRevealed: false },
+            { id: 'sn1-c3', element: 'C', x: 345, y: 140, charge: 0, hRevealed: false },
+            { id: 'sn1-c4', element: 'C', x: 300, y: 280, charge: 0, hRevealed: false },
+            { id: 'sn1-br', element: 'Br', x: 420, y: 200, charge: -1, hRevealed: false },
+            { id: 'sn1-o', element: 'O', x: 300, y: 340, charge: 0, hRevealed: false }
+          ],
+          bonds: [
+            { id: 'sn1-b1', atomId1: 'sn1-c1', atomId2: 'sn1-c2', order: 1 },
+            { id: 'sn1-b2', atomId1: 'sn1-c1', atomId2: 'sn1-c3', order: 1 },
+            { id: 'sn1-b3', atomId1: 'sn1-c1', atomId2: 'sn1-c4', order: 1 },
+            { id: 'sn1-b5', atomId1: 'sn1-c1', atomId2: 'sn1-o', order: 1 }
+          ],
+          arrows: []
+        }
+      ]
+    }
+  ];
+
+  var reactionSelect = document.getElementById('reaction-select');
+  var playCanvas = document.getElementById('play-canvas');
+  var playAtomsLayer = document.getElementById('play-atoms');
+  var playBondsLayer = document.getElementById('play-bonds');
+  var playArrowsLayer = document.getElementById('play-arrows');
+  var playCanvasHint = document.getElementById('play-canvas-hint');
+  var playPrevBtn = document.getElementById('play-prev-btn');
+  var playNextBtn = document.getElementById('play-next-btn');
+  var playAutoplayBtn = document.getElementById('play-autoplay-btn');
+  var speedRange = document.getElementById('speed-range');
+  var playStepNumEl = document.getElementById('play-step-num');
+  var playStepDescEl = document.getElementById('play-step-desc');
+
+  var playCurrentReaction = null;
+  var playCurrentStepIndex = 0;
+  var isAutoplaying = false;
+  var autoplayTimeoutId = null;
+  var AUTOPLAY_DELAYS = { 1: 3000, 2: 2200, 3: 1500, 4: 900, 5: 500 };
+
+  // 원자가 계산은 에디터와 같은 규칙을 쓰되, 재생 화면은 지금 보고 있는 단계 데이터(배열)를
+  // 직접 매개변수로 받는다 — 에디터의 전역 atoms/bonds가 아니라 선택된 반응의 한 단계이기 때문
+  function playGetBondOrderSum(bondsArr, atomId) {
+    var sum = 0;
+    bondsArr.forEach(function (b) {
+      if (b.atomId1 === atomId || b.atomId2 === atomId) sum += b.order;
+    });
+    return sum;
+  }
+
+  function playGetImplicitHCount(bondsArr, atom) {
+    var valence = VALENCE[atom.element];
+    if (valence === undefined) return 0;
+    var charge = atom.charge || 0;
+    var target = (atom.element === 'C' && charge > 0) ? valence - charge : valence + charge;
+    return Math.max(0, target - playGetBondOrderSum(bondsArr, atom.id));
+  }
+
+  function playGetRefPoint(type, id, atomsArr, bondsArr) {
+    if (type === 'atom') {
+      var a = atomsArr.filter(function (x) { return x.id === id; })[0];
+      return a ? { x: a.x, y: a.y } : null;
+    }
+    if (type === 'bond') {
+      var b = bondsArr.filter(function (x) { return x.id === id; })[0];
+      if (!b) return null;
+      var a1 = atomsArr.filter(function (x) { return x.id === b.atomId1; })[0];
+      var a2 = atomsArr.filter(function (x) { return x.id === b.atomId2; })[0];
+      if (!a1 || !a2) return null;
+      return { x: (a1.x + a2.x) / 2, y: (a1.y + a2.y) / 2 };
+    }
+    return null;
+  }
+
+  function appendPlayChargeLabel(group, atom, x, y) {
+    if (!atom.charge) return;
+    var ns = 'http://www.w3.org/2000/svg';
+    var text = document.createElementNS(ns, 'text');
+    text.setAttribute('class', 'charge-label');
+    text.setAttribute('x', x);
+    text.setAttribute('y', y);
+    text.setAttribute('text-anchor', 'start');
+    text.textContent = formatCharge(atom.charge);
+    group.appendChild(text);
+  }
+
+  // 에디터 캔버스와 같은 골격 구조식 규칙으로 그리되, 클릭/드래그 같은 상호작용은 전혀 없는 읽기 전용 렌더링
+  function renderPlayAtoms(atomsArr, bondsArr) {
+    if (!playAtomsLayer) return;
+    var ns = 'http://www.w3.org/2000/svg';
+    playAtomsLayer.textContent = '';
+
+    atomsArr.forEach(function (atom) {
+      var group = document.createElementNS(ns, 'g');
+      group.setAttribute('class', 'atom');
+
+      var isCarbon = atom.element === 'C';
+
+      if (isCarbon && !atom.hRevealed) {
+        var dot = document.createElementNS(ns, 'circle');
+        dot.setAttribute('class', 'carbon-vertex-dot');
+        dot.setAttribute('cx', atom.x);
+        dot.setAttribute('cy', atom.y);
+        dot.setAttribute('r', 2.5);
+        dot.style.opacity = '0.55';
+        group.appendChild(dot);
+        appendPlayChargeLabel(group, atom, atom.x + 7, atom.y - 7);
+      } else {
+        var halo = document.createElementNS(ns, 'rect');
+        halo.setAttribute('class', 'atom-halo');
+        halo.setAttribute('rx', 4);
+        halo.setAttribute('ry', 4);
+        group.appendChild(halo);
+
+        var text = document.createElementNS(ns, 'text');
+        text.setAttribute('class', 'atom-label');
+        text.setAttribute('x', atom.x);
+        text.setAttribute('y', atom.y);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('dominant-baseline', 'central');
+        text.setAttribute('fill', 'var(--el-' + atom.element + ')');
+        group.appendChild(text);
+
+        playAtomsLayer.appendChild(group);
+
+        if (atom.element === 'H') {
+          text.textContent = 'H';
+        } else {
+          buildFormulaLabel(text, atom.element, playGetImplicitHCount(bondsArr, atom));
+        }
+
+        var bbox = text.getBBox();
+        var padX = 3, padY = 2;
+        halo.setAttribute('x', bbox.x - padX);
+        halo.setAttribute('y', bbox.y - padY);
+        halo.setAttribute('width', bbox.width + padX * 2);
+        halo.setAttribute('height', bbox.height + padY * 2);
+
+        appendPlayChargeLabel(group, atom, bbox.x + bbox.width + 1, bbox.y + 6);
+      }
+
+      if (!group.isConnected) playAtomsLayer.appendChild(group);
+    });
+  }
+
+  function renderPlayBonds(bondsArr, atomsArr) {
+    if (!playBondsLayer) return;
+    var ns = 'http://www.w3.org/2000/svg';
+    playBondsLayer.textContent = '';
+
+    bondsArr.forEach(function (bond) {
+      var a1 = atomsArr.filter(function (a) { return a.id === bond.atomId1; })[0];
+      var a2 = atomsArr.filter(function (a) { return a.id === bond.atomId2; })[0];
+      if (!a1 || !a2) return;
+
+      var dx = a2.x - a1.x, dy = a2.y - a1.y;
+      var len = Math.sqrt(dx * dx + dy * dy) || 1;
+      var nx = -dy / len, ny = dx / len;
+      var gap = 4.5;
+      var offsets = [0];
+      if (bond.order === 2) offsets = [-gap / 2, gap / 2];
+      else if (bond.order === 3) offsets = [-gap, 0, gap];
+
+      offsets.forEach(function (off) {
+        var line = document.createElementNS(ns, 'line');
+        line.setAttribute('class', 'bond-line');
+        line.setAttribute('x1', a1.x + nx * off);
+        line.setAttribute('y1', a1.y + ny * off);
+        line.setAttribute('x2', a2.x + nx * off);
+        line.setAttribute('y2', a2.y + ny * off);
+        playBondsLayer.appendChild(line);
+      });
+    });
+  }
+
+  // 화살표는 곡선이 서서히 그려지는 것처럼 애니메이션(stroke-dasharray 트릭)
+  function renderPlayArrows(arrowsArr, atomsArr, bondsArr) {
+    if (!playArrowsLayer) return;
+    var ns = 'http://www.w3.org/2000/svg';
+    playArrowsLayer.textContent = '';
+
+    arrowsArr.forEach(function (arrow) {
+      var p0 = playGetRefPoint(arrow.fromType, arrow.from, atomsArr, bondsArr);
+      var p1 = playGetRefPoint(arrow.toType, arrow.to, atomsArr, bondsArr);
+      if (!p0 || !p1) return;
+
+      var path = document.createElementNS(ns, 'path');
+      path.setAttribute('class', 'arrow-path');
+      path.setAttribute('d', buildArrowPath(p0, p1));
+      path.setAttribute('fill', 'none');
+      path.setAttribute('marker-end', 'url(#arrow-pair-head)');
+      playArrowsLayer.appendChild(path);
+
+      var len = path.getTotalLength();
+      path.style.strokeDasharray = len;
+      path.style.strokeDashoffset = len;
+      path.getBoundingClientRect(); // 강제 리플로우: 아래 transition이 실제로 걸리게 함
+      path.style.transition = 'stroke-dashoffset 0.7s ease';
+      path.style.strokeDashoffset = '0';
+    });
+  }
+
+  function updatePlayControlsDisabled() {
+    var has = !!playCurrentReaction;
+    var lastIndex = has ? playCurrentReaction.steps.length - 1 : 0;
+    if (playPrevBtn) playPrevBtn.disabled = !has || playCurrentStepIndex <= 0;
+    if (playNextBtn) playNextBtn.disabled = !has || playCurrentStepIndex >= lastIndex;
+    if (playAutoplayBtn) playAutoplayBtn.disabled = !has;
+  }
+
+  function renderPlayStep() {
+    if (!playCurrentReaction) {
+      if (playAtomsLayer) playAtomsLayer.textContent = '';
+      if (playBondsLayer) playBondsLayer.textContent = '';
+      if (playArrowsLayer) playArrowsLayer.textContent = '';
+      if (playCanvasHint) playCanvasHint.style.display = '';
+      if (playStepNumEl) playStepNumEl.textContent = '0 / 0';
+      if (playStepDescEl) playStepDescEl.textContent = '반응을 선택해주세요.';
+      updatePlayControlsDisabled();
+      return;
+    }
+
+    var step = playCurrentReaction.steps[playCurrentStepIndex];
+    if (playCanvasHint) playCanvasHint.style.display = 'none';
+
+    renderPlayBonds(step.bonds, step.atoms);
+    renderPlayAtoms(step.atoms, step.bonds);
+    renderPlayArrows(step.arrows, step.atoms, step.bonds);
+
+    if (playStepNumEl) playStepNumEl.textContent = (playCurrentStepIndex + 1) + ' / ' + playCurrentReaction.steps.length;
+    if (playStepDescEl) playStepDescEl.textContent = step.description || '(설명이 없습니다)';
+
+    updatePlayControlsDisabled();
+  }
+
+  function stopAutoplay() {
+    isAutoplaying = false;
+    if (autoplayTimeoutId) {
+      clearTimeout(autoplayTimeoutId);
+      autoplayTimeoutId = null;
+    }
+    if (playAutoplayBtn) {
+      playAutoplayBtn.textContent = '▶';
+      playAutoplayBtn.setAttribute('aria-label', '자동재생');
+    }
+  }
+
+  function scheduleNextAutoplayStep() {
+    if (autoplayTimeoutId) clearTimeout(autoplayTimeoutId);
+    var delay = AUTOPLAY_DELAYS[speedRange ? speedRange.value : 3] || 1500;
+    autoplayTimeoutId = setTimeout(function () {
+      if (!isAutoplaying || !playCurrentReaction) return;
+      if (playCurrentStepIndex >= playCurrentReaction.steps.length - 1) {
+        stopAutoplay();
+        return;
+      }
+      playCurrentStepIndex += 1;
+      renderPlayStep();
+      scheduleNextAutoplayStep();
+    }, delay);
+  }
+
+  function startAutoplay() {
+    if (!playCurrentReaction) return;
+    isAutoplaying = true;
+    if (playAutoplayBtn) {
+      playAutoplayBtn.textContent = '❚❚';
+      playAutoplayBtn.setAttribute('aria-label', '자동재생 멈추기');
+    }
+    scheduleNextAutoplayStep();
+  }
+
+  function toggleAutoplay() {
+    if (isAutoplaying) {
+      stopAutoplay();
+      return;
+    }
+    if (playCurrentReaction && playCurrentStepIndex >= playCurrentReaction.steps.length - 1) {
+      playCurrentStepIndex = 0; // 끝까지 본 뒤 다시 누르면 처음부터
+      renderPlayStep();
+    }
+    startAutoplay();
+  }
+
+  // 저장 기능이 없어 "저장된 반응 목록"은 못 만들지만, 시드 예시 2개는 항상 보여줄 수 있고
+  // 에디터에서 지금 작업 중인 내용도(저장 없이, 메모리에 있는 그대로) 미리보기로 추가해 둔다
+  function getAvailableReactions() {
+    var list = SEED_REACTIONS.slice();
+    var hasContent = steps.some(function (s) { return s.atoms.length > 0; });
+    if (hasContent) {
+      list.push({
+        id: 'current-editor',
+        name: '✏️ ' + (currentReaction.name || '이름 없는 반응') + ' (에디터에서 작업 중)',
+        steps: steps
+      });
+    }
+    return list;
+  }
+
+  function refreshReactionSelect() {
+    if (!reactionSelect) return;
+    stopAutoplay();
+
+    var reactions = getAvailableReactions();
+    var previousValue = reactionSelect.value;
+    reactionSelect.textContent = '';
+
+    if (reactions.length === 0) {
+      var emptyOpt = document.createElement('option');
+      emptyOpt.value = '';
+      emptyOpt.textContent = '표시할 반응이 없습니다';
+      reactionSelect.appendChild(emptyOpt);
+      reactionSelect.disabled = true;
+      playCurrentReaction = null;
+      playCurrentStepIndex = 0;
+      renderPlayStep();
+      return;
+    }
+
+    reactionSelect.disabled = false;
+    reactions.forEach(function (r) {
+      var opt = document.createElement('option');
+      opt.value = r.id;
+      opt.textContent = r.name;
+      reactionSelect.appendChild(opt);
+    });
+
+    var stillExists = reactions.some(function (r) { return r.id === previousValue; });
+    reactionSelect.value = stillExists ? previousValue : reactions[0].id;
+
+    playCurrentReaction = reactions.filter(function (r) { return r.id === reactionSelect.value; })[0] || null;
+    playCurrentStepIndex = 0;
+    renderPlayStep();
+  }
+
+  if (playPrevBtn) {
+    playPrevBtn.addEventListener('click', function () {
+      stopAutoplay();
+      if (!playCurrentReaction) return;
+      playCurrentStepIndex = Math.max(0, playCurrentStepIndex - 1);
+      renderPlayStep();
+    });
+  }
+
+  if (playNextBtn) {
+    playNextBtn.addEventListener('click', function () {
+      stopAutoplay();
+      if (!playCurrentReaction) return;
+      playCurrentStepIndex = Math.min(playCurrentReaction.steps.length - 1, playCurrentStepIndex + 1);
+      renderPlayStep();
+    });
+  }
+
+  if (playAutoplayBtn) {
+    playAutoplayBtn.addEventListener('click', toggleAutoplay);
+  }
+
+  if (reactionSelect) {
+    reactionSelect.addEventListener('change', function () {
+      stopAutoplay();
+      var reactions = getAvailableReactions();
+      playCurrentReaction = reactions.filter(function (r) { return r.id === reactionSelect.value; })[0] || null;
+      playCurrentStepIndex = 0;
+      renderPlayStep();
+    });
+  }
+
+  refreshReactionSelect();
 
   steps = [createEmptyStep()];
   loadStep(0);
