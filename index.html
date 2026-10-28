@@ -30,6 +30,12 @@
     --el-N: #2b6ca3;
     --el-Br: #8a4b28;
     --el-Cl: #2f7d55;
+    --el-F: #5d8c1c;
+    --el-I: #6b2d6b;
+    --el-P: #c06400;
+    --el-S: #9c7a00;
+    --el-B: #b0566e;
+    --el-Si: #5f7586;
   }
 
   * { box-sizing: border-box; }
@@ -85,6 +91,43 @@
     height: 30px;
     flex-shrink: 0;
   }
+
+  /* ---------- 헤더: 로그인 상태 ---------- */
+  .account {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    font-size: 0.85rem;
+  }
+
+  .account[hidden] { display: none; }
+
+  .account-email {
+    color: var(--ink-muted);
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .account-btn {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--bg-panel);
+    color: var(--ink);
+    border-radius: 8px;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .account-btn:hover:not(:disabled) { background: var(--accent-soft); border-color: var(--accent); }
+  .account-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .account-btn:disabled { color: var(--ink-muted); cursor: wait; }
 
   /* ---------- 메인 레이아웃 ---------- */
   main {
@@ -373,6 +416,100 @@
     opacity: 0.4;
   }
 
+  /* ---------- 약어(직접 입력) ---------- */
+  .label-form {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+  }
+
+  .label-form input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.45rem 0.55rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-family: inherit;
+    background: var(--bg-panel);
+    color: var(--ink);
+  }
+
+  .label-form input::placeholder { color: var(--ink-muted); }
+
+  .label-form input:focus-visible,
+  .label-form button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  .label-form button {
+    appearance: none;
+    padding: 0.45rem 0.65rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-panel);
+    color: var(--ink);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .label-form button:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+  }
+
+  .custom-palette {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+  }
+
+  .custom-palette[hidden] { display: none; }
+
+  .custom-chip {
+    position: relative;
+    flex: 0 0 auto;
+    min-width: calc((100% - 1rem) / 3);
+    display: flex;
+  }
+
+  .custom-chip .element-chip {
+    flex: 1;
+    padding: 0.55rem 0.6rem;
+    white-space: nowrap;
+  }
+
+  .custom-chip-remove {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--bg-panel);
+    color: var(--ink-muted);
+    font-size: 0.75rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .custom-chip-remove:hover {
+    background: var(--danger-soft);
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  .custom-chip-remove:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
   .palette-hint {
     margin: 0.6rem 0 0;
     font-size: 0.78rem;
@@ -630,6 +767,13 @@
   }
 
   /* 전자쌍 화살표 */
+  .svg-defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+
   #arrow-pair-head path {
     fill: var(--arrow);
     fill: context-stroke; /* 지원 브라우저에서는 화살촉이 선 색을 그대로 따라감 */
@@ -935,9 +1079,137 @@
     clip: rect(0 0 0 0);
     white-space: nowrap;
   }
+
+  /* ---------- 로그인 / 회원가입 창 ---------- */
+  .auth-dialog {
+    width: min(380px, calc(100vw - 2rem));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    background: var(--bg-panel);
+    color: var(--ink);
+    box-shadow: 0 12px 32px rgba(40, 30, 10, 0.18);
+  }
+
+  .auth-dialog::backdrop {
+    background: rgba(42, 38, 32, 0.45);
+  }
+
+  .auth-dialog h2 {
+    margin: 0 0 0.35rem;
+    font-size: 1.2rem;
+  }
+
+  .auth-desc {
+    margin: 0 0 1.1rem;
+    color: var(--ink-muted);
+    font-size: 0.88rem;
+  }
+
+  .auth-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-bottom: 0.85rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .auth-field input {
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    font-weight: 400;
+    background: var(--bg);
+    color: var(--ink);
+  }
+
+  .auth-field input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  .auth-hint {
+    font-weight: 400;
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+  }
+
+  .auth-message {
+    margin: 0 0 0.85rem;
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+  }
+
+  .auth-message:empty { display: none; }
+  .auth-message[data-state="ok"] { color: var(--play-accent); }
+  .auth-message[data-state="error"] { color: var(--danger); }
+
+  .auth-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  .auth-actions button {
+    appearance: none;
+    padding: 0.55rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-panel);
+    color: var(--ink);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .auth-actions .auth-submit {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .auth-actions button:hover:not(:disabled) { filter: brightness(1.06); }
+  .auth-actions button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .auth-actions .auth-submit:disabled { opacity: 0.6; cursor: wait; }
+
+  .auth-switch {
+    margin: 1.1rem 0 0;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+  }
+
+  .link-btn {
+    appearance: none;
+    border: none;
+    background: none;
+    padding: 0;
+    font: inherit;
+    font-weight: 700;
+    color: var(--accent);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .link-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 </style>
 </head>
 <body>
+
+<!-- 에디터·학습 모드 캔버스가 같이 쓰는 화살촉. 한쪽 화면 안에 두면 그 화면이 hidden일 때
+     브라우저가 화살촉을 그리지 않으므로, 항상 렌더링되는 크기 0짜리 SVG에 따로 둔다 -->
+<svg class="svg-defs" width="0" height="0" aria-hidden="true" focusable="false">
+  <defs>
+    <marker id="arrow-pair-head" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z"></path>
+    </marker>
+  </defs>
+</svg>
 
 <header class="app-header">
   <div class="header-inner">
@@ -950,6 +1222,11 @@
         <line x1="9" y1="10" x2="16" y2="21" stroke="var(--ink)" stroke-width="1.6"/>
       </svg>
       <span>유기화학 메커니즘 스튜디오</span>
+    </div>
+    <div class="account" id="account-area" hidden>
+      <span class="account-email" id="account-email" hidden></span>
+      <button type="button" class="account-btn" id="login-open-btn">로그인</button>
+      <button type="button" class="account-btn" id="logout-btn" hidden>로그아웃</button>
     </div>
   </div>
 </header>
@@ -1014,10 +1291,21 @@
           <button type="button" class="element-chip" draggable="true" data-element="H" style="--chip-color:var(--el-H)" aria-label="수소(H) 원자 추가">H</button>
           <button type="button" class="element-chip" draggable="true" data-element="O" style="--chip-color:var(--el-O)" aria-label="산소(O) 원자 추가">O</button>
           <button type="button" class="element-chip" draggable="true" data-element="N" style="--chip-color:var(--el-N)" aria-label="질소(N) 원자 추가">N</button>
-          <button type="button" class="element-chip" draggable="true" data-element="Br" style="--chip-color:var(--el-Br)" aria-label="브롬(Br) 원자 추가">Br</button>
+          <button type="button" class="element-chip" draggable="true" data-element="S" style="--chip-color:var(--el-S)" aria-label="황(S) 원자 추가">S</button>
+          <button type="button" class="element-chip" draggable="true" data-element="P" style="--chip-color:var(--el-P)" aria-label="인(P) 원자 추가">P</button>
+          <button type="button" class="element-chip" draggable="true" data-element="F" style="--chip-color:var(--el-F)" aria-label="플루오린(F) 원자 추가">F</button>
           <button type="button" class="element-chip" draggable="true" data-element="Cl" style="--chip-color:var(--el-Cl)" aria-label="염소(Cl) 원자 추가">Cl</button>
+          <button type="button" class="element-chip" draggable="true" data-element="Br" style="--chip-color:var(--el-Br)" aria-label="브롬(Br) 원자 추가">Br</button>
+          <button type="button" class="element-chip" draggable="true" data-element="I" style="--chip-color:var(--el-I)" aria-label="아이오딘(I) 원자 추가">I</button>
+          <button type="button" class="element-chip" draggable="true" data-element="B" style="--chip-color:var(--el-B)" aria-label="붕소(B) 원자 추가">B</button>
+          <button type="button" class="element-chip" draggable="true" data-element="Si" style="--chip-color:var(--el-Si)" aria-label="규소(Si) 원자 추가">Si</button>
         </div>
-        <p class="palette-hint">원소를 캔버스로 드래그하거나 클릭해서 놓아보세요.</p>
+        <form class="label-form" id="label-form">
+          <input type="text" id="label-input" maxlength="8" autocomplete="off" placeholder="약어 (예: Me, Ph, OTs)" aria-label="원소처럼 쓸 약어 입력">
+          <button type="submit">추가</button>
+        </form>
+        <div class="custom-palette" id="custom-palette" hidden></div>
+        <p class="palette-hint">원소나 약어를 캔버스로 드래그하거나 클릭해서 놓아보세요. 약어의 숫자는 아래첨자로 표시됩니다(CO2Et → CO₂Et).</p>
 
         <h3 class="tool-list-heading">도구</h3>
         <div class="tool-list" role="group" aria-label="편집 도구 선택">
@@ -1034,11 +1322,6 @@
         <h3>캔버스</h3>
         <div class="editor-canvas-wrap" id="editor-canvas-wrap">
           <svg id="editor-canvas" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet" role="img" aria-label="반응 메커니즘을 그리는 캔버스">
-            <defs>
-              <marker id="arrow-pair-head" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse">
-                <path d="M0,0 L10,5 L0,10 z"></path>
-              </marker>
-            </defs>
             <rect id="canvas-bg" x="0" y="0" width="600" height="400" fill="transparent"></rect>
             <text id="canvas-hint" class="canvas-hint" x="300" y="200" text-anchor="middle" dominant-baseline="central">왼쪽 팔레트에서 원소를 드래그해서 여기에 놓으세요</text>
             <g id="editor-bonds"></g>
@@ -1093,6 +1376,27 @@
   </section>
 
 </main>
+
+<dialog class="auth-dialog" id="auth-dialog" aria-labelledby="auth-title">
+  <form id="auth-form">
+    <h2 id="auth-title">로그인</h2>
+    <p class="auth-desc">로그인하면 내가 만든 반응을 나만 볼 수 있게 저장할 수 있어요.</p>
+    <label class="auth-field">이메일
+      <input type="email" id="auth-email" autocomplete="email" required>
+    </label>
+    <label class="auth-field">비밀번호
+      <input type="password" id="auth-password" autocomplete="current-password" required>
+      <span class="auth-hint" id="auth-password-hint" hidden>6자 이상으로 정해주세요.</span>
+    </label>
+    <p class="auth-message" id="auth-message" role="status" aria-live="polite"></p>
+    <div class="auth-actions">
+      <button type="button" id="auth-cancel">취소</button>
+      <button type="submit" class="auth-submit" id="auth-submit">로그인</button>
+    </div>
+    <p class="auth-switch"><span id="auth-switch-text">아직 계정이 없나요?</span>
+      <button type="button" class="link-btn" id="auth-switch-btn">회원가입</button></p>
+  </form>
+</dialog>
 
 <footer class="app-footer">
   유기화학 메커니즘 스튜디오 &middot; 오프라인에서 동작하는 단일 HTML 학습 도구
@@ -1153,7 +1457,7 @@
     : null;
 
   // ================= 에디터: 반응 이름 =================
-  var currentReaction = { id: null, name: '' }; // id: 저장된 DB 행의 id (아직 저장 안 했으면 null)
+  var currentReaction = { id: null, ownerId: null, name: '' }; // id·ownerId: 저장된 DB 행과 그 주인 (아직 저장 안 했으면 null)
   var reactionNameInput = document.getElementById('reaction-name-input');
   if (reactionNameInput) {
     reactionNameInput.addEventListener('input', function () {
@@ -1225,7 +1529,17 @@
 
   // ================= 에디터: 자동 수소 계산 =================
   // 원자가(valence): 이 값에서 그려진 결합 차수의 합을 뺀 만큼 수소가 암묵적으로 채워진다.
-  var VALENCE = { C: 4, H: 1, N: 3, O: 2, Br: 1, Cl: 1 };
+  // 여기 없는 글자(Me, Ph, OTs 같은 약어)는 수소를 붙이지 않고 쓴 그대로 표시한다.
+  // P·S는 5·6개까지 결합하기도 하지만, 결합이 원자가보다 많으면 수소가 0개가 될 뿐이라 흔한 값으로 둔다.
+  var VALENCE = { C: 4, Si: 4, H: 1, B: 3, N: 3, P: 3, O: 2, S: 2, F: 1, Cl: 1, Br: 1, I: 1 };
+
+  function isElementSymbol(label) {
+    return VALENCE[label] !== undefined;
+  }
+
+  function atomColor(label) {
+    return isElementSymbol(label) ? 'var(--el-' + label + ')' : 'var(--ink)';
+  }
 
   function getBondOrderSum(atomId) {
     var sum = 0;
@@ -1236,13 +1550,17 @@
   }
 
   // 형식전하가 있으면 목표 결합 수(=몇 개의 결합/수소를 가져야 옥텟이 맞는지)가 바뀐다.
-  // 대부분의 원소(N/O/Br/Cl과 탄소 음이온)는 전하만큼 그대로 늘거나 줄지만(빈자리가 비공유 전자쌍이 됨),
-  // 탄소의 양이온(카보양이온)만은 예외 — 빈 오비탈이라 비공유 전자쌍이 없고 결합 수가 오히려 줄어든다.
+  // 대부분의 원소(N·P·O·S·할로젠과 탄소·규소 음이온)는 전하만큼 그대로 늘거나 줄지만(빈자리가 비공유 전자쌍이 됨),
+  // 탄소·규소의 양이온은 빈 오비탈이라 결합 수가 오히려 줄고,
+  // 붕소는 처음부터 빈 오비탈이 있어 음이온이면 결합이 늘고(BH4-) 양이온이면 준다.
   function getTargetBondCount(atom) {
     var valence = VALENCE[atom.element];
     if (valence === undefined) return 0;
     var charge = atom.charge || 0;
-    if (atom.element === 'C' && charge > 0) {
+    if (atom.element === 'B') {
+      return valence - charge;
+    }
+    if ((atom.element === 'C' || atom.element === 'Si') && charge > 0) {
       return valence - charge;
     }
     return valence + charge;
@@ -1269,14 +1587,27 @@
     return sign + (mag > 1 ? mag : '');
   }
 
-  // <text> 안에 "O", "OH", "NH2"처럼 원소기호+수소 개수를 tspan으로 구성 (숫자는 아래첨자)
-  function buildFormulaLabel(textEl, element, hCount) {
+  // <text> 안에 "O", "OH", "NH2"처럼 원소기호+수소 개수를 tspan으로 구성 (숫자는 아래첨자).
+  // 약어 안의 숫자도 아래첨자로 쓴다 (CO2Et → CO₂Et)
+  function buildFormulaLabel(textEl, label, hCount) {
     var ns = 'http://www.w3.org/2000/svg';
     textEl.textContent = '';
 
-    var mainSpan = document.createElementNS(ns, 'tspan');
-    mainSpan.textContent = element;
-    textEl.appendChild(mainSpan);
+    var lowered = false;
+    label.split(/(\d+)/).forEach(function (part) {
+      if (!part) return;
+      var span = document.createElementNS(ns, 'tspan');
+      var isDigits = /^\d+$/.test(part);
+      if (isDigits) {
+        span.setAttribute('dy', '3');
+        span.setAttribute('font-size', '10');
+      } else if (lowered) {
+        span.setAttribute('dy', '-3');
+      }
+      lowered = isDigits;
+      span.textContent = part;
+      textEl.appendChild(span);
+    });
 
     if (hCount > 0) {
       var hSpan = document.createElementNS(ns, 'tspan');
@@ -1357,7 +1688,7 @@
         text.setAttribute('y', atom.y);
         text.setAttribute('text-anchor', 'middle');
         text.setAttribute('dominant-baseline', 'central');
-        text.setAttribute('fill', 'var(--el-' + atom.element + ')');
+        text.setAttribute('fill', atomColor(atom.element));
         group.appendChild(text);
 
         editorAtomsLayer.appendChild(group); // getBBox를 쓰려면 먼저 문서에 붙어 있어야 함
@@ -1385,7 +1716,7 @@
         if (isCarbon) {
           group.setAttribute('aria-label', '탄소, 수소 ' + hCount + '개' + chargeNote + '. 다시 클릭하면 숨깁니다.');
         } else {
-          group.setAttribute('aria-label', atom.element + ' 원자' + (hCount > 0 ? ' (수소 ' + hCount + '개 포함)' : '') + chargeNote + ', 드래그해서 이동');
+          group.setAttribute('aria-label', atom.element + (isElementSymbol(atom.element) ? ' 원자' : ' (약어)') + (hCount > 0 ? ' (수소 ' + hCount + '개 포함)' : '') + chargeNote + ', 드래그해서 이동');
         }
       }
 
@@ -1830,9 +2161,8 @@
     };
   }
 
-  // 팔레트에서 드래그 시작
-  var elementChips = Array.prototype.slice.call(document.querySelectorAll('.element-chip'));
-  elementChips.forEach(function (chip) {
+  // 팔레트 버튼(원소·약어 공통): 캔버스로 드래그하거나 클릭해서 배치
+  function bindElementChip(chip) {
     chip.addEventListener('dragstart', function (e) {
       e.dataTransfer.setData('text/plain', chip.dataset.element);
       e.dataTransfer.effectAllowed = 'copy';
@@ -1846,7 +2176,96 @@
       var offset = atoms.length % 5;
       addAtom(chip.dataset.element, CANVAS_W / 2 + (offset - 2) * 45, CANVAS_H / 2);
     });
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.element-chip'), bindElementChip);
+
+  // ---- 약어 버튼: Me·Ph·OTs처럼 직접 입력한 글자를 원소 버튼처럼 쓴다. 목록은 이 브라우저에만 기억 ----
+  var LABEL_MAX_LENGTH = 8;
+  var CUSTOM_LABELS_KEY = 'oms-custom-labels';
+  var labelForm = document.getElementById('label-form');
+  var labelInput = document.getElementById('label-input');
+  var customPalette = document.getElementById('custom-palette');
+  var customLabels = [];
+
+  function loadCustomLabels() {
+    try {
+      var stored = JSON.parse(localStorage.getItem(CUSTOM_LABELS_KEY) || '[]');
+      if (Array.isArray(stored)) {
+        customLabels = stored.filter(function (s) {
+          return typeof s === 'string' && s.trim() && s.length <= LABEL_MAX_LENGTH;
+        });
+      }
+    } catch (e) {
+      // 저장소를 못 쓰는 환경(시크릿 창 등)이면 이번 방문 동안만 유지
+    }
+  }
+
+  function storeCustomLabels() {
+    try {
+      localStorage.setItem(CUSTOM_LABELS_KEY, JSON.stringify(customLabels));
+    } catch (e) {
+      // 위와 같음
+    }
+  }
+
+  function findPaletteChip(label) {
+    return Array.prototype.filter.call(document.querySelectorAll('.element-chip'), function (chip) {
+      return chip.dataset.element === label;
+    })[0];
+  }
+
+  function renderCustomPalette() {
+    customPalette.textContent = '';
+    customLabels.forEach(function (label) {
+      var wrap = document.createElement('span');
+      wrap.className = 'custom-chip';
+
+      var chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'element-chip';
+      chip.draggable = true;
+      chip.dataset.element = label;
+      chip.textContent = label;
+      chip.setAttribute('aria-label', label + ' 약어 추가');
+      bindElementChip(chip);
+
+      var remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'custom-chip-remove';
+      remove.textContent = '×';
+      remove.setAttribute('aria-label', label + ' 약어 버튼 지우기');
+      remove.addEventListener('click', function () {
+        customLabels = customLabels.filter(function (l) { return l !== label; });
+        storeCustomLabels();
+        renderCustomPalette();
+        labelInput.focus();
+      });
+
+      wrap.appendChild(chip);
+      wrap.appendChild(remove);
+      customPalette.appendChild(wrap);
+    });
+    customPalette.hidden = !customLabels.length;
+  }
+
+  labelForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var label = labelInput.value.trim();
+    if (!label) return;
+    labelInput.value = '';
+    var existing = findPaletteChip(label); // 이미 있는 원소·약어면 새로 만들지 않고 그 버튼을 알려준다
+    if (existing) {
+      existing.focus();
+      return;
+    }
+    customLabels.push(label);
+    storeCustomLabels();
+    renderCustomPalette();
   });
+
+  loadCustomLabels();
+  renderCustomPalette();
 
   // 캔버스에 드롭
   var editorCanvasWrap = document.getElementById('editor-canvas-wrap');
@@ -1876,8 +2295,9 @@
       dragCounter = 0;
       editorCanvasWrap.classList.remove('drag-over');
 
-      var element = e.dataTransfer.getData('text/plain');
-      if (!element) return;
+      // 팔레트 버튼이 아닌 곳(다른 창의 글자 등)에서 끌어온 긴 글은 원자로 만들지 않는다
+      var element = e.dataTransfer.getData('text/plain').trim();
+      if (!element || element.length > LABEL_MAX_LENGTH) return;
 
       var point = clientToCanvasPoint(editorCanvas, e.clientX, e.clientY);
       addAtom(element, point.x, point.y);
@@ -2064,7 +2484,7 @@
     if (!ok) return;
 
     // 객체를 통째로 교체: 진행 중인 저장 응답이 늦게 와도 새 반응에 옛 id가 붙지 않게 함
-    currentReaction = { id: null, name: '' };
+    currentReaction = { id: null, ownerId: null, name: '' };
     if (reactionNameInput) reactionNameInput.value = '';
     setSaveStatus('', '');
 
@@ -2106,10 +2526,20 @@
       return;
     }
 
+    if (!currentUser) {
+      setSaveStatus('저장하려면 먼저 로그인해주세요.', 'error');
+      openAuthDialog('login', true);
+      return;
+    }
+
     saveCurrentStepSnapshot();
     var target = currentReaction;
+    var userId = currentUser.id;
+    // 다른 계정으로 저장했던 반응이면 그 사람 것을 덮어쓰지 않고 지금 계정에 새로 저장한다
+    var isUpdate = target.id && target.ownerId === userId;
+    // user_id는 DB가 로그인한 사람의 id로 채운다 (기본값 auth.uid())
     var payload = { name: name, steps: steps, updated_at: new Date().toISOString() };
-    var query = target.id
+    var query = isUpdate
       ? sb.from('reactions').update(payload).eq('id', target.id).select('id')
       : sb.from('reactions').insert(payload).select('id');
 
@@ -2132,6 +2562,7 @@
         return;
       }
       target.id = res.data[0].id;
+      target.ownerId = userId;
       target.name = name;
       saveReactionBtn.disabled = false;
       setSaveStatus('저장했습니다. 학습 모드에서 볼 수 있어요.', 'ok');
@@ -2142,6 +2573,148 @@
 
   if (saveReactionBtn) {
     saveReactionBtn.addEventListener('click', saveReaction);
+  }
+
+  // ================= 로그인 (Supabase Auth) =================
+  // 반응은 만든 사람만 볼 수 있다 — 실제로 걸러내는 건 DB의 RLS 정책(user_id = 로그인한 사람)
+  var currentUser = null;
+  var authReady = false; // 브라우저에 남아 있던 로그인 정보를 읽기 전에는 '로그아웃 상태'로 단정하지 않는다
+  var accountArea = document.getElementById('account-area');
+  var accountEmailEl = document.getElementById('account-email');
+  var loginOpenBtn = document.getElementById('login-open-btn');
+  var logoutBtn = document.getElementById('logout-btn');
+  var authDialog = document.getElementById('auth-dialog');
+  var authForm = document.getElementById('auth-form');
+  var authTitleEl = document.getElementById('auth-title');
+  var authEmailInput = document.getElementById('auth-email');
+  var authPasswordInput = document.getElementById('auth-password');
+  var authPasswordHint = document.getElementById('auth-password-hint');
+  var authMessageEl = document.getElementById('auth-message');
+  var authSubmitBtn = document.getElementById('auth-submit');
+  var authCancelBtn = document.getElementById('auth-cancel');
+  var authSwitchText = document.getElementById('auth-switch-text');
+  var authSwitchBtn = document.getElementById('auth-switch-btn');
+  var authMode = 'login';
+  var saveAfterLogin = false; // 저장 버튼 때문에 로그인 창을 열었으면 로그인하자마자 이어서 저장
+
+  var AUTH_ERROR_TEXT = {
+    invalid_credentials: '이메일 또는 비밀번호가 맞지 않습니다.',
+    user_already_exists: '이미 가입된 이메일입니다. 로그인해주세요.',
+    weak_password: '비밀번호가 너무 약합니다. 6자 이상으로 정해주세요.',
+    email_address_invalid: '사용할 수 없는 이메일 주소입니다.',
+    email_not_confirmed: '이메일 확인이 아직 안 됐습니다. 메일함의 확인 링크를 눌러주세요.',
+    over_email_send_rate_limit: '메일을 너무 많이 보냈습니다. 잠시 후 다시 시도해주세요.',
+    over_request_rate_limit: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.',
+    signup_disabled: '지금은 회원가입을 받지 않습니다.'
+  };
+
+  function authErrorText(error) {
+    if (error && AUTH_ERROR_TEXT[error.code]) return AUTH_ERROR_TEXT[error.code];
+    return '문제가 생겼습니다: ' + (error && error.message ? error.message : '알 수 없는 오류');
+  }
+
+  function setAuthMessage(message, state) {
+    authMessageEl.textContent = message;
+    authMessageEl.dataset.state = state;
+  }
+
+  function setAuthMode(mode) {
+    authMode = mode;
+    var signup = mode === 'signup';
+    authTitleEl.textContent = signup ? '회원가입' : '로그인';
+    authSubmitBtn.textContent = signup ? '가입하기' : '로그인';
+    authPasswordInput.autocomplete = signup ? 'new-password' : 'current-password';
+    if (signup) authPasswordInput.minLength = 6;
+    else authPasswordInput.removeAttribute('minlength');
+    authPasswordHint.hidden = !signup;
+    authSwitchText.textContent = signup ? '이미 계정이 있나요?' : '아직 계정이 없나요?';
+    authSwitchBtn.textContent = signup ? '로그인' : '회원가입';
+    setAuthMessage('', '');
+  }
+
+  function openAuthDialog(mode, saveAfter) {
+    setAuthMode(mode);
+    saveAfterLogin = !!saveAfter;
+    authPasswordInput.value = '';
+    authSubmitBtn.disabled = false;
+    authDialog.showModal();
+    authEmailInput.focus();
+  }
+
+  function renderAccount() {
+    accountArea.hidden = false;
+    accountEmailEl.textContent = currentUser ? currentUser.email : '';
+    accountEmailEl.hidden = !currentUser;
+    loginOpenBtn.hidden = !!currentUser;
+    logoutBtn.hidden = !currentUser;
+  }
+
+  function submitAuth(e) {
+    e.preventDefault();
+    var signup = authMode === 'signup';
+    var credentials = { email: authEmailInput.value.trim(), password: authPasswordInput.value };
+    authSubmitBtn.disabled = true;
+    setAuthMessage(signup ? '가입하는 중…' : '로그인하는 중…', 'pending');
+
+    var request = signup ? sb.auth.signUp(credentials) : sb.auth.signInWithPassword(credentials);
+    request.then(function (res) {
+      authSubmitBtn.disabled = false;
+      if (res.error) {
+        setAuthMessage(authErrorText(res.error), 'error');
+        return;
+      }
+      if (!res.data.session) {
+        // Supabase에서 '이메일 확인'이 켜져 있으면 가입만 되고, 로그인은 메일의 링크를 누른 뒤에 된다
+        setAuthMessage('확인 메일을 보냈습니다. 메일의 링크를 누른 뒤 로그인해주세요.', 'ok');
+        return;
+      }
+      var shouldSave = saveAfterLogin;
+      authDialog.close();
+      if (shouldSave) saveReaction();
+    }, function (err) {
+      authSubmitBtn.disabled = false;
+      setAuthMessage(authErrorText(err), 'error');
+    });
+  }
+
+  if (sb) {
+    loginOpenBtn.addEventListener('click', function () {
+      openAuthDialog('login', false);
+    });
+
+    logoutBtn.addEventListener('click', function () {
+      logoutBtn.disabled = true;
+      sb.auth.signOut().then(function (res) {
+        logoutBtn.disabled = false;
+        if (res.error) window.alert('로그아웃하지 못했습니다: ' + res.error.message);
+      });
+    });
+
+    authSwitchBtn.addEventListener('click', function () {
+      setAuthMode(authMode === 'login' ? 'signup' : 'login');
+      authEmailInput.focus();
+    });
+    authCancelBtn.addEventListener('click', function () {
+      authDialog.close();
+    });
+    authDialog.addEventListener('close', function () {
+      saveAfterLogin = false;
+    });
+    authForm.addEventListener('submit', submitAuth);
+
+    sb.auth.onAuthStateChange(function (event, session) {
+      var user = session ? session.user : null;
+      var userChanged = !authReady || (user && user.id) !== (currentUser && currentUser.id);
+      currentUser = user;
+      authReady = true;
+      renderAccount();
+      if (userChanged) {
+        setSaveStatus('', ''); // '로그인해주세요' 같은 이전 계정 상태의 안내를 지운다
+        savedReactions = []; // 이전 계정의 반응이 잠깐이라도 보이지 않게
+        // 이 콜백 안에서 곧바로 DB 요청을 보내면 supabase-js가 멈출 수 있어 한 박자 미룬다
+        setTimeout(loadSavedReactions, 0);
+      }
+    });
   }
 
   // ================= 학습 모드 =================
@@ -2274,11 +2847,8 @@
   }
 
   function playGetImplicitHCount(bondsArr, atom) {
-    var valence = VALENCE[atom.element];
-    if (valence === undefined) return 0;
-    var charge = atom.charge || 0;
-    var target = (atom.element === 'C' && charge > 0) ? valence - charge : valence + charge;
-    return Math.max(0, target - playGetBondOrderSum(bondsArr, atom.id));
+    if (!isElementSymbol(atom.element)) return 0;
+    return Math.max(0, getTargetBondCount(atom) - playGetBondOrderSum(bondsArr, atom.id));
   }
 
   function playGetRefPoint(type, id, atomsArr, bondsArr) {
@@ -2343,7 +2913,7 @@
         text.setAttribute('y', atom.y);
         text.setAttribute('text-anchor', 'middle');
         text.setAttribute('dominant-baseline', 'central');
-        text.setAttribute('fill', 'var(--el-' + atom.element + ')');
+        text.setAttribute('fill', atomColor(atom.element));
         group.appendChild(text);
 
         playAtomsLayer.appendChild(group);
@@ -2399,6 +2969,8 @@
   }
 
   // 화살표는 곡선이 서서히 그려지는 것처럼 애니메이션(stroke-dasharray 트릭)
+  var ARROW_DRAW_MS = 700;
+
   function renderPlayArrows(arrowsArr, atomsArr, bondsArr) {
     if (!playArrowsLayer) return;
     var ns = 'http://www.w3.org/2000/svg';
@@ -2413,15 +2985,18 @@
       path.setAttribute('class', 'arrow-path');
       path.setAttribute('d', buildArrowPath(p0, p1));
       path.setAttribute('fill', 'none');
-      path.setAttribute('marker-end', 'url(#arrow-pair-head)');
       playArrowsLayer.appendChild(path);
 
       var len = path.getTotalLength();
       path.style.strokeDasharray = len;
       path.style.strokeDashoffset = len;
       path.getBoundingClientRect(); // 강제 리플로우: 아래 transition이 실제로 걸리게 함
-      path.style.transition = 'stroke-dashoffset 0.7s ease';
+      path.style.transition = 'stroke-dashoffset ' + ARROW_DRAW_MS + 'ms ease';
       path.style.strokeDashoffset = '0';
+      // 화살촉은 곡선이 끝까지 그려진 뒤에 붙인다 — 처음부터 달면 선보다 먼저 도착 지점에 떠 있다
+      setTimeout(function () {
+        path.setAttribute('marker-end', 'url(#arrow-pair-head)');
+      }, ARROW_DRAW_MS);
     });
   }
 
@@ -2509,10 +3084,10 @@
 
   // ---- Supabase에 저장된 반응 목록 ----
   var savedReactions = [];
-  var savedLoadState = 'idle'; // idle | loading | ok | error
+  var savedLoadState = 'idle'; // idle | loading | ok | error | signed-out
   var savedLoadSeq = 0;
 
-  // DB의 steps는 누구나 쓸 수 있는 외부 데이터라, 모양이 어긋나도 렌더링이 깨지지 않게 정리한다
+  // DB에서 온 steps는 모양이 어긋나 있을 수 있어, 렌더링이 깨지지 않게 정리한다
   function normalizeSteps(raw) {
     if (!Array.isArray(raw) || !raw.length) {
       return [{ atoms: [], bonds: [], arrows: [], description: '' }];
@@ -2535,7 +3110,17 @@
       renderReactionOptions();
       return;
     }
-    var seq = ++savedLoadSeq; // 여러 번 요청이 겹치면 마지막 응답만 반영
+    var seq = ++savedLoadSeq; // 요청이 겹치거나 그사이 로그아웃하면 마지막 요청만 반영
+    if (!authReady) {
+      savedLoadState = 'loading'; // 로그인 정보를 다 읽으면 다시 불린다
+      renderReactionOptions();
+      return;
+    }
+    if (!currentUser) {
+      savedLoadState = 'signed-out';
+      renderReactionOptions();
+      return;
+    }
     savedLoadState = 'loading';
     renderReactionOptions();
 
@@ -2563,6 +3148,7 @@
   function savedStatusText() {
     if (savedReactions.length) return '';
     if (savedLoadState === 'loading' || savedLoadState === 'idle') return '불러오는 중…';
+    if (savedLoadState === 'signed-out') return '로그인하면 내가 저장한 반응이 여기에 나옵니다';
     if (savedLoadState === 'error') return '저장된 반응을 불러오지 못했습니다';
     return '아직 저장된 반응이 없습니다';
   }
