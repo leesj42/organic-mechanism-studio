@@ -687,7 +687,7 @@
   .editor-canvas-wrap.tool-bond .bond,
   .editor-canvas-wrap.tool-delete .bond,
   .editor-canvas-wrap.tool-arrow .bond,
-  .editor-canvas-wrap.tool-delete .reaction-arrow {
+  .editor-canvas-wrap.tool-delete .arrow-hit {
     cursor: pointer;
   }
 
@@ -779,9 +779,21 @@
     fill: context-stroke; /* 지원 브라우저에서는 화살촉이 선 색을 그대로 따라감 */
   }
 
+  /* 화살표의 클릭 영역(투명한 굵은 선)은 원자·결합보다 아래층에 두고 삭제 도구에서만 켠다.
+     화살표 끝은 원자·결합 바로 옆이라, 위층에 두면 그 원자·결합을 누르는 클릭을 가로챈다 */
   .arrow-hit {
     stroke: transparent;
     stroke-width: 14px;
+    pointer-events: none;
+  }
+
+  .editor-canvas-wrap.tool-delete .arrow-hit {
+    pointer-events: stroke;
+  }
+
+  /* 보이는 화살표는 맨 위에 그리되 클릭은 아래로 통과시킨다 (키보드 포커스는 그대로 받음) */
+  #editor-arrows {
+    pointer-events: none;
   }
 
   .arrow-path {
@@ -797,7 +809,7 @@
     stroke: var(--accent);
   }
 
-  .editor-canvas-wrap.tool-delete .reaction-arrow:hover .arrow-path {
+  .editor-canvas-wrap.tool-delete .reaction-arrow.hovered .arrow-path {
     stroke: var(--danger);
   }
 
@@ -1324,6 +1336,7 @@
           <svg id="editor-canvas" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet" role="img" aria-label="반응 메커니즘을 그리는 캔버스">
             <rect id="canvas-bg" x="0" y="0" width="600" height="400" fill="transparent"></rect>
             <text id="canvas-hint" class="canvas-hint" x="300" y="200" text-anchor="middle" dominant-baseline="central">왼쪽 팔레트에서 원소를 드래그해서 여기에 놓으세요</text>
+            <g id="editor-arrow-hits"></g>
             <g id="editor-bonds"></g>
             <g id="editor-atoms"></g>
             <g id="editor-arrows"></g>
@@ -1476,6 +1489,7 @@
   var editorAtomsLayer = document.getElementById('editor-atoms');
   var editorBondsLayer = document.getElementById('editor-bonds');
   var editorArrowsLayer = document.getElementById('editor-arrows');
+  var editorArrowHitsLayer = document.getElementById('editor-arrow-hits');
   var canvasHint = document.getElementById('canvas-hint');
   var canvasBg = document.getElementById('canvas-bg');
 
@@ -2041,11 +2055,19 @@
     renderArrows();
   }
 
-  function bindArrowInteraction(group, arrow) {
-    group.addEventListener('pointerup', function () {
+  // group: 맨 위층의 보이는 화살표(키보드 포커스용), hit: 원자·결합 아래층의 클릭 영역
+  function bindArrowInteraction(group, hit, arrow) {
+    hit.addEventListener('pointerup', function () {
       if (activeTool === 'delete') {
         deleteArrow(arrow.id);
       }
+    });
+    // 두 요소가 다른 층에 있어 CSS :hover로는 보이는 화살표를 강조할 수 없으므로 class로 넘겨준다
+    hit.addEventListener('pointerenter', function () {
+      group.classList.add('hovered');
+    });
+    hit.addEventListener('pointerleave', function () {
+      group.classList.remove('hovered');
     });
     group.addEventListener('keydown', function (e) {
       if ((e.key === 'Enter' || e.key === ' ') && activeTool === 'delete') {
@@ -2103,6 +2125,7 @@
     if (!editorArrowsLayer) return;
     var ns = 'http://www.w3.org/2000/svg';
     editorArrowsLayer.textContent = '';
+    editorArrowHitsLayer.textContent = '';
 
     arrows.forEach(function (arrow) {
       var p0 = getRefPoint(arrow.fromType, arrow.from);
@@ -2111,18 +2134,19 @@
 
       var d = buildArrowPath(p0, p1);
 
+      var hit = document.createElementNS(ns, 'path');
+      hit.setAttribute('class', 'arrow-hit');
+      hit.setAttribute('data-arrow-id', arrow.id);
+      hit.setAttribute('d', d);
+      hit.setAttribute('fill', 'none');
+      editorArrowHitsLayer.appendChild(hit);
+
       var group = document.createElementNS(ns, 'g');
       group.setAttribute('class', 'reaction-arrow');
       group.setAttribute('data-arrow-id', arrow.id);
       group.setAttribute('tabindex', '0');
       group.setAttribute('role', 'button');
       group.setAttribute('aria-label', '전자쌍 화살표. 삭제 도구에서 클릭하면 지웁니다.');
-
-      var hit = document.createElementNS(ns, 'path');
-      hit.setAttribute('class', 'arrow-hit');
-      hit.setAttribute('d', d);
-      hit.setAttribute('fill', 'none');
-      group.appendChild(hit);
 
       var path = document.createElementNS(ns, 'path');
       path.setAttribute('class', 'arrow-path');
@@ -2132,7 +2156,7 @@
       group.appendChild(path);
 
       editorArrowsLayer.appendChild(group);
-      bindArrowInteraction(group, arrow);
+      bindArrowInteraction(group, hit, arrow);
     });
   }
 
@@ -3155,6 +3179,8 @@
 
   // 에디터에서 지금 작업 중인 내용(저장 전이어도)도 미리보기로 볼 수 있게 한다
   function getEditorEntry() {
+    // 삭제하면 캔버스 배열이 새로 만들어져 단계 슬롯과 연결이 끊기므로, 읽기 전에 현재 단계를 반영해 둔다
+    saveCurrentStepSnapshot();
     var hasContent = steps.some(function (s) { return s.atoms.length > 0; });
     if (!hasContent) return null;
     return {
