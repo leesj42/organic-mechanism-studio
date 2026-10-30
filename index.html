@@ -1161,8 +1161,8 @@
     white-space: nowrap;
   }
 
-  /* ---------- 로그인 / 회원가입 창 ---------- */
-  .auth-dialog {
+  /* ---------- 창(로그인·불러오기) ---------- */
+  .dialog {
     width: min(380px, calc(100vw - 2rem));
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -1172,16 +1172,16 @@
     box-shadow: 0 12px 32px rgba(40, 30, 10, 0.18);
   }
 
-  .auth-dialog::backdrop {
+  .dialog::backdrop {
     background: rgba(42, 38, 32, 0.45);
   }
 
-  .auth-dialog h2 {
+  .dialog h2 {
     margin: 0 0 0.35rem;
     font-size: 1.2rem;
   }
 
-  .auth-desc {
+  .dialog-desc {
     margin: 0 0 1.1rem;
     color: var(--ink-muted);
     font-size: 0.88rem;
@@ -1218,23 +1218,23 @@
     color: var(--ink-muted);
   }
 
-  .auth-message {
+  .dialog-message {
     margin: 0 0 0.85rem;
     font-size: 0.85rem;
     color: var(--ink-muted);
   }
 
-  .auth-message:empty { display: none; }
-  .auth-message[data-state="ok"] { color: var(--play-accent); }
-  .auth-message[data-state="error"] { color: var(--danger); }
+  .dialog-message:empty { display: none; }
+  .dialog-message[data-state="ok"] { color: var(--play-accent); }
+  .dialog-message[data-state="error"] { color: var(--danger); }
 
-  .auth-actions {
+  .dialog-actions {
     display: flex;
     justify-content: flex-end;
     gap: 0.5rem;
   }
 
-  .auth-actions button {
+  .dialog-actions button {
     appearance: none;
     padding: 0.55rem 1rem;
     border: 1px solid var(--border);
@@ -1246,15 +1246,59 @@
     cursor: pointer;
   }
 
-  .auth-actions .auth-submit {
+  .dialog-actions .auth-submit {
     background: var(--accent);
     border-color: var(--accent);
     color: var(--accent-ink);
   }
 
-  .auth-actions button:hover:not(:disabled) { filter: brightness(1.06); }
-  .auth-actions button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .auth-actions .auth-submit:disabled { opacity: 0.6; cursor: wait; }
+  .dialog-actions button:hover:not(:disabled) { filter: brightness(1.06); }
+  .dialog-actions button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .dialog-actions .auth-submit:disabled { opacity: 0.6; cursor: wait; }
+
+  .load-list {
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: 0;
+    max-height: 50vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .load-item {
+    width: 100%;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-panel);
+    color: var(--ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .load-item:hover { background: var(--accent-soft); border-color: var(--accent); }
+  .load-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .load-item-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+
+  .load-item-date {
+    flex-shrink: 0;
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+  }
 
   .auth-switch {
     margin: 1.1rem 0 0;
@@ -1360,6 +1404,7 @@
     <div class="editor-toolbar">
       <input type="text" id="reaction-name-input" placeholder="반응 이름을 입력하세요 (예: SN2 반응)" aria-label="반응 이름">
       <button type="button" id="new-reaction-btn">새 반응</button>
+      <button type="button" id="load-reaction-btn">불러오기</button>
       <button type="button" id="save-reaction-btn">저장</button>
     </div>
     <p class="save-status" id="save-status" role="status" aria-live="polite"></p>
@@ -1478,10 +1523,20 @@
 
 </main>
 
-<dialog class="auth-dialog" id="auth-dialog" aria-labelledby="auth-title">
+<dialog class="dialog" id="load-dialog" aria-labelledby="load-title">
+  <h2 id="load-title">저장된 반응 불러오기</h2>
+  <p class="dialog-desc">고른 반응을 에디터로 불러옵니다. 고친 뒤 저장하면 그 반응에 덮어씁니다.</p>
+  <p class="dialog-message" id="load-message" role="status" aria-live="polite"></p>
+  <ul class="load-list" id="load-list"></ul>
+  <div class="dialog-actions">
+    <button type="button" id="load-cancel">닫기</button>
+  </div>
+</dialog>
+
+<dialog class="dialog" id="auth-dialog" aria-labelledby="auth-title">
   <form id="auth-form">
     <h2 id="auth-title">로그인</h2>
-    <p class="auth-desc">로그인하면 내가 만든 반응을 나만 볼 수 있게 저장할 수 있어요.</p>
+    <p class="dialog-desc">로그인하면 내가 만든 반응을 나만 볼 수 있게 저장할 수 있어요.</p>
     <label class="auth-field">이메일
       <input type="email" id="auth-email" autocomplete="email" required>
     </label>
@@ -1489,8 +1544,8 @@
       <input type="password" id="auth-password" autocomplete="current-password" required>
       <span class="auth-hint" id="auth-password-hint" hidden>6자 이상으로 정해주세요.</span>
     </label>
-    <p class="auth-message" id="auth-message" role="status" aria-live="polite"></p>
-    <div class="auth-actions">
+    <p class="dialog-message" id="auth-message" role="status" aria-live="polite"></p>
+    <div class="dialog-actions">
       <button type="button" id="auth-cancel">취소</button>
       <button type="submit" class="auth-submit" id="auth-submit">로그인</button>
     </div>
@@ -2968,6 +3023,136 @@
     });
   }
 
+  // ================= 에디터: 저장된 반응 불러오기 =================
+  var loadReactionBtn = document.getElementById('load-reaction-btn');
+  var loadDialog = document.getElementById('load-dialog');
+  var loadListEl = document.getElementById('load-list');
+  var loadMessageEl = document.getElementById('load-message');
+  var loadListSeq = 0;
+
+  function setLoadMessage(message, state) {
+    loadMessageEl.textContent = message;
+    loadMessageEl.dataset.state = state;
+  }
+
+  function formatSavedAt(iso) {
+    var d = new Date(iso);
+    if (isNaN(d)) return '';
+    return d.toLocaleString('ko-KR', { month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  }
+
+  function openLoadDialog() {
+    if (!sb) {
+      setSaveStatus('서버에 연결할 수 없어 불러오지 못했습니다. 인터넷 연결을 확인해주세요.', 'error');
+      return;
+    }
+    if (!currentUser) {
+      setSaveStatus('저장된 반응을 불러오려면 먼저 로그인해주세요.', 'error');
+      openAuthDialog('login', false);
+      return;
+    }
+    loadListEl.textContent = '';
+    setLoadMessage('목록을 불러오는 중…', 'pending');
+    loadDialog.showModal();
+
+    var seq = ++loadListSeq; // 창을 닫았다 다시 열어 요청이 겹치면 마지막 것만 반영
+    sb.from('reactions')
+      .select('id, name, steps, updated_at')
+      .order('updated_at', { ascending: false })
+      .then(function (res) {
+        if (seq !== loadListSeq) return;
+        if (res.error) {
+          setLoadMessage('목록을 불러오지 못했습니다: ' + res.error.message, 'error');
+          return;
+        }
+        renderLoadList(res.data || []);
+      }, function (err) {
+        if (seq !== loadListSeq) return;
+        setLoadMessage('목록을 불러오지 못했습니다: ' + (err && err.message ? err.message : '알 수 없는 오류'), 'error');
+      });
+  }
+
+  function renderLoadList(rows) {
+    loadListEl.textContent = '';
+    if (!rows.length) {
+      setLoadMessage('아직 저장된 반응이 없습니다.', '');
+      return;
+    }
+    setLoadMessage('', '');
+    rows.forEach(function (row) {
+      var item = document.createElement('li');
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'load-item';
+
+      var nameEl = document.createElement('span');
+      nameEl.className = 'load-item-name';
+      nameEl.textContent = (row.name || '이름 없는 반응') + (row.id === currentReaction.id ? ' (편집 중)' : '');
+      var dateEl = document.createElement('span');
+      dateEl.className = 'load-item-date';
+      dateEl.textContent = formatSavedAt(row.updated_at);
+
+      btn.appendChild(nameEl);
+      btn.appendChild(dateEl);
+      btn.addEventListener('click', function () {
+        loadReactionIntoEditor(row);
+      });
+      item.appendChild(btn);
+      loadListEl.appendChild(item);
+    });
+    loadListEl.querySelector('button').focus();
+  }
+
+  function editorHasUnsavedWork() {
+    var hasContent = reactionNameInput.value.trim() ||
+      steps.some(function (s) { return s.atoms.length || s.description; });
+    return hasContent && currentSignature() !== savedSignature;
+  }
+
+  // 불러온 뒤 새로 그리는 원자·결합·화살표가 기존 id(a12, b5, r3 …)와 겹치지 않도록 다음 번호를 정한다
+  function nextIdNumber(items, prefix) {
+    var max = 0;
+    items.forEach(function (item) {
+      var m = new RegExp('^' + prefix + '(\\d+)$').exec(item.id);
+      if (m) max = Math.max(max, Number(m[1]));
+    });
+    return max + 1;
+  }
+
+  function loadReactionIntoEditor(row) {
+    if (editorHasUnsavedWork() &&
+        !window.confirm('에디터에서 저장하지 않은 내용은 사라집니다. 이 반응을 불러올까요?')) {
+      return;
+    }
+
+    var loaded = normalizeSteps(row.steps);
+    function all(key) {
+      return loaded.reduce(function (list, s) { return list.concat(s[key]); }, []);
+    }
+    atomIdSeq = nextIdNumber(all('atoms'), 'a');
+    bondIdSeq = nextIdNumber(all('bonds'), 'b');
+    arrowIdSeq = nextIdNumber(all('arrows'), 'r');
+    stepIdSeq = 1;
+    loaded.forEach(function (s) { s.id = 's' + (stepIdSeq++); });
+
+    // 저장 버튼이 새로 만들지 않고 이 행을 덮어쓰도록 id·주인을 기억 (객체를 통째로 교체: 진행 중인 저장 응답과 섞이지 않게)
+    var name = row.name || '';
+    currentReaction = { id: row.id, ownerId: currentUser.id, name: name };
+    reactionNameInput.value = name;
+    steps = loaded;
+    loadStep(0);
+    setActiveTool('select');
+
+    savedSignature = currentSignature();
+    setSaveStatus('불러왔습니다: ' + (name || '이름 없는 반응') + '. 고친 뒤 저장하면 이 반응에 덮어씁니다.', 'ok');
+    loadDialog.close();
+  }
+
+  loadReactionBtn.addEventListener('click', openLoadDialog);
+  document.getElementById('load-cancel').addEventListener('click', function () {
+    loadDialog.close();
+  });
+
   // ================= 학습 모드 =================
   // 시드 데이터: 저장된 반응과 별개로, 처음부터 들어있는 예시 반응은 항상 보여준다.
   var SEED_REACTIONS = [
@@ -3603,8 +3788,8 @@
   }
 
   document.addEventListener('keydown', function (e) {
-    // 원자·결합이 이미 처리한 키(Enter·방향키)나 로그인 창이 열려 있을 때는 건드리지 않는다
-    if (e.defaultPrevented || e.isComposing || authDialog.open) return;
+    // 원자·결합이 이미 처리한 키(Enter·방향키)나 로그인·불러오기 창이 열려 있을 때는 건드리지 않는다
+    if (e.defaultPrevented || e.isComposing || document.querySelector('dialog[open]')) return;
     var mod = e.ctrlKey || e.metaKey;
     // Ctrl+S는 반응 이름을 입력하는 중에도 저장되도록 입력칸 검사보다 먼저 본다
     if (!panels.editor.hidden && mod && !e.altKey && !e.shiftKey && e.code === 'KeyS') {
