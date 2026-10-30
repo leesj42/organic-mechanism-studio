@@ -271,16 +271,7 @@
     flex: 1;
   }
 
-  .badge-soon {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--accent);
-    background: var(--accent-soft);
-    border-radius: 999px;
-    padding: 0.2rem 0.6rem;
-  }
-
-  /* ---------- 에디터 스켈레톤 ---------- */
+  /* ---------- 에디터 ---------- */
   .editor-toolbar {
     display: flex;
     gap: 0.6rem;
@@ -566,6 +557,79 @@
     color: var(--accent-ink);
   }
 
+  /* ---------- 단축키 표시 ---------- */
+  kbd {
+    display: inline-block;
+    min-width: 1.4em;
+    padding: 0 0.3em;
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--ink-muted);
+    font-family: inherit;
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  .tool-btn kbd {
+    margin-left: auto;
+  }
+
+  .tool-btn[aria-pressed="true"] kbd {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.5);
+    color: var(--accent-ink);
+  }
+
+  .draw-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.9rem;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .draw-options label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    cursor: pointer;
+  }
+
+  .shortcut-help {
+    margin-top: 0.9rem;
+    font-size: 0.8rem;
+  }
+
+  .shortcut-help summary {
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--ink-muted);
+  }
+
+  .shortcut-help dl {
+    margin: 0.5rem 0 0;
+  }
+
+  .shortcut-help dt {
+    margin-top: 0.45rem;
+  }
+
+  .shortcut-help dd {
+    margin: 0.15rem 0 0;
+    color: var(--ink-muted);
+  }
+
+  .play-shortcuts {
+    margin: 0.6rem 0 0;
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+  }
+
   .tool-list .swatch {
     display: flex;
     align-items: center;
@@ -627,6 +691,7 @@
   .canvas-hint {
     fill: var(--ink-muted);
     font-size: 15px;
+    pointer-events: none; /* 빈 캔버스 클릭(결합 도구로 탄소 놓기 등)을 안내 문구가 가로채지 않게 */
   }
 
   .atom {
@@ -980,7 +1045,7 @@
     outline-offset: 1px;
   }
 
-  /* ---------- 학습 모드 스켈레톤 ---------- */
+  /* ---------- 학습 모드 ---------- */
   .play-toolbar {
     display: flex;
     gap: 0.6rem;
@@ -1285,7 +1350,7 @@
     </div>
   </section>
 
-  <!-- ================= 에디터 모드 (스켈레톤) ================= -->
+  <!-- ================= 에디터 모드 ================= -->
   <section id="panel-editor" tabindex="0" hidden>
     <div class="subpage-bar">
       <button class="btn-back" type="button" data-goto="home">← 홈으로</button>
@@ -1325,13 +1390,31 @@
 
         <h3 class="tool-list-heading">도구</h3>
         <div class="tool-list" role="group" aria-label="편집 도구 선택">
-          <button type="button" class="tool-btn" data-tool="select" aria-pressed="true">선택 · 이동</button>
-          <button type="button" class="tool-btn" data-tool="bond" aria-pressed="false">결합 도구</button>
-          <button type="button" class="tool-btn" data-tool="delete" aria-pressed="false">삭제</button>
-          <button type="button" class="tool-btn" data-tool="arrow" aria-pressed="false">전자쌍 화살표</button>
-          <button type="button" class="tool-btn" data-tool="charge" aria-pressed="false">형식전하</button>
+          <button type="button" class="tool-btn" data-tool="select" aria-pressed="true" aria-keyshortcuts="1">선택 · 이동<kbd aria-hidden="true">1</kbd></button>
+          <button type="button" class="tool-btn" data-tool="bond" aria-pressed="false" aria-keyshortcuts="2">결합 도구<kbd aria-hidden="true">2</kbd></button>
+          <button type="button" class="tool-btn" data-tool="delete" aria-pressed="false" aria-keyshortcuts="3">삭제<kbd aria-hidden="true">3</kbd></button>
+          <button type="button" class="tool-btn" data-tool="arrow" aria-pressed="false" aria-keyshortcuts="4">전자쌍 화살표<kbd aria-hidden="true">4</kbd></button>
+          <button type="button" class="tool-btn" data-tool="charge" aria-pressed="false" aria-keyshortcuts="5">형식전하<kbd aria-hidden="true">5</kbd></button>
         </div>
         <p class="palette-hint" id="tool-hint">원자를 드래그하면 이동합니다.</p>
+
+        <div class="draw-options" role="group" aria-label="그리기 보조">
+          <label><input type="checkbox" id="fixed-length" checked> 고정 길이</label>
+          <label><input type="checkbox" id="fixed-angle" checked> 고정 각도 (30°)</label>
+        </div>
+        <p class="palette-hint">결합을 이어 그리거나 원자를 끌 때 길이·각도를 맞춥니다. Alt를 누른 채로 하면 자유롭게 놓을 수 있어요.</p>
+
+        <details class="shortcut-help">
+          <summary>단축키</summary>
+          <dl>
+            <dt><kbd>1</kbd>~<kbd>5</kbd></dt><dd>도구 바꾸기</dd>
+            <dt><kbd>C</kbd> <kbd>H</kbd> <kbd>O</kbd> <kbd>N</kbd> <kbd>S</kbd> <kbd>P</kbd> <kbd>F</kbd> <kbd>I</kbd> <kbd>B</kbd></dt><dd>원소 놓기 — 원자 위에 마우스를 올리고 누르면 그 원자를 바꿈</dd>
+            <dt><kbd>Shift</kbd>+<kbd>C</kbd> / <kbd>B</kbd> / <kbd>S</kbd></dt><dd>Cl / Br / Si</dd>
+            <dt><kbd>Delete</kbd></dt><dd>마우스를 올린(또는 선택한) 원자·결합 지우기</dd>
+            <dt><kbd>Esc</kbd></dt><dd>그리던 결합·화살표 멈추기</dd>
+            <dt><kbd>Ctrl</kbd>+<kbd>S</kbd></dt><dd>저장</dd>
+          </dl>
+        </details>
       </div>
 
       <div class="panel" aria-label="캔버스">
@@ -1357,7 +1440,7 @@
     </div>
   </section>
 
-  <!-- ================= 학습 모드 (스켈레톤) ================= -->
+  <!-- ================= 학습 모드 ================= -->
   <section id="panel-play" tabindex="0" hidden>
     <div class="subpage-bar">
       <button class="btn-back" type="button" data-goto="home">← 홈으로</button>
@@ -1389,6 +1472,7 @@
       </div>
 
       <p class="step-status"><span class="step-num" id="play-step-num">0 / 0</span> 단계 — <span id="play-step-desc">반응을 선택해주세요.</span></p>
+      <p class="play-shortcuts">단축키: <kbd>←</kbd> <kbd>→</kbd> 단계 이동 · <kbd>Space</kbd> 자동재생</p>
     </div>
   </section>
 
@@ -1416,7 +1500,7 @@
 </dialog>
 
 <footer class="app-footer">
-  유기화학 메커니즘 스튜디오 &middot; 오프라인에서 동작하는 단일 HTML 학습 도구
+  유기화학 메커니즘 스튜디오
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1512,7 +1596,7 @@
 
   var TOOL_HINTS = {
     select: '원자를 드래그하면 이동합니다.',
-    bond: '원자 두 개를 순서대로 클릭해서 결합을 만드세요. 이미 결합이 있으면 클릭할 때마다 단일→이중→삼중으로 바뀝니다.',
+    bond: '원자 두 개를 차례로 클릭하면 결합이 생깁니다. 원자를 고른 뒤(또는 처음부터) 빈 곳을 클릭하면 그 방향으로 탄소가 이어지고, Esc로 멈춥니다. 결합을 클릭하면 단일→이중→삼중으로 바뀝니다.',
     delete: '지우고 싶은 원자·결합·화살표를 클릭하세요.',
     arrow: '전자쌍이 출발하는 지점(원자 또는 결합)을 클릭한 뒤, 도착하는 지점을 클릭하세요.',
     charge: '원자를 좌클릭하면 전하가 -1, 우클릭하면 +1 됩니다. (-3 ~ +3)'
@@ -1802,6 +1886,9 @@
       }
       if (activeTool === 'select') {
         var point = clientToCanvasPoint(editorCanvas, e.clientX, e.clientY);
+        var constraints = drawConstraints(e);
+        var anchor = (constraints.length || constraints.angle) && nearestBondedNeighbor(atom, point);
+        if (anchor) point = clampToCanvas(constrainFrom(anchor, point, constraints));
         atom.x = point.x;
         atom.y = point.y;
         updateAtomDom(atom, group);
@@ -2169,15 +2256,28 @@
   }
 
   function addAtom(element, x, y) {
-    atoms.push({
+    var atom = {
       id: 'a' + (atomIdSeq++),
       element: element,
       x: x,
       y: y,
       charge: 0,
       hRevealed: false // 탄소일 때만 의미 있음: 클릭해서 수소 개수를 보여주는 중인지
-    });
+    };
+    atoms.push(atom);
     renderAtoms();
+    return atom;
+  }
+
+  function findAtom(id) {
+    return atoms.filter(function (a) { return a.id === id; })[0];
+  }
+
+  function clampToCanvas(p) {
+    return {
+      x: Math.max(ATOM_R + 6, Math.min(CANVAS_W - ATOM_R - 6, p.x)),
+      y: Math.max(ATOM_R + 6, Math.min(CANVAS_H - ATOM_R - 6, p.y))
+    };
   }
 
   function clientToCanvasPoint(svg, clientX, clientY) {
@@ -2186,11 +2286,68 @@
     pt.y = clientY;
     var ctm = svg.getScreenCTM();
     if (!ctm) return { x: CANVAS_W / 2, y: CANVAS_H / 2 };
-    var loc = pt.matrixTransform(ctm.inverse());
+    return clampToCanvas(pt.matrixTransform(ctm.inverse()));
+  }
+
+  // ================= 에디터: 고정 길이·고정 각도 =================
+  // 결합을 이어 그리거나 결합된 원자를 끌 때, 이웃 원자 기준으로 결합 길이와 방향(30° 단위)을 맞춘다
+  var BOND_LENGTH = 45;
+  var ANGLE_STEP = Math.PI / 6;
+  var fixedLengthInput = document.getElementById('fixed-length');
+  var fixedAngleInput = document.getElementById('fixed-angle');
+
+  // Alt를 누르고 있으면 이번 동작만 맞춤 없이
+  function drawConstraints(e) {
     return {
-      x: Math.max(ATOM_R + 6, Math.min(CANVAS_W - ATOM_R - 6, loc.x)),
-      y: Math.max(ATOM_R + 6, Math.min(CANVAS_H - ATOM_R - 6, loc.y))
+      length: fixedLengthInput.checked && !e.altKey,
+      angle: fixedAngleInput.checked && !e.altKey
     };
+  }
+
+  function constrainFrom(anchor, point, constraints) {
+    var dx = point.x - anchor.x;
+    var dy = point.y - anchor.y;
+    var dist = Math.sqrt(dx * dx + dy * dy);
+    var angle = Math.atan2(dy, dx);
+    if (constraints.angle) angle = Math.round(angle / ANGLE_STEP) * ANGLE_STEP;
+    if (constraints.length) dist = BOND_LENGTH;
+    return { x: anchor.x + Math.cos(angle) * dist, y: anchor.y + Math.sin(angle) * dist };
+  }
+
+  // 끌고 있는 원자와 결합한 원자 중 포인터에 가장 가까운 것 (기준점으로 씀)
+  function nearestBondedNeighbor(atom, point) {
+    var best = null, bestDist = Infinity;
+    bonds.forEach(function (b) {
+      var otherId = b.atomId1 === atom.id ? b.atomId2 : (b.atomId2 === atom.id ? b.atomId1 : null);
+      var other = otherId && findAtom(otherId);
+      if (!other) return;
+      var d = Math.hypot(other.x - point.x, other.y - point.y);
+      if (d < bestDist) { best = other; bestDist = d; }
+    });
+    return best;
+  }
+
+  function atomNear(point, radius, excludeId) {
+    return atoms.filter(function (a) {
+      return a.id !== excludeId && Math.hypot(a.x - point.x, a.y - point.y) < radius;
+    })[0];
+  }
+
+  // 결합 도구로 빈 곳을 클릭: 고른 원자에서 그 방향으로 탄소를 이어 붙이고, 새 탄소에서 계속 그린다.
+  // 고른 원자가 없으면 그 자리에 탄소를 놓고 거기서 시작한다.
+  function drawBondToPoint(point, constraints) {
+    var start = bondStartAtomId && findAtom(bondStartAtomId);
+    if (!start) {
+      bondStartAtomId = addAtom('C', point.x, point.y).id;
+      renderAtoms();
+      return;
+    }
+    var target = clampToCanvas(constrainFrom(start, point, constraints));
+    // 그 자리에 이미 원자가 있으면(고리를 닫을 때 등) 새로 만들지 않고 그 원자와 잇는다
+    var end = atomNear(target, 12, start.id) || addAtom('C', target.x, target.y);
+    addOrCycleBond(start.id, end.id);
+    bondStartAtomId = end.id;
+    renderAtoms();
   }
 
   // 버튼 클릭으로 놓을 자리: 가운데 줄부터 45px 간격 격자를 훑어 다른 원자가 없는 첫 칸을 고른다
@@ -2355,12 +2512,12 @@
     });
   }
 
-  // 빈 캔버스를 클릭하면 결합/화살표 도구의 대기 중인 선택을 취소
+  // 빈 캔버스 클릭: 결합 도구면 그 방향으로 탄소를 이어 그리고, 화살표 도구면 대기 중인 선택을 취소
   if (canvasBg) {
-    canvasBg.addEventListener('pointerup', function () {
-      if (activeTool === 'bond' && bondStartAtomId) {
-        bondStartAtomId = null;
-        renderAtoms();
+    canvasBg.addEventListener('pointerup', function (e) {
+      if (e.button !== 0) return;
+      if (activeTool === 'bond') {
+        drawBondToPoint(clientToCanvasPoint(editorCanvas, e.clientX, e.clientY), drawConstraints(e));
       }
       if (activeTool === 'arrow' && arrowStart) {
         arrowStart = null;
@@ -2368,6 +2525,15 @@
         renderBonds();
       }
     });
+  }
+
+  // 결합·화살표를 그리다 만 상태(첫 지점만 고른 상태)를 취소
+  function cancelPendingPick() {
+    if (!bondStartAtomId && !arrowStart) return;
+    bondStartAtomId = null;
+    arrowStart = null;
+    renderAtoms();
+    renderBonds();
   }
 
   // ================= 에디터: 반응 단계 =================
@@ -2581,9 +2747,10 @@
     else if (!changed && state === 'dirty') setSaveStatus(SAVED_MESSAGE, 'ok');
   }
 
-  // 에디터의 어떤 조작이든 끝난 직후에 한 번씩 비교한다 (각 핸들러가 먼저 실행되도록 한 박자 미룸)
+  // 에디터의 어떤 조작이든 끝난 직후에 한 번씩 비교한다 (각 핸들러가 먼저 실행되도록 한 박자 미룸).
+  // 단축키는 포커스가 에디터 밖(body)에 있을 때도 눌리므로 문서 전체에서 듣는다
   ['input', 'click', 'pointerup', 'keydown', 'contextmenu', 'drop'].forEach(function (type) {
-    panels.editor.addEventListener(type, function () {
+    document.addEventListener(type, function () {
       setTimeout(refreshSaveStatus, 0);
     });
   });
@@ -2686,7 +2853,7 @@
     user_already_exists: '이미 가입된 이메일입니다. 로그인해주세요.',
     weak_password: '비밀번호가 너무 약합니다. 6자 이상으로 정해주세요.',
     email_address_invalid: '사용할 수 없는 이메일 주소입니다.',
-    email_not_confirmed: '이메일 확인이 아직 안 됐습니다. 메일함의 확인 링크를 눌러주세요.',
+    email_not_confirmed: '이메일 확인이 끝나지 않은 계정입니다. 관리자에게 알려주세요.',
     over_email_send_rate_limit: '메일을 너무 많이 보냈습니다. 잠시 후 다시 시도해주세요.',
     over_request_rate_limit: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.',
     signup_disabled: '지금은 회원가입을 받지 않습니다.'
@@ -3344,6 +3511,111 @@
       renderPlayStep();
     });
   }
+
+  // ================= 단축키 =================
+  // 한글 입력 상태에서는 C 키가 'ㅊ'로 들어오므로 글자(e.key) 대신 키 위치(e.code)로 구분한다
+  var TOOL_KEYS = { 1: 'select', 2: 'bond', 3: 'delete', 4: 'arrow', 5: 'charge' };
+  var ELEMENT_KEYS = { C: 'C', H: 'H', O: 'O', N: 'N', S: 'S', P: 'P', F: 'F', I: 'I', B: 'B' };
+  var SHIFT_ELEMENT_KEYS = { C: 'Cl', B: 'Br', S: 'Si' };
+
+  function isTypingTarget(el) {
+    return el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable;
+  }
+
+  // 단축키 대상: 마우스가 올라가 있는 원자·결합. 원소를 바꾸면 원자를 새로 그리면서 :hover가
+  // 마우스를 움직일 때까지 풀리므로, 연달아 눌러도 같은 원자를 가리키도록 id로 기억해 둔다
+  var hoveredRef = null; // { type: 'atom' | 'bond', id }
+  editorCanvas.addEventListener('pointerover', function (e) {
+    var atomEl = e.target.closest('.atom');
+    var bondEl = !atomEl && e.target.closest('.bond');
+    if (atomEl) hoveredRef = { type: 'atom', id: atomEl.dataset.atomId };
+    else if (bondEl) hoveredRef = { type: 'bond', id: bondEl.dataset.bondId };
+    else hoveredRef = null;
+  });
+  editorCanvas.addEventListener('pointerleave', function () {
+    hoveredRef = null;
+  });
+
+  // 원소 키: 마우스를 올려둔 원자가 있으면 그 원자를 바꾸고, 없으면 빈 자리에 새로 놓는다
+  function placeOrReplaceElement(element) {
+    var atom = hoveredRef && hoveredRef.type === 'atom' && findAtom(hoveredRef.id);
+    if (atom) {
+      atom.element = element;
+      if (element !== 'C') atom.hRevealed = false;
+      renderAtoms();
+      return;
+    }
+    var spot = findFreeSpot();
+    addAtom(element, spot.x, spot.y);
+  }
+
+  // Delete 키: 마우스를 올린 원자·결합, 없으면 클릭·Tab으로 고른(포커스된) 원자·결합·화살표를 지운다
+  function deleteHoveredOrFocused() {
+    var ref = hoveredRef;
+    hoveredRef = null;
+    if (ref && ref.type === 'atom' && findAtom(ref.id)) {
+      deleteAtom(ref.id);
+      return true;
+    }
+    if (ref && ref.type === 'bond' && bonds.some(function (b) { return b.id === ref.id; })) {
+      deleteBond(ref.id);
+      return true;
+    }
+    var el = document.activeElement;
+    if (el.dataset.atomId) deleteAtom(el.dataset.atomId);
+    else if (el.dataset.bondId) deleteBond(el.dataset.bondId);
+    else if (el.dataset.arrowId) deleteArrow(el.dataset.arrowId);
+    else return false;
+    return true;
+  }
+
+  function handleEditorShortcut(e) {
+    var digit = e.code.replace(/^(Digit|Numpad)/, '');
+    if (TOOL_KEYS[digit]) {
+      setActiveTool(TOOL_KEYS[digit]);
+      return;
+    }
+    var letter = e.code.indexOf('Key') === 0 ? e.code.slice(3) : '';
+    var element = e.shiftKey ? SHIFT_ELEMENT_KEYS[letter] : ELEMENT_KEYS[letter];
+    if (element) {
+      e.preventDefault();
+      placeOrReplaceElement(element);
+      return;
+    }
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      if (deleteHoveredOrFocused()) e.preventDefault();
+      return;
+    }
+    if (e.key === 'Escape') cancelPendingPick();
+  }
+
+  function handlePlayShortcut(e) {
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      playPrevBtn.click();
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      playNextBtn.click();
+    } else if (e.code === 'Space' && e.target.tagName !== 'BUTTON') { // 버튼에 포커스가 있으면 Space는 그 버튼 몫
+      e.preventDefault();
+      toggleAutoplay();
+    }
+  }
+
+  document.addEventListener('keydown', function (e) {
+    // 원자·결합이 이미 처리한 키(Enter·방향키)나 로그인 창이 열려 있을 때는 건드리지 않는다
+    if (e.defaultPrevented || e.isComposing || authDialog.open) return;
+    var mod = e.ctrlKey || e.metaKey;
+    // Ctrl+S는 반응 이름을 입력하는 중에도 저장되도록 입력칸 검사보다 먼저 본다
+    if (!panels.editor.hidden && mod && !e.altKey && !e.shiftKey && e.code === 'KeyS') {
+      e.preventDefault(); // 브라우저의 '페이지 저장' 대신
+      saveReaction();
+      return;
+    }
+    if (mod || e.altKey || isTypingTarget(e.target)) return;
+    if (!panels.editor.hidden) handleEditorShortcut(e);
+    else if (!panels.play.hidden) handlePlayShortcut(e);
+  });
 
   refreshReactionSelect();
 
