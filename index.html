@@ -1445,9 +1445,9 @@
 
         <div class="draw-options" role="group" aria-label="그리기 보조">
           <label><input type="checkbox" id="fixed-length" checked> 고정 길이</label>
-          <label><input type="checkbox" id="fixed-angle" checked> 고정 각도 (30°)</label>
+          <label><input type="checkbox" id="fixed-angle" checked> 고정 각도</label>
         </div>
-        <p class="palette-hint">결합을 이어 그리거나 원자를 끌 때 길이·각도를 맞춥니다. Alt를 누른 채로 하면 자유롭게 놓을 수 있어요.</p>
+        <p class="palette-hint">결합을 이어 그리거나 원자를 끌 때 길이(45px)와 각도(이미 있는 결합과 120°)를 맞춥니다. Alt를 누른 채로 하면 자유롭게 놓을 수 있어요.</p>
 
         <details class="shortcut-help">
           <summary>단축키</summary>
@@ -1943,7 +1943,7 @@
         var point = clientToCanvasPoint(editorCanvas, e.clientX, e.clientY);
         var constraints = drawConstraints(e);
         var anchor = (constraints.length || constraints.angle) && nearestBondedNeighbor(atom, point);
-        if (anchor) point = clampToCanvas(constrainFrom(anchor, point, constraints));
+        if (anchor) point = clampToCanvas(constrainFrom(anchor, point, constraints, atom.id));
         atom.x = point.x;
         atom.y = point.y;
         updateAtomDom(atom, group);
@@ -2231,7 +2231,7 @@
   function getRefPoint(type, id) {
     if (type === 'atom') {
       var atom = atoms.filter(function (a) { return a.id === id; })[0];
-      return atom ? { x: atom.x, y: atom.y } : null;
+      return atom ? { x: atom.x, y: atom.y, clear: atomArrowClearance(atom) } : null;
     }
     if (type === 'bond') {
       var bond = bonds.filter(function (b) { return b.id === id; })[0];
@@ -2239,35 +2239,51 @@
       var a1 = atoms.filter(function (a) { return a.id === bond.atomId1; })[0];
       var a2 = atoms.filter(function (a) { return a.id === bond.atomId2; })[0];
       if (!a1 || !a2) return null;
-      return { x: (a1.x + a2.x) / 2, y: (a1.y + a2.y) / 2 };
+      return { x: (a1.x + a2.x) / 2, y: (a1.y + a2.y) / 2, clear: ARROW_CLEAR_BOND };
     }
     return null;
   }
 
+  // 화살표 끝을 대상에서 띄울 거리: 글자로 표시되는 원자는 글자 둘레만큼, 탄소 꼭짓점·결합 중점은 조금만
+  var ARROW_CLEAR_LABEL = 13;
+  var ARROW_CLEAR_VERTEX = 6;
+  var ARROW_CLEAR_BOND = 3;
+  var SHORT_ARROW = 40; // 이보다 가까우면(결합 → 바로 옆 원자 등) 작은 아치로 그린다
+  var SHORT_ARROW_BOW = 24;
+
+  function atomArrowClearance(atom) {
+    return atom.element !== 'C' || atom.hRevealed ? ARROW_CLEAR_LABEL : ARROW_CLEAR_VERTEX;
+  }
+
   // 시작점 P0 → 끝점 P1 사이에 곡선 화살표 경로(d)를 만든다. 양 끝은 대상에서 살짝 띄운다.
+  // p0·p1의 clear: 그 대상(원자 글자·꼭짓점·결합)에서 얼마나 띄울지
   function buildArrowPath(p0, p1) {
     var dx = p1.x - p0.x;
     var dy = p1.y - p0.y;
     var dist = Math.sqrt(dx * dx + dy * dy) || 1;
     var ux = dx / dist;
     var uy = dy / dist;
-
-    // 시작/끝 여백은 거리에 비례하게 — 원자 사이가 가까워도(탄소 정점·결합 중점처럼 앵커가 작을 때)
-    // 화살표가 지나치게 짧게 눌리지 않도록 함
-    var padStart = Math.min(12, dist * 0.2);
-    var padEnd = Math.min(15, dist * 0.25);
-
-    var start = { x: p0.x + ux * padStart, y: p0.y + uy * padStart };
-    var end = { x: p1.x - ux * padEnd, y: p1.y - uy * padEnd };
-
-    var mx = (start.x + end.x) / 2;
-    var my = (start.y + end.y) / 2;
     var nx = -dy / dist; // 진행 방향에 수직인 단위 벡터 — 곡선의 휘는 방향
     var ny = dx / dist;
-    var bow = Math.min(80, dist * 0.75); // 곡선 부분을 크게 — 화살촉 크기는 그대로 두고 휘는 정도만 키움
-    var cx = mx + nx * bow;
-    var cy = my + ny * bow;
 
+    var start, end, bow;
+    if (dist < SHORT_ARROW) {
+      // 두 점 사이에 공간이 거의 없으므로, 양 끝을 휘는 쪽으로 들어 올려 결합 바로 위에서 출발해
+      // 원자 글자 가장자리에 내려앉는 아치로 그린다 (축 위에 그리면 화살촉만 남고 글자를 덮는다)
+      start = { x: p0.x + nx * p0.clear, y: p0.y + ny * p0.clear };
+      end = { x: p1.x + nx * p1.clear, y: p1.y + ny * p1.clear };
+      bow = SHORT_ARROW_BOW;
+    } else {
+      // 시작/끝 여백은 거리에 비례하게 — 원자 사이가 가까워도 화살표가 지나치게 짧게 눌리지 않도록 함
+      var padStart = Math.min(12, dist * 0.2);
+      var padEnd = Math.min(15, dist * 0.25);
+      start = { x: p0.x + ux * padStart, y: p0.y + uy * padStart };
+      end = { x: p1.x - ux * padEnd, y: p1.y - uy * padEnd };
+      bow = Math.min(80, dist * 0.75); // 곡선 부분을 크게 — 화살촉 크기는 그대로 두고 휘는 정도만 키움
+    }
+
+    var cx = (start.x + end.x) / 2 + nx * bow;
+    var cy = (start.y + end.y) / 2 + ny * bow;
     return 'M ' + start.x + ' ' + start.y + ' Q ' + cx + ' ' + cy + ' ' + end.x + ' ' + end.y;
   }
 
@@ -2345,7 +2361,7 @@
   }
 
   // ================= 에디터: 고정 길이·고정 각도 =================
-  // 결합을 이어 그리거나 결합된 원자를 끌 때, 이웃 원자 기준으로 결합 길이와 방향(30° 단위)을 맞춘다
+  // 결합을 이어 그리거나 결합된 원자를 끌 때, 기준 원자에서의 결합 길이와 방향을 맞춘다
   var BOND_LENGTH = 45;
   var ANGLE_STEP = Math.PI / 6;
   var fixedLengthInput = document.getElementById('fixed-length');
@@ -2359,12 +2375,54 @@
     };
   }
 
-  function constrainFrom(anchor, point, constraints) {
+  // 기준 원자에서 뻗은 결합들의 방향(라디안). 끌고 있는 원자로 가는 결합은 빼고 본다
+  function bondDirections(anchor, excludeAtomId) {
+    var dirs = [];
+    bonds.forEach(function (b) {
+      var otherId = b.atomId1 === anchor.id ? b.atomId2 : (b.atomId2 === anchor.id ? b.atomId1 : null);
+      if (!otherId || otherId === excludeAtomId) return;
+      var other = findAtom(otherId);
+      if (other) dirs.push({ angle: Math.atan2(other.y - anchor.y, other.x - anchor.x), order: b.order });
+    });
+    return dirs;
+  }
+
+  function angleGap(a, b) {
+    return Math.abs(Math.atan2(Math.sin(a - b), Math.cos(a - b)));
+  }
+
+  // 고정 각도 — 일반적인 2D 구조식처럼 결합 사이가 120°가 되게 맞춘다:
+  // 기준 원자에 결합이 없으면 30° 단위, 하나면 그 결합과 120°인 두 방향(삼중 결합이면 일직선도),
+  // 둘 이상이면 결합들 사이 빈 각의 한가운데 — 그중 포인터 쪽에 가장 가까운 방향을 고른다
+  function snapAngle(anchor, angle, excludeAtomId) {
+    var dirs = bondDirections(anchor, excludeAtomId);
+    if (!dirs.length) return Math.round(angle / ANGLE_STEP) * ANGLE_STEP;
+
+    var candidates;
+    if (dirs.length === 1) {
+      var t = dirs[0].angle;
+      candidates = [t + 2 * Math.PI / 3, t - 2 * Math.PI / 3];
+      if (dirs[0].order === 3) candidates.push(t + Math.PI);
+    } else {
+      var sorted = dirs
+        .map(function (d) { return (d.angle + 2 * Math.PI) % (2 * Math.PI); })
+        .sort(function (a, b) { return a - b; });
+      candidates = sorted.map(function (a, i) {
+        var next = i + 1 < sorted.length ? sorted[i + 1] : sorted[0] + 2 * Math.PI;
+        return (a + next) / 2;
+      });
+    }
+    return candidates.reduce(function (best, c) {
+      return angleGap(c, angle) < angleGap(best, angle) ? c : best;
+    });
+  }
+
+  function constrainFrom(anchor, point, constraints, excludeAtomId) {
     var dx = point.x - anchor.x;
     var dy = point.y - anchor.y;
     var dist = Math.sqrt(dx * dx + dy * dy);
     var angle = Math.atan2(dy, dx);
-    if (constraints.angle) angle = Math.round(angle / ANGLE_STEP) * ANGLE_STEP;
+    if (constraints.angle) angle = snapAngle(anchor, angle, excludeAtomId);
     if (constraints.length) dist = BOND_LENGTH;
     return { x: anchor.x + Math.cos(angle) * dist, y: anchor.y + Math.sin(angle) * dist };
   }
@@ -3155,17 +3213,20 @@
 
   // ================= 학습 모드 =================
   // 시드 데이터: 저장된 반응과 별개로, 처음부터 들어있는 예시 반응은 항상 보여준다.
+  // 에디터의 고정 길이·각도와 같은 규칙으로 그린다 — 결합은 모두 45px, 결합 사이는 120°
+  // (사방에 결합이 4개인 탄소만 세 결합을 120°로 펼치고 나머지 하나를 그 사이에 둔다).
+  // 45px × cos 30° ≈ 38.97, 45px × sin 30° = 22.5
   var SEED_REACTIONS = [
     {
       id: 'seed-sn2',
       name: 'SN2 반응 (OH⁻ + CH₃Br → CH₃OH + Br⁻)',
       steps: [
         {
-          description: '친핵체 OH⁻의 비공유 전자쌍이 탄소를 뒤쪽에서 공격하는 동시에, C-Br 결합의 전자쌍이 브로민으로 이동합니다. 두 일이 동시에 일어나는 협동(concerted) 메커니즘입니다.',
+          description: '친핵체 OH⁻의 비공유 전자쌍이 브로민의 반대쪽(뒤쪽)에서 탄소를 공격하는 동시에, C-Br 결합의 전자쌍이 브로민으로 이동합니다. 두 일이 한 번에 일어나는 협동(concerted) 메커니즘입니다.',
           atoms: [
-            { id: 'sn2-o', element: 'O', x: 130, y: 200, charge: -1, hRevealed: false },
-            { id: 'sn2-c', element: 'C', x: 300, y: 200, charge: 0, hRevealed: false },
-            { id: 'sn2-br', element: 'Br', x: 470, y: 200, charge: 0, hRevealed: false }
+            { id: 'sn2-br', element: 'Br', x: 255, y: 200, charge: 0, hRevealed: false },
+            { id: 'sn2-c', element: 'C', x: 300, y: 200, charge: 0, hRevealed: true },
+            { id: 'sn2-o', element: 'O', x: 390, y: 200, charge: -1, hRevealed: false }
           ],
           bonds: [
             { id: 'sn2-b-cbr', atomId1: 'sn2-c', atomId2: 'sn2-br', order: 1 }
@@ -3178,9 +3239,9 @@
         {
           description: '생성물: 탄소가 친핵체 쪽에서 새 결합(C-O)을 얻고, 원래 결합(C-Br)의 반대 방향으로 구조가 뒤집혔습니다 — 이를 발덴 반전(Walden inversion)이라고 합니다. Br⁻는 이탈기로 떨어져 나갑니다.',
           atoms: [
-            { id: 'sn2-o', element: 'O', x: 245, y: 200, charge: 0, hRevealed: false },
-            { id: 'sn2-c', element: 'C', x: 300, y: 200, charge: 0, hRevealed: false },
-            { id: 'sn2-br', element: 'Br', x: 480, y: 290, charge: -1, hRevealed: false }
+            { id: 'sn2-br', element: 'Br', x: 190, y: 200, charge: -1, hRevealed: false },
+            { id: 'sn2-c', element: 'C', x: 300, y: 200, charge: 0, hRevealed: true },
+            { id: 'sn2-o', element: 'O', x: 345, y: 200, charge: 0, hRevealed: false }
           ],
           bonds: [
             { id: 'sn2-b-co', atomId1: 'sn2-c', atomId2: 'sn2-o', order: 1 }
@@ -3197,30 +3258,30 @@
           description: 'C-Br 결합이 이온화되며 끊어져 브로민이 결합 전자쌍을 모두 가지고 이탈합니다. 3차 탄소는 카보양이온이 됩니다.',
           atoms: [
             { id: 'sn1-c1', element: 'C', x: 300, y: 200, charge: 0, hRevealed: false },
-            { id: 'sn1-c2', element: 'C', x: 255, y: 140, charge: 0, hRevealed: false },
-            { id: 'sn1-c3', element: 'C', x: 345, y: 140, charge: 0, hRevealed: false },
-            { id: 'sn1-c4', element: 'C', x: 300, y: 280, charge: 0, hRevealed: false },
-            { id: 'sn1-br', element: 'Br', x: 420, y: 200, charge: 0, hRevealed: false }
+            { id: 'sn1-br', element: 'Br', x: 300, y: 155, charge: 0, hRevealed: false },
+            { id: 'sn1-c2', element: 'C', x: 261.03, y: 222.5, charge: 0, hRevealed: false },
+            { id: 'sn1-c3', element: 'C', x: 338.97, y: 222.5, charge: 0, hRevealed: false },
+            { id: 'sn1-c4', element: 'C', x: 300, y: 245, charge: 0, hRevealed: false }
           ],
           bonds: [
+            { id: 'sn1-b4', atomId1: 'sn1-c1', atomId2: 'sn1-br', order: 1 },
             { id: 'sn1-b1', atomId1: 'sn1-c1', atomId2: 'sn1-c2', order: 1 },
             { id: 'sn1-b2', atomId1: 'sn1-c1', atomId2: 'sn1-c3', order: 1 },
-            { id: 'sn1-b3', atomId1: 'sn1-c1', atomId2: 'sn1-c4', order: 1 },
-            { id: 'sn1-b4', atomId1: 'sn1-c1', atomId2: 'sn1-br', order: 1 }
+            { id: 'sn1-b3', atomId1: 'sn1-c1', atomId2: 'sn1-c4', order: 1 }
           ],
           arrows: [
             { id: 'sn1-a1', from: 'sn1-b4', fromType: 'bond', to: 'sn1-br', toType: 'atom' }
           ]
         },
         {
-          description: '카보양이온의 빈 p 오비탈을 향해 친핵체(OH⁻)의 비공유 전자쌍이 공격합니다.',
+          description: '카보양이온의 탄소는 결합이 3개뿐이라 세 메틸기가 120°로 펼쳐진 평면 구조가 됩니다. 비어 있는 p 오비탈을 향해 친핵체(OH⁻)의 비공유 전자쌍이 공격합니다.',
           atoms: [
             { id: 'sn1-c1', element: 'C', x: 300, y: 200, charge: 1, hRevealed: false },
-            { id: 'sn1-c2', element: 'C', x: 255, y: 140, charge: 0, hRevealed: false },
-            { id: 'sn1-c3', element: 'C', x: 345, y: 140, charge: 0, hRevealed: false },
-            { id: 'sn1-c4', element: 'C', x: 300, y: 280, charge: 0, hRevealed: false },
-            { id: 'sn1-br', element: 'Br', x: 420, y: 200, charge: -1, hRevealed: false },
-            { id: 'sn1-o', element: 'O', x: 300, y: 340, charge: -1, hRevealed: false }
+            { id: 'sn1-c2', element: 'C', x: 261.03, y: 222.5, charge: 0, hRevealed: false },
+            { id: 'sn1-c3', element: 'C', x: 338.97, y: 222.5, charge: 0, hRevealed: false },
+            { id: 'sn1-c4', element: 'C', x: 300, y: 155, charge: 0, hRevealed: false },
+            { id: 'sn1-br', element: 'Br', x: 430, y: 130, charge: -1, hRevealed: false },
+            { id: 'sn1-o', element: 'O', x: 300, y: 290, charge: -1, hRevealed: false }
           ],
           bonds: [
             { id: 'sn1-b1', atomId1: 'sn1-c1', atomId2: 'sn1-c2', order: 1 },
@@ -3235,11 +3296,11 @@
           description: '생성물: 3차 알코올 (CH₃)₃C-OH와 브로민화 이온(Br⁻)이 만들어졌습니다.',
           atoms: [
             { id: 'sn1-c1', element: 'C', x: 300, y: 200, charge: 0, hRevealed: false },
-            { id: 'sn1-c2', element: 'C', x: 255, y: 140, charge: 0, hRevealed: false },
-            { id: 'sn1-c3', element: 'C', x: 345, y: 140, charge: 0, hRevealed: false },
-            { id: 'sn1-c4', element: 'C', x: 300, y: 280, charge: 0, hRevealed: false },
-            { id: 'sn1-br', element: 'Br', x: 420, y: 200, charge: -1, hRevealed: false },
-            { id: 'sn1-o', element: 'O', x: 300, y: 340, charge: 0, hRevealed: false }
+            { id: 'sn1-c2', element: 'C', x: 261.03, y: 222.5, charge: 0, hRevealed: false },
+            { id: 'sn1-c3', element: 'C', x: 338.97, y: 222.5, charge: 0, hRevealed: false },
+            { id: 'sn1-c4', element: 'C', x: 300, y: 155, charge: 0, hRevealed: false },
+            { id: 'sn1-br', element: 'Br', x: 430, y: 130, charge: -1, hRevealed: false },
+            { id: 'sn1-o', element: 'O', x: 300, y: 245, charge: 0, hRevealed: false }
           ],
           bonds: [
             { id: 'sn1-b1', atomId1: 'sn1-c1', atomId2: 'sn1-c2', order: 1 },
@@ -3291,7 +3352,7 @@
   function playGetRefPoint(type, id, atomsArr, bondsArr) {
     if (type === 'atom') {
       var a = atomsArr.filter(function (x) { return x.id === id; })[0];
-      return a ? { x: a.x, y: a.y } : null;
+      return a ? { x: a.x, y: a.y, clear: atomArrowClearance(a) } : null;
     }
     if (type === 'bond') {
       var b = bondsArr.filter(function (x) { return x.id === id; })[0];
@@ -3299,7 +3360,7 @@
       var a1 = atomsArr.filter(function (x) { return x.id === b.atomId1; })[0];
       var a2 = atomsArr.filter(function (x) { return x.id === b.atomId2; })[0];
       if (!a1 || !a2) return null;
-      return { x: (a1.x + a2.x) / 2, y: (a1.y + a2.y) / 2 };
+      return { x: (a1.x + a2.x) / 2, y: (a1.y + a2.y) / 2, clear: ARROW_CLEAR_BOND };
     }
     return null;
   }
