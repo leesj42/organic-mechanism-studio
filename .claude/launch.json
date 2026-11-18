@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "mo-visualizer",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8765", "--directory", "D:/2학년/2학기/정보과학 프로젝트/MO-visualizer"],
+      "port": 8765
+    }
+  ]
+}
