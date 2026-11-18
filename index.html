@@ -179,11 +179,11 @@
 
   .cards {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.25rem;
   }
 
-  @media (max-width: 700px) {
+  @media (max-width: 900px) {
     .cards { grid-template-columns: 1fr; }
   }
 
@@ -237,6 +237,124 @@
 
   .card.editor .card-cta { background: var(--editor-accent); }
   .card.play .card-cta { background: var(--play-accent); }
+  .card.board .icon-wrap { background: var(--accent-soft); }
+  .card.board .card-cta { background: var(--accent); }
+
+  /* ---------- 반응 게시판 ---------- */
+  .board-intro {
+    margin: 0 0 1rem;
+    color: var(--ink-muted);
+    font-size: 0.92rem;
+  }
+
+  .board-search {
+    width: 100%;
+    margin-bottom: 1rem;
+    padding: 0.55rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-panel);
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.92rem;
+  }
+
+  .board-search:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .board-status {
+    margin: 0 0 1rem;
+    color: var(--ink-muted);
+    font-size: 0.9rem;
+  }
+
+  .board-status:empty { display: none; }
+  .board-status[data-state="error"] { color: var(--danger); }
+
+  .board-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+
+  .board-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-panel);
+    box-shadow: var(--shadow);
+  }
+
+  .board-thumb {
+    display: block;
+    width: 100%;
+    height: 130px;
+    margin-bottom: 0.25rem;
+    border-radius: 8px;
+    background: var(--bg);
+  }
+
+  .board-thumb .bond-line { stroke-width: 2.5; }
+
+  .board-thumb-label {
+    font-size: 15px;
+    font-weight: 700;
+    paint-order: stroke;
+    stroke: var(--bg);
+    stroke-width: 6px;
+    stroke-linejoin: round;
+  }
+
+  .board-title {
+    margin: 0;
+    font-size: 1.05rem;
+    overflow-wrap: anywhere;
+  }
+
+  .board-meta {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+  }
+
+  .board-desc {
+    margin: 0;
+    font-size: 0.88rem;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .board-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: auto;
+    padding-top: 0.4rem;
+  }
+
+  .board-actions button {
+    appearance: none;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-panel);
+    color: var(--ink);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .board-actions button:hover { background: var(--accent-soft); border-color: var(--accent); }
+  .board-actions button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .board-actions .board-play { background: var(--play-accent); border-color: var(--play-accent); color: #fff; }
+  .board-actions .board-play:hover { background: var(--play-accent); filter: brightness(1.08); }
+  .board-actions .board-delete { margin-left: auto; color: var(--danger); }
+  .board-actions .board-delete:hover { background: var(--danger-soft); border-color: var(--danger); }
 
   .card-cta:hover { filter: brightness(1.08); }
   .card-cta:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
@@ -599,6 +717,27 @@
     gap: 0.35rem;
     cursor: pointer;
   }
+
+  .clean-btn {
+    appearance: none;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.9rem;
+    padding: 0.45rem 0.6rem;
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .clean-btn:hover { background: #dbe8f3; }
+  .clean-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .clean-btn kbd { margin-left: auto; }
 
   .shortcut-help {
     margin-top: 0.9rem;
@@ -1489,7 +1628,18 @@
     font-weight: 600;
   }
 
-  .dialog-field input {
+  .dialog-optional {
+    font-weight: 400;
+    color: var(--ink-muted);
+  }
+
+  .dialog-field textarea {
+    resize: vertical;
+    min-height: 4.5rem;
+  }
+
+  .dialog-field input,
+  .dialog-field textarea {
     padding: 0.55rem 0.75rem;
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -1500,7 +1650,8 @@
     color: var(--ink);
   }
 
-  .dialog-field input:focus-visible {
+  .dialog-field input:focus-visible,
+  .dialog-field textarea:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 1px;
   }
@@ -1684,6 +1835,18 @@
         <p>저장된 반응을 선택해 단계별로 넘겨보거나 자동재생으로 화살표가 그려지는 과정을 감상하세요.</p>
         <button class="card-cta" type="button" data-goto="play">학습 모드 열기</button>
       </div>
+
+      <div class="card board">
+        <div class="icon-wrap">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="4" y="4" width="16" height="16" rx="2.5" stroke="var(--accent)" stroke-width="1.6"/>
+            <path d="M8 9h8M8 12.5h8M8 16h5" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h2>반응 게시판</h2>
+        <p>다른 사람이 올린 반응을 보고 학습 모드로 공부하거나, 에디터로 가져와 고쳐 보세요. 내 반응도 올려서 공유할 수 있어요.</p>
+        <button class="card-cta" type="button" data-goto="board">게시판 열기</button>
+      </div>
     </div>
   </section>
 
@@ -1701,6 +1864,7 @@
       <button type="button" id="new-reaction-btn">새 반응</button>
       <button type="button" id="load-reaction-btn">불러오기</button>
       <button type="button" id="save-reaction-btn">저장</button>
+      <button type="button" id="share-reaction-btn">게시판에 올리기</button>
     </div>
     <p class="save-status" id="save-status" role="status" aria-live="polite"></p>
 
@@ -1743,6 +1907,8 @@
           <label><input type="checkbox" id="fixed-angle" checked> 고정 각도</label>
         </div>
         <p class="palette-hint">결합을 이어 그리거나 원자를 끌 때 길이(45px)와 각도(이미 있는 결합과 120°)를 맞춥니다. Alt를 누른 채로 하면 자유롭게 놓을 수 있어요.</p>
+        <button type="button" class="clean-btn" id="clean-btn" aria-keyshortcuts="K">구조 정리<kbd aria-hidden="true">K</kbd></button>
+        <p class="palette-hint">선택한 분자(선택이 없으면 전체)를 결합 45px·각도 120°, 고리는 정다각형으로 한 번에 정리합니다.</p>
 
         <details class="shortcut-help">
           <summary>단축키</summary>
@@ -1754,6 +1920,7 @@
             <dt><kbd>Esc</kbd></dt><dd>선택 풀기, 그리던 결합·화살표 멈추기</dd>
             <dt><kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd></dt><dd>실행 취소 / 다시 실행</dd>
             <dt><kbd>Ctrl</kbd>+<kbd>A</kbd></dt><dd>현재 단계 전체 선택</dd>
+            <dt><kbd>K</kbd></dt><dd>구조 정리 (선택한 분자, 없으면 전체)</dd>
             <dt><kbd>Ctrl</kbd>+<kbd>C</kbd> / <kbd>X</kbd> / <kbd>V</kbd></dt><dd>복사 / 잘라내기 / 붙여넣기 (다른 단계·반응에도 붙여넣기 가능)</dd>
             <dt><kbd>←</kbd> <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd></dt><dd>선택한 것 옮기기 (Shift로 크게)</dd>
             <dt><kbd>Ctrl</kbd>+<kbd>S</kbd></dt><dd>저장</dd>
@@ -1860,6 +2027,19 @@
     </div>
   </section>
 
+  <!-- ================= 반응 게시판 ================= -->
+  <section id="panel-board" tabindex="0" hidden>
+    <div class="subpage-bar">
+      <button class="btn-back" type="button" data-goto="home">← 홈으로</button>
+      <h1>반응 게시판</h1>
+      <button class="btn-back" type="button" id="board-refresh-btn">새로고침</button>
+    </div>
+    <p class="board-intro">다른 사람이 올린 반응을 학습 모드로 공부하거나 에디터로 가져와 고쳐 볼 수 있어요. 내 반응은 에디터의 <strong>게시판에 올리기</strong>로 공유하세요.</p>
+    <input type="search" class="board-search" id="board-search" placeholder="제목·설명·닉네임으로 찾기" aria-label="게시판 검색">
+    <p class="board-status" id="board-status" role="status" aria-live="polite"></p>
+    <ul class="board-list" id="board-list"></ul>
+  </section>
+
 </main>
 
 <dialog class="dialog" id="load-dialog" aria-labelledby="load-title">
@@ -1870,6 +2050,27 @@
   <div class="dialog-actions">
     <button type="button" id="load-cancel">닫기</button>
   </div>
+</dialog>
+
+<dialog class="dialog" id="share-dialog" aria-labelledby="share-dialog-title">
+  <form id="share-form">
+    <h2 id="share-dialog-title">게시판에 올리기</h2>
+    <p class="dialog-desc">에디터의 지금 모습을 그대로 올립니다. 나중에 내 반응을 고쳐도 올린 글은 바뀌지 않아요. 이메일은 공개되지 않고 닉네임만 보입니다.</p>
+    <label class="dialog-field">제목
+      <input type="text" id="share-title-input" maxlength="60" required>
+    </label>
+    <label class="dialog-field">설명 <span class="dialog-optional">(선택)</span>
+      <textarea id="share-desc-input" maxlength="300" rows="3" placeholder="어떤 반응인지, 어디에 주의하면 좋은지 적어 주세요."></textarea>
+    </label>
+    <label class="dialog-field">닉네임
+      <input type="text" id="share-author-input" maxlength="20" required placeholder="게시판에 보일 이름">
+    </label>
+    <p class="dialog-message" id="share-message" role="status" aria-live="polite"></p>
+    <div class="dialog-actions">
+      <button type="button" id="share-cancel-btn">취소</button>
+      <button type="submit" class="dialog-submit" id="share-submit-btn">올리기</button>
+    </div>
+  </form>
 </dialog>
 
 <dialog class="dialog" id="deck-dialog" aria-labelledby="deck-dialog-title">
@@ -1925,7 +2126,8 @@
   var panels = {
     home: document.getElementById('panel-home'),
     editor: document.getElementById('panel-editor'),
-    play: document.getElementById('panel-play')
+    play: document.getElementById('panel-play'),
+    board: document.getElementById('panel-board')
   };
 
   function switchView(view, opts) {
@@ -1942,6 +2144,10 @@
 
     if (view === 'play' && typeof refreshReactionSelect === 'function') {
       refreshReactionSelect(); // 에디터에서 방금 바뀐 내용을 반영해 목록을 다시 채움
+    }
+
+    if (view === 'board') {
+      loadBoard(); // 들어올 때마다 최신 글을 불러온다
     }
 
     if (opts.focusPanel) {
@@ -2656,6 +2862,400 @@
     });
     selectAtoms(newIds, false); // 붙여넣은 것을 선택해 두어 바로 끌어서 옮길 수 있게
     return true;
+  }
+
+  // ================= 에디터: 구조 정리 =================
+  // 분자를 결합 45px, 결합 사이 120°(고리는 정다각형)로 다시 배치한다 (ChemDraw의 Clean Structure).
+  // 어느 쪽으로 뻗을지는 원래 그린 방향에 가장 가까운 쪽을 고르고, 분자의 중심 위치는 그대로 둔다
+  var TAU = Math.PI * 2;
+  var DEG120 = TAU / 3;
+  var MAX_RING = 8;
+
+  function angleOf(from, to) {
+    return Math.atan2(to.y - from.y, to.x - from.x);
+  }
+
+  function snap30(angle) {
+    return Math.round(angle / (Math.PI / 6)) * (Math.PI / 6);
+  }
+
+  function rotatePoint(p, angle) {
+    var c = Math.cos(angle), s = Math.sin(angle);
+    return { x: p.x * c - p.y * s, y: p.x * s + p.y * c };
+  }
+
+  function centroid(points) {
+    var sx = 0, sy = 0;
+    points.forEach(function (p) { sx += p.x; sy += p.y; });
+    return { x: sx / points.length, y: sy / points.length };
+  }
+
+  // 후보 방향들을 이웃들에게 하나씩 나눠 준다: 원래 방향(hint)과 가장 가까운 짝부터 정한다
+  function assignDirections(candidates, hints) {
+    var result = [], usedC = {}, usedH = {}, cost = 0;
+    for (var step = 0; step < hints.length && step < candidates.length; step++) {
+      var best = null;
+      hints.forEach(function (h, i) {
+        if (usedH[i]) return;
+        candidates.forEach(function (c, j) {
+          if (usedC[j]) return;
+          var g = angleGap(c, h);
+          if (!best || g < best.g) best = { i: i, j: j, g: g };
+        });
+      });
+      result[best.i] = candidates[best.j];
+      usedH[best.i] = usedC[best.j] = true;
+      cost += best.g;
+    }
+    return { dirs: result, cost: cost };
+  }
+
+  // 고리 찾기: 결합마다 그 결합을 빼고 두 원자를 잇는 가장 짧은 길을 찾으면, 그 길 + 결합이 가장 작은 고리
+  function findRings(ids, adj) {
+    var rings = [], seen = {};
+    ids.forEach(function (u) {
+      adj[u].forEach(function (nb) {
+        var v = nb.id;
+        if (u > v) return;
+        var prev = {};
+        prev[u] = null;
+        var queue = [u];
+        while (queue.length && !(v in prev)) {
+          var x = queue.shift();
+          adj[x].forEach(function (n) {
+            if (n.id in prev) return;
+            if (x === u && n.id === v) return; // 이 결합 자체는 빼고
+            prev[n.id] = x;
+            queue.push(n.id);
+          });
+        }
+        if (!(v in prev)) return;
+        var path = [];
+        for (var p = v; p !== null; p = prev[p]) path.unshift(p);
+        if (path.length > MAX_RING) return;
+        var key = path.slice().sort().join(',');
+        if (seen[key]) return;
+        seen[key] = true;
+        rings.push(path); // 고리 순서대로 (마지막 원자와 첫 원자도 결합)
+      });
+    });
+    return rings;
+  }
+
+  // 원자를 공유하는 고리끼리 묶어 '고리계'(나프탈렌처럼 붙은 고리들)로 만든다
+  function groupRingSystems(rings) {
+    var systems = [];
+    rings.forEach(function (ring) {
+      var joined = systems.filter(function (s) {
+        return ring.some(function (id) { return s.atomSet[id]; });
+      });
+      var merged = { rings: [ring], atomSet: {} };
+      joined.forEach(function (s) {
+        merged.rings = merged.rings.concat(s.rings);
+        Object.keys(s.atomSet).forEach(function (id) { merged.atomSet[id] = true; });
+        systems.splice(systems.indexOf(s), 1);
+      });
+      ring.forEach(function (id) { merged.atomSet[id] = true; });
+      systems.push(merged);
+    });
+    return systems;
+  }
+
+  // 고리계의 모양(원점 기준 좌표): 첫 고리를 정다각형으로 놓고, 붙은 고리는 공유한 변의 반대쪽에 정다각형으로 붙인다.
+  // 다리 걸친 고리처럼 이렇게 놓을 수 없는 원자는 비워 두면 일반 사슬처럼 이어 붙여진다
+  function buildRingTemplate(system) {
+    var local = {};
+    var rings = system.rings.slice().sort(function (a, b) {
+      return Math.abs(a.length - 6) - Math.abs(b.length - 6); // 육각 고리부터
+    });
+
+    function placePolygon(ring, center, startIndex, startAngle, dir) {
+      var n = ring.length;
+      var radius = BOND_LENGTH / (2 * Math.sin(Math.PI / n));
+      for (var k = 0; k < n; k++) {
+        var id = ring[(startIndex + k) % n];
+        var a = startAngle + dir * k * TAU / n;
+        if (!local[id]) local[id] = { x: center.x + radius * Math.cos(a), y: center.y + radius * Math.sin(a) };
+      }
+    }
+
+    placePolygon(rings.shift(), { x: 0, y: 0 }, 0, -Math.PI / 2, 1);
+
+    var progress = true;
+    while (rings.length && progress) {
+      progress = false;
+      for (var r = 0; r < rings.length; r++) {
+        var ring = rings[r];
+        var n = ring.length;
+        var placedIdx = [];
+        ring.forEach(function (id, i) { if (local[id]) placedIdx.push(i); });
+        if (!placedIdx.length) continue;
+        rings.splice(r, 1);
+        progress = true;
+        var placedCenter = centroid(Object.keys(local).map(function (id) { return local[id]; }));
+        var radius = BOND_LENGTH / (2 * Math.sin(Math.PI / n));
+
+        if (placedIdx.length === 2 && ((placedIdx[1] - placedIdx[0]) === 1 || (placedIdx[0] === 0 && placedIdx[1] === n - 1))) {
+          // 변 하나를 공유: 그 변을 기준으로 이미 놓인 쪽의 반대편에 새 고리의 중심을 둔다
+          var i0 = placedIdx[0], i1 = placedIdx[1];
+          if (i0 === 0 && i1 === n - 1) { i0 = n - 1; i1 = 0; } // i0 → i1 이 고리 순서
+          var p = local[ring[i0]], q = local[ring[i1]];
+          var mid = { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 };
+          var nx = -(q.y - p.y) / BOND_LENGTH, ny = (q.x - p.x) / BOND_LENGTH;
+          var apothem = BOND_LENGTH / (2 * Math.tan(Math.PI / n));
+          var c1 = { x: mid.x + nx * apothem, y: mid.y + ny * apothem };
+          var c2 = { x: mid.x - nx * apothem, y: mid.y - ny * apothem };
+          var center = Math.hypot(c1.x - placedCenter.x, c1.y - placedCenter.y) >
+                       Math.hypot(c2.x - placedCenter.x, c2.y - placedCenter.y) ? c1 : c2;
+          var ap = Math.atan2(p.y - center.y, p.x - center.x);
+          var aq = Math.atan2(q.y - center.y, q.x - center.x);
+          var dir = Math.atan2(Math.sin(aq - ap), Math.cos(aq - ap)) > 0 ? 1 : -1;
+          placePolygon(ring, center, i0, ap, dir);
+        } else if (placedIdx.length === 1) {
+          // 원자 하나만 공유(스파이로): 그 원자에서 바깥쪽으로 새 고리를 단다
+          var s = local[ring[placedIdx[0]]];
+          var out = Math.atan2(s.y - placedCenter.y, s.x - placedCenter.x);
+          var ctr = { x: s.x + radius * Math.cos(out), y: s.y + radius * Math.sin(out) };
+          placePolygon(ring, ctr, placedIdx[0], out + Math.PI, 1);
+        }
+        break;
+      }
+    }
+    return local;
+  }
+
+  // 이미 놓인 결합 방향(placed)이 있는 원자에서, 아직 안 놓인 이웃 k개가 뻗을 방향 후보
+  function directionCandidates(placed, k, linear) {
+    if (linear && placed.length === 1 && k === 1) return [placed[0] + Math.PI];
+    if (placed.length === 1) {
+      var t = placed[0];
+      if (k <= 2) return [t + DEG120, t - DEG120];
+      if (k === 3) return [t + DEG120, t - DEG120, t + Math.PI]; // 셋은 120°로, 넷째는 그 사이
+      var even = [];
+      for (var i = 1; i <= k; i++) even.push(t + i * TAU / (k + 1));
+      return even;
+    }
+    // 결합이 둘 이상 놓였으면 가장 넓은 빈 각의 한가운데를 차례로 채운다
+    var dirs = placed.map(function (a) { return (a % TAU + TAU) % TAU; });
+    var result = [];
+    for (var j = 0; j < k; j++) {
+      dirs.sort(function (a, b) { return a - b; });
+      var bestGap = -1, bestMid = 0;
+      dirs.forEach(function (a, idx) {
+        var next = idx + 1 < dirs.length ? dirs[idx + 1] : dirs[0] + TAU;
+        if (next - a > bestGap) { bestGap = next - a; bestMid = (a + next) / 2; }
+      });
+      result.push(bestMid);
+      dirs.push(bestMid % TAU);
+    }
+    return result;
+  }
+
+  // 결합이 하나도 놓이지 않은 시작 원자: 첫 결합은 원래 방향을 30° 단위로, 나머지는 120° 간격(넷째는 사이)
+  // axisHint: 사슬 전체가 뻗은 방향(가장 긴 사슬의 양 끝을 잇는 방향). 없으면 두 이웃을 잇는 방향을 쓴다
+  function rootCandidates(hints, axisHint) {
+    var k = hints.length;
+    if (k === 2) {
+      // 사슬 가운데서 시작하면, 첫 결합이 아니라 사슬이 뻗은 방향을 30° 단위로 맞추고
+      // 두 결합을 그 축에서 ±30°로 둔다 — 그래야 교과서처럼 축을 따라 뻗는 지그재그가 된다
+      var axis = snap30(axisHint !== undefined ? axisHint :
+        Math.atan2(Math.sin(hints[1]) - Math.sin(hints[0]), Math.cos(hints[1]) - Math.cos(hints[0])));
+      var up = assignDirections([axis + Math.PI - Math.PI / 6, axis + Math.PI / 6], hints);
+      var down = assignDirections([axis + Math.PI + Math.PI / 6, axis - Math.PI / 6], hints);
+      return (up.cost <= down.cost ? up : down).dirs;
+    }
+    var base = snap30(hints[0]);
+    var shapes = k === 1 ? [[0]] :
+                 k === 2 ? [[0, DEG120], [0, -DEG120]] :
+                 k === 3 ? [[0, DEG120, -DEG120]] :
+                 k === 4 ? [[0, DEG120, -DEG120, Math.PI]] :
+                 [Array.apply(null, Array(k)).map(function (_, i) { return i * TAU / k; })];
+    var best = null;
+    shapes.forEach(function (shape) {
+      var res = assignDirections(shape.map(function (d) { return base + d; }), hints);
+      if (!best || res.cost < best.cost) best = res;
+    });
+    return best.dirs;
+  }
+
+  // 고리 없는 분자에서 가장 긴 사슬: 아무 원자에서 가장 먼 원자를 찾고, 거기서 다시 가장 먼 원자까지의 길
+  function longestPath(start, adj) {
+    function farthest(from) {
+      var prev = {};
+      prev[from] = null;
+      var queue = [from], last = from;
+      while (queue.length) {
+        last = queue.shift();
+        adj[last].forEach(function (n) {
+          if (n.id in prev) return;
+          prev[n.id] = last;
+          queue.push(n.id);
+        });
+      }
+      return { last: last, prev: prev };
+    }
+    var end = farthest(start).last;
+    var walk = farthest(end);
+    var path = [];
+    for (var p = walk.last; p !== null; p = walk.prev[p]) path.push(p);
+    return path;
+  }
+
+  function layoutMolecule(ids) {
+    var orig = {};
+    ids.forEach(function (id) {
+      var a = findAtom(id);
+      orig[id] = { x: a.x, y: a.y };
+    });
+    var adj = {};
+    ids.forEach(function (id) { adj[id] = []; });
+    bonds.forEach(function (b) {
+      if (!adj[b.atomId1] || !adj[b.atomId2]) return;
+      adj[b.atomId1].push({ id: b.atomId2, order: b.order });
+      adj[b.atomId2].push({ id: b.atomId1, order: b.order });
+    });
+
+    var systems = groupRingSystems(findRings(ids, adj));
+    var systemOf = {};
+    systems.forEach(function (s) {
+      s.local = buildRingTemplate(s);
+      Object.keys(s.local).forEach(function (id) { systemOf[id] = s; });
+    });
+
+    var pos = {};
+    var turnOf = {}; // 지그재그가 되도록, 이 원자를 놓을 때 꺾은 방향(+1/-1)을 기억해 다음엔 반대로 꺾는다
+    var queue = [];
+
+    // 고리계를 통째로 놓는다: 들어온 결합(entry)이 있으면 그 결합 방향으로 고리가 뻗게, 없으면 원래 그림에 맞춘다.
+    // 거울상 두 가지 중 원래 그림과 더 가까운 쪽을 고른다
+    function placeSystem(sys, entryId, entryPos, inDir) {
+      var memberIds = Object.keys(sys.local);
+      var best = null;
+      [1, -1].forEach(function (mirror) {
+        var local = {};
+        memberIds.forEach(function (id) { local[id] = { x: sys.local[id].x, y: sys.local[id].y * mirror }; });
+        var placed = {};
+        if (entryId) {
+          var ringCenter = centroid(sys.rings.filter(function (r) { return r.indexOf(entryId) !== -1; })[0]
+            .filter(function (id) { return local[id]; }).map(function (id) { return local[id]; }));
+          var rot = inDir - angleOf(local[entryId], ringCenter);
+          memberIds.forEach(function (id) {
+            var d = rotatePoint({ x: local[id].x - local[entryId].x, y: local[id].y - local[entryId].y }, rot);
+            placed[id] = { x: entryPos.x + d.x, y: entryPos.y + d.y };
+          });
+        } else {
+          // 원래 그림과 가장 잘 겹치는 회전(최소제곱)을 30° 단위로 맞춘다
+          var lc = centroid(memberIds.map(function (id) { return local[id]; }));
+          var oc = centroid(memberIds.map(function (id) { return orig[id]; }));
+          var sin = 0, cos = 0;
+          memberIds.forEach(function (id) {
+            var lx = local[id].x - lc.x, ly = local[id].y - lc.y;
+            var ox = orig[id].x - oc.x, oy = orig[id].y - oc.y;
+            sin += lx * oy - ly * ox;
+            cos += lx * ox + ly * oy;
+          });
+          var angle = snap30(Math.atan2(sin, cos));
+          memberIds.forEach(function (id) {
+            var d = rotatePoint({ x: local[id].x - lc.x, y: local[id].y - lc.y }, angle);
+            placed[id] = { x: oc.x + d.x, y: oc.y + d.y };
+          });
+        }
+        var refId = entryId || memberIds[0];
+        var cost = 0;
+        memberIds.forEach(function (id) {
+          var dx = (placed[id].x - placed[refId].x) - (orig[id].x - orig[refId].x);
+          var dy = (placed[id].y - placed[refId].y) - (orig[id].y - orig[refId].y);
+          cost += dx * dx + dy * dy;
+        });
+        if (!best || cost < best.cost) best = { cost: cost, placed: placed };
+      });
+      memberIds.forEach(function (id) {
+        pos[id] = best.placed[id];
+        queue.push(id);
+      });
+    }
+
+    // 시작점: 고리계가 있으면 가장 큰 고리계, 없으면 가장 긴 사슬의 한가운데 원자.
+    // 사슬은 양 끝을 잇는 방향을 축으로 삼아, 대충 그려도 전체가 뻗은 방향대로 반듯해지게 한다
+    var bigSystem = systems.slice().sort(function (a, b) {
+      return Object.keys(b.local).length - Object.keys(a.local).length;
+    })[0];
+    var rootAxis;
+    if (bigSystem) {
+      placeSystem(bigSystem, null);
+    } else {
+      var path = longestPath(ids[0], adj);
+      var root = path[Math.floor(path.length / 2)];
+      rootAxis = angleOf(orig[path[0]], orig[path[path.length - 1]]);
+      pos[root] = { x: orig[root].x, y: orig[root].y };
+      queue.push(root);
+    }
+
+    while (queue.length) {
+      var a = queue.shift();
+      var pending = adj[a].filter(function (n) { return !pos[n.id]; });
+      if (!pending.length) continue;
+      var placedDirs = adj[a].filter(function (n) { return pos[n.id]; }).map(function (n) { return angleOf(pos[a], pos[n.id]); });
+      var hints = pending.map(function (n) { return angleOf(orig[a], orig[n.id]); });
+      var linear = adj[a].some(function (n) { return n.order === 3; }) ||
+                   adj[a].filter(function (n) { return n.order === 2; }).length >= 2;
+
+      var dirs;
+      if (!placedDirs.length && linear && pending.length === 2) {
+        var lineDir = snap30(rootAxis !== undefined ? rootAxis : hints[0]);
+        dirs = assignDirections([lineDir, lineDir + Math.PI], hints).dirs;
+      } else if (!placedDirs.length) {
+        dirs = rootCandidates(hints, rootAxis);
+      } else if (placedDirs.length === 1 && pending.length === 1 && !linear) {
+        // 사슬: 들어온 결합과 120°인 두 방향 중 원래 방향에 가까운 쪽, 비슷하면 지그재그가 되게 반대로 꺾는다
+        var t = placedDirs[0];
+        var gPlus = angleGap(t + DEG120, hints[0]);
+        var gMinus = angleGap(t - DEG120, hints[0]);
+        var sign = Math.abs(gPlus - gMinus) < Math.PI / 18 ? -(turnOf[a] || -1) : (gPlus < gMinus ? 1 : -1);
+        dirs = [t + sign * DEG120];
+        turnOf[pending[0].id] = sign;
+      } else {
+        dirs = assignDirections(directionCandidates(placedDirs, pending.length, linear), hints).dirs;
+      }
+
+      pending.forEach(function (n, i) {
+        if (pos[n.id]) return; // 같은 고리계를 통째로 놓으면서 이미 자리 잡은 경우
+        var p = { x: pos[a].x + Math.cos(dirs[i]) * BOND_LENGTH, y: pos[a].y + Math.sin(dirs[i]) * BOND_LENGTH };
+        if (systemOf[n.id] && systemOf[n.id] !== systemOf[a]) {
+          placeSystem(systemOf[n.id], n.id, p, dirs[i]);
+        } else {
+          pos[n.id] = p;
+          queue.push(n.id);
+        }
+      });
+    }
+
+    // 분자의 중심을 원래 자리에 두고, 캔버스 밖으로 나가면 통째로 안쪽으로 민다
+    var newCenter = centroid(ids.map(function (id) { return pos[id]; }));
+    var oldCenter = centroid(ids.map(function (id) { return orig[id]; }));
+    var moved = ids.map(function (id) {
+      return { x: pos[id].x + oldCenter.x - newCenter.x, y: pos[id].y + oldCenter.y - newCenter.y };
+    });
+    var d = clampGroupDelta(moved, 0, 0);
+    ids.forEach(function (id, i) {
+      var atom = findAtom(id);
+      atom.x = moved[i].x + d.dx;
+      atom.y = moved[i].y + d.dy;
+    });
+  }
+
+  // 선택한 원자가 속한 분자들(선택이 없으면 현재 단계의 모든 분자)을 정리한다. 결합 없는 원자는 그대로
+  function cleanStructure() {
+    var sel = selectedIds();
+    var targets = sel.length ? sel : atoms.map(function (a) { return a.id; });
+    var done = {};
+    targets.forEach(function (id) {
+      if (done[id]) return;
+      var molecule = connectedAtomIds(id);
+      molecule.forEach(function (m) { done[m] = true; });
+      if (molecule.length > 1) layoutMolecule(molecule);
+    });
+    renderSelection();
   }
 
   // ================= 에디터: 결합 =================
@@ -3585,6 +4185,8 @@
     });
   });
 
+  document.getElementById('clean-btn').addEventListener('click', cleanStructure);
+
   undoBtn.addEventListener('click', undo);
   redoBtn.addEventListener('click', redo);
 
@@ -3799,6 +4401,7 @@
         setTimeout(function () {
           loadSavedReactions();
           loadDecks();
+          if (!panels.board.hidden) renderBoard(); // 내 글에만 붙는 '삭제' 버튼을 새 계정에 맞게
         }, 0);
       }
     });
@@ -3900,13 +4503,15 @@
     return max + 1;
   }
 
-  function loadReactionIntoEditor(row) {
+  // asCopy: 게시판 글처럼 남의 반응을 가져올 때 — 저장하면 원본을 덮어쓰지 않고 내 반응으로 새로 저장된다
+  function loadReactionIntoEditor(row, asCopy) {
     if (editorHasUnsavedWork() &&
         !window.confirm('에디터에서 저장하지 않은 내용은 사라집니다. 이 반응을 불러올까요?')) {
-      return;
+      return false;
     }
 
-    var loaded = normalizeSteps(row.steps);
+    // 목록에 들고 있는 원본 데이터를 에디터가 직접 고치지 않도록 복사본으로 연다
+    var loaded = normalizeSteps(JSON.parse(JSON.stringify(row.steps)));
     function all(key) {
       return loaded.reduce(function (list, s) { return list.concat(s[key]); }, []);
     }
@@ -3918,22 +4523,323 @@
 
     // 저장 버튼이 새로 만들지 않고 이 행을 덮어쓰도록 id·주인을 기억 (객체를 통째로 교체: 진행 중인 저장 응답과 섞이지 않게)
     var name = row.name || '';
-    currentReaction = { id: row.id, ownerId: currentUser.id, name: name };
+    currentReaction = asCopy
+      ? { id: null, ownerId: null, name: name }
+      : { id: row.id, ownerId: currentUser.id, name: name };
     reactionNameInput.value = name;
     steps = loaded;
     loadStep(0);
     setActiveTool('select');
     resetHistory();
 
-    savedSignature = currentSignature();
-    setSaveStatus('불러왔습니다: ' + (name || '이름 없는 반응') + '. 고친 뒤 저장하면 이 반응에 덮어씁니다.', 'ok');
+    if (asCopy) {
+      savedSignature = null;
+      setSaveStatus('게시판에서 가져왔습니다: ' + (name || '이름 없는 반응') + '. 저장하면 내 반응으로 새로 저장됩니다.', 'info');
+    } else {
+      savedSignature = currentSignature();
+      setSaveStatus('불러왔습니다: ' + (name || '이름 없는 반응') + '. 고친 뒤 저장하면 이 반응에 덮어씁니다.', 'ok');
+    }
     loadDialog.close();
+    return true;
   }
 
   loadReactionBtn.addEventListener('click', openLoadDialog);
   document.getElementById('load-cancel').addEventListener('click', function () {
     loadDialog.close();
   });
+
+  // ================= 반응 게시판 =================
+  // board_posts 테이블: 누구나(로그인 안 해도) 읽고, 로그인한 사람은 올리고 자기 글만 지울 수 있다.
+  // 올린 순간의 단계 데이터를 따로 저장하므로, 나중에 내 반응을 고쳐도 게시글은 그대로다
+  var BOARD_LIMIT = 100;
+  var NICKNAME_KEY = 'oms-nickname';
+  var boardPosts = []; // { id, userId, author, title, description, createdAt, steps }
+  var boardLoadSeq = 0;
+  var openedPosts = []; // '학습 모드에서 보기'로 연 글 — 학습 모드 목록에 따로 묶어 보여준다
+  var boardListEl = document.getElementById('board-list');
+  var boardStatusEl = document.getElementById('board-status');
+  var boardSearchEl = document.getElementById('board-search');
+  var shareBtn = document.getElementById('share-reaction-btn');
+  var shareDialog = document.getElementById('share-dialog');
+  var shareForm = document.getElementById('share-form');
+  var shareTitleInput = document.getElementById('share-title-input');
+  var shareDescInput = document.getElementById('share-desc-input');
+  var shareAuthorInput = document.getElementById('share-author-input');
+  var shareMessageEl = document.getElementById('share-message');
+  var shareSubmitBtn = document.getElementById('share-submit-btn');
+
+  function setBoardStatus(message, state) {
+    boardStatusEl.textContent = message;
+    boardStatusEl.dataset.state = state;
+  }
+
+  function boardErrorText(error) {
+    if (error && error.code === 'PGRST205') return '게시판 테이블이 아직 없어요. Supabase SQL Editor에서 README의 게시판 SQL을 실행해주세요.';
+    return '문제가 생겼습니다: ' + (error && error.message ? error.message : '알 수 없는 오류');
+  }
+
+  function loadBoard() {
+    if (!boardListEl) return; // 첫 화면이 #board일 때 이 부분이 준비되기 전에 불린 경우 — 준비가 끝나면 다시 부른다
+    if (!sb) {
+      setBoardStatus('서버에 연결할 수 없어 게시판을 불러오지 못했습니다. 인터넷 연결을 확인해주세요.', 'error');
+      return;
+    }
+    var seq = ++boardLoadSeq;
+    setBoardStatus('불러오는 중…', '');
+    sb.from('board_posts')
+      .select('id, user_id, author_name, title, description, steps, created_at')
+      .order('created_at', { ascending: false })
+      .limit(BOARD_LIMIT)
+      .then(function (res) {
+        if (seq !== boardLoadSeq) return;
+        if (res.error) {
+          boardPosts = [];
+          renderBoard();
+          setBoardStatus(boardErrorText(res.error), 'error');
+          return;
+        }
+        boardPosts = (res.data || []).map(function (row) {
+          return {
+            id: row.id,
+            userId: row.user_id,
+            author: row.author_name || '익명',
+            title: row.title || '제목 없음',
+            description: row.description || '',
+            createdAt: row.created_at,
+            steps: normalizeSteps(row.steps)
+          };
+        });
+        renderBoard();
+      }, function (err) {
+        if (seq !== boardLoadSeq) return;
+        setBoardStatus(boardErrorText(err), 'error');
+      });
+  }
+
+  // 첫 단계 구조를 작은 그림으로: 원자 범위에 맞춰 확대·축소, 결합은 선, 글자 원자는 테두리를 둘러 선 위에서도 읽히게
+  function buildThumbnail(step) {
+    var ns = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'board-thumb');
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', '첫 단계 구조 미리보기');
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    if (!step || !step.atoms.length) {
+      svg.setAttribute('viewBox', '0 0 200 100');
+      return svg;
+    }
+    var xs = step.atoms.map(function (a) { return a.x; });
+    var ys = step.atoms.map(function (a) { return a.y; });
+    var cx = (Math.min.apply(null, xs) + Math.max.apply(null, xs)) / 2;
+    var cy = (Math.min.apply(null, ys) + Math.max.apply(null, ys)) / 2;
+    var w = Math.max(Math.max.apply(null, xs) - Math.min.apply(null, xs) + 60, 200); // 작은 분자가 지나치게 커지지 않게
+    var h = Math.max(Math.max.apply(null, ys) - Math.min.apply(null, ys) + 60, 100);
+    svg.setAttribute('viewBox', (cx - w / 2) + ' ' + (cy - h / 2) + ' ' + w + ' ' + h);
+
+    step.bonds.forEach(function (bond) {
+      var a1 = step.atoms.filter(function (a) { return a.id === bond.atomId1; })[0];
+      var a2 = step.atoms.filter(function (a) { return a.id === bond.atomId2; })[0];
+      if (!a1 || !a2) return;
+      var len = Math.hypot(a2.x - a1.x, a2.y - a1.y) || 1;
+      var nx = -(a2.y - a1.y) / len, ny = (a2.x - a1.x) / len;
+      var offsets = bond.order === 2 ? [-2.5, 2.5] : bond.order === 3 ? [-4.5, 0, 4.5] : [0];
+      offsets.forEach(function (off) {
+        var line = document.createElementNS(ns, 'line');
+        line.setAttribute('class', 'bond-line');
+        line.setAttribute('x1', a1.x + nx * off);
+        line.setAttribute('y1', a1.y + ny * off);
+        line.setAttribute('x2', a2.x + nx * off);
+        line.setAttribute('y2', a2.y + ny * off);
+        svg.appendChild(line);
+      });
+    });
+
+    step.atoms.forEach(function (atom) {
+      if (atom.element === 'C' && !atom.hRevealed) return; // 골격 구조식: 탄소는 꼭짓점으로만
+      var text = document.createElementNS(ns, 'text');
+      text.setAttribute('class', 'board-thumb-label');
+      text.setAttribute('x', atom.x);
+      text.setAttribute('y', atom.y);
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('dominant-baseline', 'central');
+      text.setAttribute('fill', atomColor(atom.element));
+      if (atom.element === 'H') text.textContent = 'H';
+      else buildFormulaLabel(text, atom.element, playGetImplicitHCount(step.bonds, atom));
+      if (atom.charge) {
+        var charge = document.createElementNS(ns, 'tspan');
+        charge.setAttribute('dy', '-6');
+        charge.setAttribute('font-size', '11');
+        charge.textContent = formatCharge(atom.charge);
+        text.appendChild(charge);
+      }
+      svg.appendChild(text);
+    });
+    return svg;
+  }
+
+  function boardButton(label, className, onClick) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = label;
+    if (className) btn.className = className;
+    btn.addEventListener('click', onClick);
+    return btn;
+  }
+
+  function buildBoardCard(post) {
+    var item = document.createElement('li');
+    item.className = 'board-card';
+    item.appendChild(buildThumbnail(post.steps[0]));
+
+    var title = document.createElement('h3');
+    title.className = 'board-title';
+    title.textContent = post.title;
+    item.appendChild(title);
+
+    var meta = document.createElement('p');
+    meta.className = 'board-meta';
+    meta.textContent = post.author + ' · ' + formatSavedAt(post.createdAt) + ' · ' + post.steps.length + '단계';
+    item.appendChild(meta);
+
+    if (post.description) {
+      var desc = document.createElement('p');
+      desc.className = 'board-desc';
+      desc.textContent = post.description;
+      item.appendChild(desc);
+    }
+
+    var actions = document.createElement('div');
+    actions.className = 'board-actions';
+    actions.appendChild(boardButton('학습 모드에서 보기', 'board-play', function () { openPostInPlay(post); }));
+    actions.appendChild(boardButton('에디터로 가져오기', '', function () { importPost(post); }));
+    if (currentUser && post.userId === currentUser.id) {
+      actions.appendChild(boardButton('삭제', 'board-delete', function () { deletePost(post); }));
+    }
+    item.appendChild(actions);
+    return item;
+  }
+
+  function renderBoard() {
+    var query = boardSearchEl.value.trim().toLowerCase();
+    var shown = boardPosts.filter(function (p) {
+      return !query || (p.title + ' ' + p.description + ' ' + p.author).toLowerCase().indexOf(query) !== -1;
+    });
+    boardListEl.textContent = '';
+    shown.forEach(function (post) { boardListEl.appendChild(buildBoardCard(post)); });
+    if (!boardPosts.length) setBoardStatus('아직 올라온 반응이 없어요. 에디터에서 \'게시판에 올리기\'로 첫 반응을 올려 보세요!', '');
+    else if (!shown.length) setBoardStatus('"' + boardSearchEl.value.trim() + '"에 맞는 글이 없어요.', '');
+    else setBoardStatus('', '');
+  }
+
+  // 학습 모드에서 보기: 퀴즈 덱을 푸는 중이면 덱이 반응을 정하므로 퀴즈를 끄고 이 반응을 연다
+  function openPostInPlay(post) {
+    var entry = { id: 'post-' + post.id, name: post.title + ' (' + post.author + ')', steps: post.steps };
+    if (!openedPosts.some(function (r) { return r.id === entry.id; })) openedPosts.push(entry);
+    if (quizMode) {
+      quizToggle.checked = false;
+      quizToggle.dispatchEvent(new Event('change'));
+    }
+    switchView('play', { focusPanel: true });
+    reactionSelect.value = entry.id;
+    reactionSelect.dispatchEvent(new Event('change'));
+  }
+
+  // 에디터로 가져오기: 복사본으로 열어서, 저장하면 원래 글이 아니라 내 반응으로 새로 저장된다
+  function importPost(post) {
+    if (loadReactionIntoEditor({ name: post.title, steps: post.steps }, true)) {
+      switchView('editor', { focusPanel: true });
+    }
+  }
+
+  function deletePost(post) {
+    if (!window.confirm('"' + post.title + '" 글을 게시판에서 삭제할까요? 되돌릴 수 없습니다.')) return;
+    sb.from('board_posts').delete().eq('id', post.id).then(function (res) {
+      if (res.error) {
+        setBoardStatus(boardErrorText(res.error), 'error');
+        return;
+      }
+      loadBoard();
+    }, function (err) {
+      setBoardStatus(boardErrorText(err), 'error');
+    });
+  }
+
+  function setShareMessage(message, state) {
+    shareMessageEl.textContent = message;
+    shareMessageEl.dataset.state = state;
+  }
+
+  function openShareDialog() {
+    if (!sb) {
+      setSaveStatus('서버에 연결할 수 없어 올리지 못했습니다. 인터넷 연결을 확인해주세요.', 'error');
+      return;
+    }
+    saveCurrentStepSnapshot();
+    if (!steps.some(function (s) { return s.atoms.length; })) {
+      setSaveStatus('올릴 내용이 없어요. 먼저 반응을 그려 주세요.', 'error');
+      return;
+    }
+    if (!currentUser) {
+      setSaveStatus('게시판에 올리려면 먼저 로그인해주세요.', 'error');
+      openAuthDialog('login', false);
+      return;
+    }
+    shareTitleInput.value = reactionNameInput.value.trim();
+    shareDescInput.value = '';
+    try {
+      shareAuthorInput.value = localStorage.getItem(NICKNAME_KEY) || '';
+    } catch (e) {
+      shareAuthorInput.value = '';
+    }
+    setShareMessage('', '');
+    shareSubmitBtn.disabled = false;
+    shareDialog.showModal();
+    (shareTitleInput.value ? shareDescInput : shareTitleInput).focus();
+  }
+
+  shareForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var title = shareTitleInput.value.trim();
+    var author = shareAuthorInput.value.trim();
+    if (!title || !author) {
+      setShareMessage('제목과 닉네임을 입력해주세요.', 'error');
+      return;
+    }
+    try {
+      localStorage.setItem(NICKNAME_KEY, author); // 다음에 올릴 때 닉네임을 미리 채워 둔다
+    } catch (err) {
+      // 저장소를 못 쓰는 환경이면 다음에 다시 입력
+    }
+    saveCurrentStepSnapshot();
+    // user_id는 DB가 로그인한 사람의 id로 채운다 (기본값 auth.uid())
+    var payload = {
+      title: title,
+      description: shareDescInput.value.trim(),
+      author_name: author,
+      steps: JSON.parse(JSON.stringify(steps))
+    };
+    shareSubmitBtn.disabled = true;
+    setShareMessage('올리는 중…', 'pending');
+    sb.from('board_posts').insert(payload).select('id').then(function (res) {
+      shareSubmitBtn.disabled = false;
+      if (res.error) {
+        setShareMessage(boardErrorText(res.error), 'error');
+        return;
+      }
+      shareDialog.close();
+      setSaveStatus('게시판에 올렸어요. 홈 → 반응 게시판에서 볼 수 있어요.', 'info');
+    }, function (err) {
+      shareSubmitBtn.disabled = false;
+      setShareMessage(boardErrorText(err), 'error');
+    });
+  });
+
+  shareBtn.addEventListener('click', openShareDialog);
+  document.getElementById('share-cancel-btn').addEventListener('click', function () {
+    shareDialog.close();
+  });
+  document.getElementById('board-refresh-btn').addEventListener('click', loadBoard);
+  boardSearchEl.addEventListener('input', renderBoard);
 
   // ================= 학습 모드 =================
   // 시드 데이터: 저장된 반응과 별개로, 처음부터 들어있는 예시 반응은 항상 보여준다.
@@ -4907,7 +5813,7 @@
   }
 
   function getAvailableReactions() {
-    var list = SEED_REACTIONS.concat(savedReactions);
+    var list = SEED_REACTIONS.concat(savedReactions).concat(openedPosts);
     var editorEntry = getEditorEntry();
     if (editorEntry) list.push(editorEntry);
     return list;
@@ -4941,6 +5847,7 @@
     appendOptionGroup('예시 반응', SEED_REACTIONS, '');
     appendOptionGroup('저장된 반응', savedReactions, savedStatusText());
     var editorEntry = getEditorEntry();
+    appendOptionGroup('게시판에서 연 반응', openedPosts, '');
     if (editorEntry) appendOptionGroup('작성 중', [editorEntry], '');
 
     // 퀴즈 덱을 푸는 중에는 목록만 새로 채우고, 지금 카드는 덱이 정한 그대로 둔다
@@ -5068,6 +5975,11 @@
       setActiveTool(TOOL_KEYS[digit]);
       return;
     }
+    if (e.code === 'KeyK' && !e.shiftKey) {
+      e.preventDefault();
+      cleanStructure();
+      return;
+    }
     var letter = e.code.indexOf('Key') === 0 ? e.code.slice(3) : '';
     var element = e.shiftKey ? SHIFT_ELEMENT_KEYS[letter] : ELEMENT_KEYS[letter];
     if (element) {
@@ -5145,6 +6057,7 @@
   loadStep(0);
   setActiveTool('select');
   resetHistory();
+  if (!panels.board.hidden) loadBoard(); // 주소가 #board로 열린 경우
 })();
 </script>
 

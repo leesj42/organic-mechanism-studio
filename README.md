@@ -11,10 +11,12 @@
   - 골격 구조식 규칙: 탄소는 꼭짓점으로만, 이종원자는 `OH`, `NH₂`처럼 수소 개수를 자동으로 붙여 표시합니다.
   - 형식전하에 맞춰 수소 개수가 바뀝니다 (NH₄⁺, BH₄⁻, 카보양이온 등).
   - **고정 길이·고정 각도**: 결합을 45px 길이로, 이미 있는 결합과 120°가 되는 방향으로 이어 그려서 지그재그 사슬이나 육각 고리를 일반적인 2D 구조식처럼 깔끔하게 그릴 수 있습니다.
+  - **구조 정리**(`K`): 대충 그린 분자를 결합 45px·각도 120°, 고리는 정다각형(붙은 고리 포함)으로 한 번에 반듯하게 정리합니다. 원래 그린 방향과 위치는 최대한 유지합니다.
   - **편집**: 원자·분자·범위를 선택해서 함께 옮기거나 지우고, 복사·잘라내기·붙여넣기(`Ctrl+C`/`X`/`V`)와 실행 취소·다시 실행(`Ctrl+Z`/`Ctrl+Y`)을 쓸 수 있습니다.
 - **단계 관리** — 반응을 여러 단계로 나누고, 단계마다 설명을 붙입니다. 새 단계는 이전 단계의 구조를 복제해서 시작합니다.
 - **학습 모드** — 반응을 골라 단계별로 넘겨보거나 자동재생합니다. 화살표가 곡선을 따라 그려지는 애니메이션으로 전자의 이동을 보여줍니다. SN2·SN1 예시 반응이 들어 있습니다.
   - **퀴즈로 복습하기**: 예시 반응과 저장한 반응을 섞은 플래시카드 덱으로 하나씩 풀어 나갑니다. 다음 단계의 구조(중간체·생성물)를 가려 두고 먼저 예상해 보게 하고, 화살표를 숨긴 뒤 직접 그린 화살표를 채점합니다(맞음 초록 · 방향 반대 주황 · 틀림 빨강, 정답 보기 가능). 한 반응을 풀면 '알았어요 → 다음' 또는 '다시 볼래요'(덱 뒤로 보내 다시 풀기)로 바로 넘어갑니다. 공부할 반응만 골라 **나만의 덱**을 만들어 계정에 저장해 둘 수 있습니다.
+- **반응 게시판** — 다른 사람이 올린 반응을 구조 미리보기와 함께 둘러보고(로그인 없이도 가능), 학습 모드로 공부하거나 에디터로 가져와 고쳐 내 반응으로 저장할 수 있습니다. 에디터의 '게시판에 올리기'로 내 반응을 닉네임과 함께 공유합니다(올린 순간의 모습이 저장되고, 내 글은 삭제 가능).
 - **로그인과 저장** — 이메일로 가입하면 만든 반응을 계정에 저장하고, 자기 반응만 볼 수 있습니다. 저장한 반응은 **불러오기**로 에디터에 다시 열어 고칠 수 있습니다.
 
 ## 사용 방법
@@ -37,6 +39,7 @@
 | 에디터 | `Esc` | 선택 풀기, 그리던 결합·화살표 멈추기 |
 | 에디터 | `Ctrl` + `Z` / `Ctrl` + `Y` | 실행 취소 / 다시 실행 (`Ctrl` + `Shift` + `Z`도 다시 실행) |
 | 에디터 | `Ctrl` + `A` | 현재 단계 전체 선택 |
+| 에디터 | `K` | 구조 정리 (선택한 분자, 없으면 전체) |
 | 에디터 | `Ctrl` + `C` / `X` / `V` | 복사 / 잘라내기 / 붙여넣기 (다른 단계·반응에도 붙여넣기 가능) |
 | 에디터 | 방향키 | 선택한 것 옮기기 (`Shift`로 크게) |
 | 에디터 | 클릭 / `Shift`+클릭 / 더블클릭 / 빈 곳 끌기 | 선택 / 여러 개 선택 / 분자 전체 선택 / 범위 선택 (선택·이동 도구) |
@@ -114,6 +117,29 @@
    create policy "own decks: update" on public.decks for update to authenticated
      using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
    create policy "own decks: delete" on public.decks for delete to authenticated
+     using ((select auth.uid()) = user_id);
+
+   -- 반응 게시판: 누구나 읽고, 로그인한 사람은 올리고, 자기 글만 지운다 (이메일 대신 닉네임만 공개)
+   create table public.board_posts (
+     id uuid primary key default gen_random_uuid(),
+     user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+     author_name text not null check (char_length(author_name) between 1 and 20),
+     title text not null check (char_length(title) between 1 and 60),
+     description text not null default '' check (char_length(description) <= 300),
+     steps jsonb not null default '[]'::jsonb,
+     created_at timestamptz not null default now()
+   );
+   create index board_posts_created_at_idx on public.board_posts (created_at desc);
+
+   alter table public.board_posts enable row level security;
+   grant select on public.board_posts to anon, authenticated;
+   grant insert, delete on public.board_posts to authenticated;
+
+   create policy "board: anyone can read" on public.board_posts for select to anon, authenticated
+     using (true);
+   create policy "board: post as myself" on public.board_posts for insert to authenticated
+     with check ((select auth.uid()) = user_id);
+   create policy "board: delete my posts" on public.board_posts for delete to authenticated
      using ((select auth.uid()) = user_id);
    ```
 
