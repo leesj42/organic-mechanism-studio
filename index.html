@@ -630,6 +630,265 @@
     color: var(--ink-muted);
   }
 
+  /* ---------- 퀴즈(복습) ---------- */
+  .quiz-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .quiz-panel {
+    margin-top: 0.9rem;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+  }
+
+  .quiz-panel[hidden] { display: none; }
+
+  .quiz-instruction {
+    margin: 0 0 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  .quiz-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .quiz-actions button {
+    appearance: none;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-panel);
+    color: var(--ink);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .quiz-actions button:hover:not(:disabled) { background: var(--accent-soft); border-color: var(--accent); }
+  .quiz-actions button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .quiz-actions button:disabled { color: var(--ink-muted); cursor: not-allowed; }
+
+  .quiz-actions .quiz-primary,
+  .quiz-actions .quiz-primary:hover:not(:disabled) {
+    background: var(--play-accent);
+    border-color: var(--play-accent);
+    color: #fff;
+  }
+
+  .quiz-actions .quiz-primary:disabled { opacity: 0.5; color: #fff; }
+
+  .quiz-result {
+    margin: 0.6rem 0 0;
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+
+  .quiz-result:empty { display: none; }
+  .quiz-result[data-state="ok"] { color: var(--play-accent); }
+  .quiz-result[data-state="partial"] { color: var(--editor-accent); }
+
+  .quiz-hit {
+    fill: transparent;
+    stroke: transparent;
+    cursor: pointer;
+  }
+
+  .quiz-hit-bond { stroke-width: 14px; }
+  .quiz-hit-atom:hover { fill: rgba(43, 108, 163, 0.12); }
+  .quiz-hit-bond:hover { stroke: rgba(43, 108, 163, 0.15); }
+  .quiz-hit-atom.picked { fill: rgba(124, 58, 237, 0.22); }
+  .quiz-hit-bond.picked { stroke: rgba(124, 58, 237, 0.3); }
+
+  .quiz-user {
+    fill: none;
+    stroke: var(--arrow);
+    stroke-width: 2.5;
+  }
+
+  .quiz-user.correct { stroke: var(--play-accent); }
+  .quiz-user.reversed { stroke: #d97706; }
+  .quiz-user.wrong { stroke: var(--danger); }
+
+  .quiz-answer {
+    fill: none;
+    stroke: var(--play-accent);
+    stroke-width: 2;
+    stroke-dasharray: 5 4;
+    opacity: 0.8;
+  }
+
+  .deck-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--play-accent);
+    border-radius: var(--radius);
+    background: #eef6f1;
+  }
+
+  .deck-bar[hidden] { display: none; }
+
+  .deck-choose {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid rgba(47, 125, 85, 0.25);
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+
+  .deck-choose select {
+    flex: 1;
+    min-width: 160px;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-panel);
+    color: var(--ink);
+    font: inherit;
+    font-weight: 600;
+  }
+
+  .deck-choose button {
+    appearance: none;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-panel);
+    color: var(--ink);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .deck-choose button:hover:not(:disabled) { background: var(--accent-soft); border-color: var(--accent); }
+  .deck-choose button:disabled { color: var(--ink-muted); cursor: not-allowed; }
+  .deck-choose select:focus-visible,
+  .deck-choose button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .deck-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem 1rem;
+  }
+
+  .deck-pick {
+    margin: 0 0 0.85rem;
+    padding: 0.5rem 0.7rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .deck-pick legend {
+    padding: 0 0.3rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .deck-pick-list {
+    max-height: 40vh;
+    overflow-y: auto;
+  }
+
+  .deck-pick-group {
+    margin: 0.5rem 0 0.25rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+  }
+
+  .deck-pick-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    padding: 0.25rem 0;
+    font-size: 0.88rem;
+    cursor: pointer;
+  }
+
+  .deck-pick-item input { margin-top: 0.2rem; }
+
+  .deck-pick-empty {
+    margin: 0.25rem 0;
+    font-size: 0.82rem;
+    color: var(--ink-muted);
+  }
+
+  .dialog-actions .deck-delete {
+    margin-right: auto;
+    color: var(--danger);
+  }
+
+  .dialog-actions .deck-delete[hidden] { display: none; }
+
+  .deck-info {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.75rem;
+    min-width: 0;
+  }
+
+  .deck-progress {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--play-accent);
+    white-space: nowrap;
+  }
+
+  .deck-name {
+    font-weight: 700;
+  }
+
+  .deck-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .deck-actions button {
+    appearance: none;
+    padding: 0.45rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-panel);
+    color: var(--ink);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .deck-actions button:hover { filter: brightness(0.97); }
+  .deck-actions button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .deck-actions .deck-primary {
+    background: var(--play-accent);
+    border-color: var(--play-accent);
+    color: #fff;
+  }
+
+  .quiz-cover-q {
+    font-size: 72px;
+    font-weight: 700;
+    fill: var(--border);
+  }
+
   .tool-list .swatch {
     display: flex;
     align-items: center;
@@ -794,6 +1053,40 @@
 
   .bond:focus-visible .bond-line {
     stroke: var(--accent);
+  }
+
+  /* 선택(선택·이동 도구): 원자 둘레에 반투명 원, 선택된 원자끼리의 결합·화살표는 강조색 */
+  .atom.selected .atom-hit {
+    fill: rgba(43, 108, 163, 0.18);
+  }
+
+  .atom.selected .atom-halo {
+    fill: var(--accent-soft);
+  }
+
+  .atom.selected .carbon-vertex-dot {
+    fill: var(--accent);
+    opacity: 1;
+  }
+
+  .bond.selected .bond-line {
+    stroke: var(--accent);
+  }
+
+  .reaction-arrow.selected .arrow-path {
+    stroke: var(--accent);
+  }
+
+  .marquee {
+    fill: rgba(43, 108, 163, 0.08);
+    stroke: var(--accent);
+    stroke-width: 1;
+    stroke-dasharray: 4 3;
+    pointer-events: none;
+  }
+
+  .editor-canvas-wrap {
+    user-select: none;
   }
 
   /* 결합 도구: 클릭 대상 원자/결합에 강조색 */
@@ -1187,7 +1480,7 @@
     font-size: 0.88rem;
   }
 
-  .auth-field {
+  .dialog-field {
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
@@ -1196,7 +1489,7 @@
     font-weight: 600;
   }
 
-  .auth-field input {
+  .dialog-field input {
     padding: 0.55rem 0.75rem;
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -1207,7 +1500,7 @@
     color: var(--ink);
   }
 
-  .auth-field input:focus-visible {
+  .dialog-field input:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 1px;
   }
@@ -1246,7 +1539,7 @@
     cursor: pointer;
   }
 
-  .dialog-actions .auth-submit {
+  .dialog-actions .dialog-submit {
     background: var(--accent);
     border-color: var(--accent);
     color: var(--accent-ink);
@@ -1254,7 +1547,7 @@
 
   .dialog-actions button:hover:not(:disabled) { filter: brightness(1.06); }
   .dialog-actions button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .dialog-actions .auth-submit:disabled { opacity: 0.6; cursor: wait; }
+  .dialog-actions .dialog-submit:disabled { opacity: 0.6; cursor: wait; }
 
   .load-list {
     list-style: none;
@@ -1403,6 +1696,8 @@
 
     <div class="editor-toolbar">
       <input type="text" id="reaction-name-input" placeholder="반응 이름을 입력하세요 (예: SN2 반응)" aria-label="반응 이름">
+      <button type="button" id="undo-btn" aria-label="실행 취소" title="실행 취소 (Ctrl+Z)" disabled>↶</button>
+      <button type="button" id="redo-btn" aria-label="다시 실행" title="다시 실행 (Ctrl+Y)" disabled>↷</button>
       <button type="button" id="new-reaction-btn">새 반응</button>
       <button type="button" id="load-reaction-btn">불러오기</button>
       <button type="button" id="save-reaction-btn">저장</button>
@@ -1441,7 +1736,7 @@
           <button type="button" class="tool-btn" data-tool="arrow" aria-pressed="false" aria-keyshortcuts="4">전자쌍 화살표<kbd aria-hidden="true">4</kbd></button>
           <button type="button" class="tool-btn" data-tool="charge" aria-pressed="false" aria-keyshortcuts="5">형식전하<kbd aria-hidden="true">5</kbd></button>
         </div>
-        <p class="palette-hint" id="tool-hint">원자를 드래그하면 이동합니다.</p>
+        <p class="palette-hint" id="tool-hint">원자·결합을 클릭하면 선택(Shift로 여러 개, 더블클릭은 분자 전체), 빈 곳을 끌면 범위 선택. 선택한 것을 끌면 함께 움직입니다. 탄소를 우클릭하면 수소 개수를 보여줍니다.</p>
 
         <div class="draw-options" role="group" aria-label="그리기 보조">
           <label><input type="checkbox" id="fixed-length" checked> 고정 길이</label>
@@ -1455,8 +1750,12 @@
             <dt><kbd>1</kbd>~<kbd>5</kbd></dt><dd>도구 바꾸기</dd>
             <dt><kbd>C</kbd> <kbd>H</kbd> <kbd>O</kbd> <kbd>N</kbd> <kbd>S</kbd> <kbd>P</kbd> <kbd>F</kbd> <kbd>I</kbd> <kbd>B</kbd></dt><dd>원소 놓기 — 원자 위에 마우스를 올리고 누르면 그 원자를 바꿈</dd>
             <dt><kbd>Shift</kbd>+<kbd>C</kbd> / <kbd>B</kbd> / <kbd>S</kbd></dt><dd>Cl / Br / Si</dd>
-            <dt><kbd>Delete</kbd></dt><dd>마우스를 올린(또는 선택한) 원자·결합 지우기</dd>
-            <dt><kbd>Esc</kbd></dt><dd>그리던 결합·화살표 멈추기</dd>
+            <dt><kbd>Delete</kbd></dt><dd>선택한 것, 없으면 마우스를 올린 원자·결합 지우기</dd>
+            <dt><kbd>Esc</kbd></dt><dd>선택 풀기, 그리던 결합·화살표 멈추기</dd>
+            <dt><kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd></dt><dd>실행 취소 / 다시 실행</dd>
+            <dt><kbd>Ctrl</kbd>+<kbd>A</kbd></dt><dd>현재 단계 전체 선택</dd>
+            <dt><kbd>Ctrl</kbd>+<kbd>C</kbd> / <kbd>X</kbd> / <kbd>V</kbd></dt><dd>복사 / 잘라내기 / 붙여넣기 (다른 단계·반응에도 붙여넣기 가능)</dd>
+            <dt><kbd>←</kbd> <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd></dt><dd>선택한 것 옮기기 (Shift로 크게)</dd>
             <dt><kbd>Ctrl</kbd>+<kbd>S</kbd></dt><dd>저장</dd>
           </dl>
         </details>
@@ -1472,6 +1771,7 @@
             <g id="editor-bonds"></g>
             <g id="editor-atoms"></g>
             <g id="editor-arrows"></g>
+            <rect id="marquee" class="marquee" style="display: none"></rect>
           </svg>
         </div>
       </div>
@@ -1494,6 +1794,27 @@
 
     <div class="play-toolbar">
       <select id="reaction-select" aria-label="반응 선택"></select>
+      <label class="quiz-toggle"><input type="checkbox" id="quiz-toggle"> 퀴즈로 복습하기</label>
+    </div>
+
+    <div class="deck-bar" id="deck-bar" hidden>
+      <div class="deck-choose">
+        <label for="deck-select">덱</label>
+        <select id="deck-select"></select>
+        <button type="button" id="deck-new-btn">+ 새 덱</button>
+        <button type="button" id="deck-edit-btn">덱 편집</button>
+      </div>
+      <div class="deck-row">
+        <div class="deck-info">
+          <span class="deck-progress" id="deck-progress"></span>
+          <span class="deck-name" id="deck-name"></span>
+        </div>
+        <div class="deck-actions">
+          <button type="button" id="deck-again-btn">다시 볼래요</button>
+          <button type="button" id="deck-known-btn" class="deck-primary">알았어요 → 다음</button>
+          <button type="button" id="deck-restart-btn" class="deck-primary" hidden>다시 섞어서 시작</button>
+        </div>
+      </div>
     </div>
 
     <div class="panel" aria-label="재생 캔버스">
@@ -1503,7 +1824,25 @@
           <g id="play-bonds"></g>
           <g id="play-atoms"></g>
           <g id="play-arrows"></g>
+          <g id="quiz-arrows"></g>
+          <g id="quiz-hits"></g>
+          <g id="quiz-cover" style="display: none">
+            <text class="quiz-cover-q" x="300" y="180" text-anchor="middle" dominant-baseline="central">?</text>
+            <text class="canvas-hint" x="300" y="250" text-anchor="middle" dominant-baseline="central">이 단계의 구조를 먼저 예상해 보세요</text>
+          </g>
         </svg>
+      </div>
+
+      <div class="quiz-panel" id="quiz-panel" hidden>
+        <p class="quiz-instruction" id="quiz-instruction"></p>
+        <div class="quiz-actions">
+          <button type="button" id="quiz-reveal-btn" class="quiz-primary">구조 보기</button>
+          <button type="button" id="quiz-undo-btn">마지막 화살표 지우기</button>
+          <button type="button" id="quiz-clear-btn">모두 지우기</button>
+          <button type="button" id="quiz-grade-btn" class="quiz-primary">채점</button>
+          <button type="button" id="quiz-answer-btn">정답 보기</button>
+        </div>
+        <p class="quiz-result" id="quiz-result" role="status" aria-live="polite"></p>
       </div>
 
       <div class="play-controls">
@@ -1517,7 +1856,7 @@
       </div>
 
       <p class="step-status"><span class="step-num" id="play-step-num">0 / 0</span> 단계 — <span id="play-step-desc">반응을 선택해주세요.</span></p>
-      <p class="play-shortcuts">단축키: <kbd>←</kbd> <kbd>→</kbd> 단계 이동 · <kbd>Space</kbd> 자동재생</p>
+      <p class="play-shortcuts">단축키: <kbd>←</kbd> <kbd>→</kbd> 단계 이동 · <kbd>Space</kbd> 자동재생 (퀴즈 중에는 꺼짐)</p>
     </div>
   </section>
 
@@ -1533,21 +1872,41 @@
   </div>
 </dialog>
 
+<dialog class="dialog" id="deck-dialog" aria-labelledby="deck-dialog-title">
+  <form id="deck-form">
+    <h2 id="deck-dialog-title">새 덱 만들기</h2>
+    <p class="dialog-desc">공부할 반응을 골라 나만의 카드 덱을 만드세요. 덱은 내 계정에 저장됩니다.</p>
+    <label class="dialog-field">덱 이름
+      <input type="text" id="deck-name-input" maxlength="40" required placeholder="예: 친핵성 치환 반응">
+    </label>
+    <fieldset class="deck-pick">
+      <legend>반응 고르기</legend>
+      <div class="deck-pick-list" id="deck-pick-list"></div>
+    </fieldset>
+    <p class="dialog-message" id="deck-message" role="status" aria-live="polite"></p>
+    <div class="dialog-actions">
+      <button type="button" class="deck-delete" id="deck-delete-btn">덱 삭제</button>
+      <button type="button" id="deck-cancel-btn">취소</button>
+      <button type="submit" class="dialog-submit" id="deck-save-btn">저장</button>
+    </div>
+  </form>
+</dialog>
+
 <dialog class="dialog" id="auth-dialog" aria-labelledby="auth-title">
   <form id="auth-form">
     <h2 id="auth-title">로그인</h2>
     <p class="dialog-desc">로그인하면 내가 만든 반응을 나만 볼 수 있게 저장할 수 있어요.</p>
-    <label class="auth-field">이메일
+    <label class="dialog-field">이메일
       <input type="email" id="auth-email" autocomplete="email" required>
     </label>
-    <label class="auth-field">비밀번호
+    <label class="dialog-field">비밀번호
       <input type="password" id="auth-password" autocomplete="current-password" required>
       <span class="auth-hint" id="auth-password-hint" hidden>6자 이상으로 정해주세요.</span>
     </label>
     <p class="dialog-message" id="auth-message" role="status" aria-live="polite"></p>
     <div class="dialog-actions">
       <button type="button" id="auth-cancel">취소</button>
-      <button type="submit" class="auth-submit" id="auth-submit">로그인</button>
+      <button type="submit" class="dialog-submit" id="auth-submit">로그인</button>
     </div>
     <p class="auth-switch"><span id="auth-switch-text">아직 계정이 없나요?</span>
       <button type="button" class="link-btn" id="auth-switch-btn">회원가입</button></p>
@@ -1648,9 +2007,11 @@
   var bondIdSeq = 1;
   var arrows = [];
   var arrowIdSeq = 1;
+  // 선택·이동 도구로 고른 원자 id → true. 결합·화살표는 양 끝이 모두 선택돼 있으면 선택된 것으로 본다
+  var selectedAtomIds = {};
 
   var TOOL_HINTS = {
-    select: '원자를 드래그하면 이동합니다.',
+    select: '원자·결합을 클릭하면 선택(Shift로 여러 개, 더블클릭은 분자 전체), 빈 곳을 끌면 범위 선택. 선택한 것을 끌면 함께 움직입니다. 탄소를 우클릭하면 수소 개수를 보여줍니다.',
     bond: '원자 두 개를 차례로 클릭하면 결합이 생깁니다. 원자를 고른 뒤(또는 처음부터) 빈 곳을 클릭하면 그 방향으로 탄소가 이어지고, Esc로 멈춥니다. 결합을 클릭하면 단일→이중→삼중으로 바뀝니다.',
     delete: '지우고 싶은 원자·결합·화살표를 클릭하세요.',
     arrow: '전자쌍이 출발하는 지점(원자 또는 결합)을 클릭한 뒤, 도착하는 지점을 클릭하세요.',
@@ -1664,6 +2025,7 @@
     activeTool = tool;
     bondStartAtomId = null;
     arrowStart = null;
+    if (tool !== 'select') selectedAtomIds = {}; // 선택은 선택·이동 도구에서만 의미가 있다
 
     toolButtons.forEach(function (btn) {
       btn.setAttribute('aria-pressed', btn.dataset.tool === tool ? 'true' : 'false');
@@ -1808,7 +2170,7 @@
     atoms.forEach(function (atom) {
       var group = document.createElementNS(ns, 'g');
       var isArrowPending = arrowStart && arrowStart.type === 'atom' && arrowStart.id === atom.id;
-      group.setAttribute('class', 'atom' + (atom.id === bondStartAtomId ? ' bond-pending' : '') + (isArrowPending ? ' arrow-pending' : ''));
+      group.setAttribute('class', 'atom' + (atom.id === bondStartAtomId ? ' bond-pending' : '') + (isArrowPending ? ' arrow-pending' : '') + (selectedAtomIds[atom.id] ? ' selected' : ''));
       group.setAttribute('data-atom-id', atom.id);
       group.setAttribute('tabindex', '0');
       group.setAttribute('role', 'button');
@@ -1917,6 +2279,7 @@
     var moved = false;
     var startClientX = 0;
     var startClientY = 0;
+    var groupDrag = null; // 여러 개가 선택된 상태에서 그중 하나를 끌면 { start, origins } — 선택 전체를 같이 옮긴다
 
     group.addEventListener('pointerdown', function (e) {
       e.preventDefault();
@@ -1929,8 +2292,12 @@
       } catch (err) {
         // 포인터가 이미 해제됐거나 유효하지 않은 경우 등 — 캡처 없이도 클릭 판정은 계속 동작하므로 무시
       }
+      groupDrag = null;
       if (activeTool === 'select') {
         group.classList.add('dragging');
+        if (selectedAtomIds[atom.id] && selectedIds().length > 1) {
+          groupDrag = startGroupDrag(clientToCanvasPoint(editorCanvas, e.clientX, e.clientY));
+        }
       }
     });
 
@@ -1939,7 +2306,9 @@
       if (Math.abs(e.clientX - startClientX) > 3 || Math.abs(e.clientY - startClientY) > 3) {
         moved = true;
       }
-      if (activeTool === 'select') {
+      if (activeTool === 'select' && groupDrag) {
+        moveGroup(groupDrag, clientToCanvasPoint(editorCanvas, e.clientX, e.clientY));
+      } else if (activeTool === 'select') {
         var point = clientToCanvasPoint(editorCanvas, e.clientX, e.clientY);
         var constraints = drawConstraints(e);
         var anchor = (constraints.length || constraints.angle) && nearestBondedNeighbor(atom, point);
@@ -1957,10 +2326,11 @@
         group.releasePointerCapture(e.pointerId);
       }
       group.classList.remove('dragging');
+      groupDrag = null;
       if (e.button !== 0) return; // 우클릭 등은 contextmenu 핸들러에서 따로 처리
       if (!moved) {
         if (activeTool === 'select') {
-          toggleCarbonH(atom);
+          handleSelectClick(atom.id, [atom.id], e.shiftKey);
         } else {
           handleAtomClick(atom);
         }
@@ -1975,11 +2345,14 @@
       group.classList.remove('dragging');
     });
 
-    // 형식전하 도구에서 우클릭 = 전하 증가(+). 기본 우클릭 메뉴는 원자 위에서는 항상 막는다.
+    // 우클릭: 형식전하 도구에서는 전하 증가(+), 선택·이동 도구에서는 탄소의 수소 개수 보이기/숨기기.
+    // 기본 우클릭 메뉴는 원자 위에서는 항상 막는다.
     group.addEventListener('contextmenu', function (e) {
       e.preventDefault();
       if (activeTool === 'charge') {
         adjustCharge(atom, 1);
+      } else if (activeTool === 'select') {
+        toggleCarbonH(atom);
       }
     });
 
@@ -1998,21 +2371,29 @@
 
       if (activeTool !== 'select') return;
 
-      // 키보드로도 이동 가능 (방향키, Shift로 크게 이동)
-      var step = e.shiftKey ? 20 : 6;
-      var dx = 0, dy = 0;
-      if (e.key === 'ArrowLeft') dx = -step;
-      else if (e.key === 'ArrowRight') dx = step;
-      else if (e.key === 'ArrowUp') dy = -step;
-      else if (e.key === 'ArrowDown') dy = step;
-      else return;
+      // 키보드로도 이동 가능 (방향키, Shift로 크게 이동). 선택된 원자면 선택 전체를 함께 옮긴다
+      var delta = arrowKeyDelta(e);
+      if (!delta) return;
       e.preventDefault();
-      atom.x = Math.max(ATOM_R + 6, Math.min(CANVAS_W - ATOM_R - 6, atom.x + dx));
-      atom.y = Math.max(ATOM_R + 6, Math.min(CANVAS_H - ATOM_R - 6, atom.y + dy));
+      if (selectedAtomIds[atom.id]) {
+        nudgeSelection(delta.dx, delta.dy);
+        return;
+      }
+      atom.x = Math.max(ATOM_R + 6, Math.min(CANVAS_W - ATOM_R - 6, atom.x + delta.dx));
+      atom.y = Math.max(ATOM_R + 6, Math.min(CANVAS_H - ATOM_R - 6, atom.y + delta.dy));
       updateAtomDom(atom, group);
       renderBonds();
       renderArrows();
     });
+  }
+
+  function arrowKeyDelta(e) {
+    var step = e.shiftKey ? 20 : 6;
+    if (e.key === 'ArrowLeft') return { dx: -step, dy: 0 };
+    if (e.key === 'ArrowRight') return { dx: step, dy: 0 };
+    if (e.key === 'ArrowUp') return { dx: 0, dy: -step };
+    if (e.key === 'ArrowDown') return { dx: 0, dy: step };
+    return null;
   }
 
   // 원자를 (드래그 없이) 클릭했을 때 — 현재 도구에 따라 동작이 달라짐
@@ -2046,26 +2427,235 @@
   }
 
   function deleteAtom(atomId) {
-    atoms = atoms.filter(function (a) { return a.id !== atomId; });
+    deleteAtoms([atomId]);
+  }
 
-    var removedBondIds = bonds
-      .filter(function (b) { return b.atomId1 === atomId || b.atomId2 === atomId; })
-      .map(function (b) { return b.id; });
-    bonds = bonds.filter(function (b) { return b.atomId1 !== atomId && b.atomId2 !== atomId; });
+  // 원자들을 지우면 거기 붙은 결합과, 그 원자·결합을 가리키던 화살표도 함께 지운다
+  function deleteAtoms(atomIds) {
+    var gone = {};
+    atomIds.forEach(function (id) { gone[id] = true; });
+    atoms = atoms.filter(function (a) { return !gone[a.id]; });
 
+    var removedBondIds = {};
+    bonds.forEach(function (b) {
+      if (gone[b.atomId1] || gone[b.atomId2]) removedBondIds[b.id] = true;
+    });
+    bonds = bonds.filter(function (b) { return !removedBondIds[b.id]; });
+
+    function refGone(type, id) {
+      return type === 'atom' ? gone[id] : removedBondIds[id];
+    }
     arrows = arrows.filter(function (ar) {
-      var refsAtom = (ar.fromType === 'atom' && ar.from === atomId) || (ar.toType === 'atom' && ar.to === atomId);
-      var refsRemovedBond = (ar.fromType === 'bond' && removedBondIds.indexOf(ar.from) !== -1) ||
-                             (ar.toType === 'bond' && removedBondIds.indexOf(ar.to) !== -1);
-      return !refsAtom && !refsRemovedBond;
+      return !refGone(ar.fromType, ar.from) && !refGone(ar.toType, ar.to);
     });
 
-    if (bondStartAtomId === atomId) bondStartAtomId = null;
-    if (arrowStart && arrowStart.type === 'atom' && arrowStart.id === atomId) arrowStart = null;
+    if (gone[bondStartAtomId]) bondStartAtomId = null;
+    if (arrowStart && refGone(arrowStart.type, arrowStart.id)) arrowStart = null;
+    atomIds.forEach(function (id) { delete selectedAtomIds[id]; });
 
     renderAtoms();
     renderBonds();
     renderArrows();
+  }
+
+  // ================= 에디터: 선택 =================
+  function selectedIds() {
+    return atoms.filter(function (a) { return selectedAtomIds[a.id]; }).map(function (a) { return a.id; });
+  }
+
+  function isBondSelected(bond) {
+    return !!(selectedAtomIds[bond.atomId1] && selectedAtomIds[bond.atomId2]);
+  }
+
+  function isRefSelected(type, id) {
+    if (type === 'atom') return !!selectedAtomIds[id];
+    var bond = bonds.filter(function (b) { return b.id === id; })[0];
+    return !!bond && isBondSelected(bond);
+  }
+
+  function isArrowSelected(arrow) {
+    return isRefSelected(arrow.fromType, arrow.from) && isRefSelected(arrow.toType, arrow.to);
+  }
+
+  function renderSelection() {
+    renderAtoms();
+    renderBonds();
+    renderArrows();
+  }
+
+  // additive(Shift)면 기존 선택에 더하고, 아니면 새로 고른다
+  function selectAtoms(ids, additive) {
+    if (!additive) selectedAtomIds = {};
+    ids.forEach(function (id) { selectedAtomIds[id] = true; });
+    renderSelection();
+  }
+
+  function clearSelection() {
+    if (!selectedIds().length) return;
+    selectedAtomIds = {};
+    renderSelection();
+  }
+
+  // 결합으로 이어진 원자 전체(= 분자 하나)
+  function connectedAtomIds(startId) {
+    var seen = {};
+    seen[startId] = true;
+    var queue = [startId];
+    while (queue.length) {
+      var id = queue.shift();
+      bonds.forEach(function (b) {
+        var other = b.atomId1 === id ? b.atomId2 : (b.atomId2 === id ? b.atomId1 : null);
+        if (other && !seen[other]) {
+          seen[other] = true;
+          queue.push(other);
+        }
+      });
+    }
+    return Object.keys(seen);
+  }
+
+  // 클릭: 고르기(Shift면 켜고 끄기), 같은 원자·결합을 빠르게 두 번: 분자 전체.
+  // 클릭마다 원자를 새로 그려서 브라우저의 dblclick이 잘 안 잡히므로 시간으로 직접 판정한다
+  var lastSelectClick = { key: null, time: 0 };
+
+  function handleSelectClick(key, ids, additive) {
+    var now = Date.now();
+    var isDouble = lastSelectClick.key === key && now - lastSelectClick.time < 400;
+    lastSelectClick = { key: key, time: isDouble ? 0 : now };
+    if (isDouble) {
+      selectAtoms(connectedAtomIds(ids[0]), additive);
+      return;
+    }
+    if (additive) {
+      var allOn = ids.every(function (id) { return selectedAtomIds[id]; });
+      ids.forEach(function (id) {
+        if (allOn) delete selectedAtomIds[id];
+        else selectedAtomIds[id] = true;
+      });
+      renderSelection();
+      return;
+    }
+    selectAtoms(ids, false);
+  }
+
+  function selectAll() {
+    if (activeTool !== 'select') setActiveTool('select');
+    selectAtoms(atoms.map(function (a) { return a.id; }), false);
+  }
+
+  // 선택 전체를 (dx, dy)만큼 옮기되, 하나라도 캔버스 밖으로 나가지 않게 이동량을 줄인다
+  function clampGroupDelta(list, dx, dy) {
+    var lo = ATOM_R + 6;
+    list.forEach(function (p) {
+      dx = Math.max(lo - p.x, Math.min(CANVAS_W - lo - p.x, dx));
+      dy = Math.max(lo - p.y, Math.min(CANVAS_H - lo - p.y, dy));
+    });
+    return { dx: dx, dy: dy };
+  }
+
+  function startGroupDrag(point) {
+    var origins = {};
+    selectedIds().forEach(function (id) {
+      var a = findAtom(id);
+      origins[id] = { x: a.x, y: a.y };
+    });
+    return { start: point, origins: origins };
+  }
+
+  // 원자를 새로 그리지 않고 기존 요소의 위치만 바꾼다. 끄는 도중에 원자를 새로 그리면
+  // 마우스로 잡고 있던 요소가 사라져 포인터 캡처가 풀리고, 그 뒤로는 움직임이 전달되지 않는다
+  function moveAtomsInPlace(list) {
+    list.forEach(function (a) {
+      var el = Array.prototype.filter.call(editorAtomsLayer.children, function (g) {
+        return g.dataset.atomId === a.id;
+      })[0];
+      if (el) updateAtomDom(a, el);
+    });
+    renderBonds();
+    renderArrows();
+  }
+
+  function moveGroup(drag, point) {
+    var ids = Object.keys(drag.origins);
+    var d = clampGroupDelta(ids.map(function (id) { return drag.origins[id]; }),
+      point.x - drag.start.x, point.y - drag.start.y);
+    var list = ids.map(findAtom).filter(Boolean);
+    list.forEach(function (a) {
+      a.x = drag.origins[a.id].x + d.dx;
+      a.y = drag.origins[a.id].y + d.dy;
+    });
+    moveAtomsInPlace(list);
+  }
+
+  function nudgeSelection(dx, dy) {
+    var list = selectedIds().map(findAtom);
+    var d = clampGroupDelta(list, dx, dy);
+    list.forEach(function (a) {
+      a.x += d.dx;
+      a.y += d.dy;
+    });
+    moveAtomsInPlace(list);
+  }
+
+  // ================= 에디터: 복사 · 잘라내기 · 붙여넣기 =================
+  // 다른 단계나 불러온 다른 반응에도 붙여넣을 수 있도록 페이지 안에 따로 보관한다
+  var clipboard = null;
+  var pasteCount = 0;
+  var PASTE_OFFSET = 30;
+
+  function copySelection() {
+    var ids = selectedIds();
+    if (!ids.length) return false;
+    clipboard = JSON.parse(JSON.stringify({
+      atoms: atoms.filter(function (a) { return selectedAtomIds[a.id]; }),
+      bonds: bonds.filter(isBondSelected),
+      arrows: arrows.filter(isArrowSelected)
+    }));
+    pasteCount = 1; // 복사한 뒤 붙여넣으면 원본과 겹치지 않게 옆으로 비켜 놓는다
+    return true;
+  }
+
+  function cutSelection() {
+    if (!copySelection()) return false;
+    pasteCount = 0; // 잘라낸 것은 처음엔 원래 자리에 붙여넣는다
+    deleteAtoms(selectedIds());
+    return true;
+  }
+
+  function pasteClipboard() {
+    if (!clipboard || !clipboard.atoms.length) return false;
+    if (activeTool !== 'select') setActiveTool('select');
+    var off = clampGroupDelta(clipboard.atoms, PASTE_OFFSET * pasteCount, PASTE_OFFSET * pasteCount);
+    pasteCount += 1;
+
+    // 붙여넣는 것들은 모두 새 id를 받고, 결합·화살표가 가리키는 대상도 새 id로 바꾼다
+    var atomMap = {}, bondMap = {};
+    var newIds = [];
+    clipboard.atoms.forEach(function (a) {
+      var copy = JSON.parse(JSON.stringify(a));
+      copy.id = 'a' + (atomIdSeq++);
+      copy.x += off.dx;
+      copy.y += off.dy;
+      atomMap[a.id] = copy.id;
+      newIds.push(copy.id);
+      atoms.push(copy);
+    });
+    clipboard.bonds.forEach(function (b) {
+      var id = 'b' + (bondIdSeq++);
+      bondMap[b.id] = id;
+      bonds.push({ id: id, atomId1: atomMap[b.atomId1], atomId2: atomMap[b.atomId2], order: b.order });
+    });
+    clipboard.arrows.forEach(function (ar) {
+      arrows.push({
+        id: 'r' + (arrowIdSeq++),
+        from: ar.fromType === 'atom' ? atomMap[ar.from] : bondMap[ar.from],
+        fromType: ar.fromType,
+        to: ar.toType === 'atom' ? atomMap[ar.to] : bondMap[ar.to],
+        toType: ar.toType
+      });
+    });
+    selectAtoms(newIds, false); // 붙여넣은 것을 선택해 두어 바로 끌어서 옮길 수 있게
+    return true;
   }
 
   // ================= 에디터: 결합 =================
@@ -2096,8 +2686,10 @@
     renderArrows();
   }
 
-  function handleBondClick(bond) {
-    if (activeTool === 'delete') {
+  function handleBondClick(bond, additive) {
+    if (activeTool === 'select') {
+      handleSelectClick(bond.id, [bond.atomId1, bond.atomId2], additive);
+    } else if (activeTool === 'delete') {
       deleteBond(bond.id);
     } else if (activeTool === 'bond') {
       bond.order = bond.order >= 3 ? 1 : bond.order + 1;
@@ -2109,13 +2701,14 @@
   }
 
   function bindBondInteraction(group, bond) {
-    group.addEventListener('pointerup', function () {
-      handleBondClick(bond);
+    group.addEventListener('pointerup', function (e) {
+      if (e.button !== 0) return;
+      handleBondClick(bond, e.shiftKey);
     });
     group.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        handleBondClick(bond);
+        handleBondClick(bond, e.shiftKey);
       }
     });
   }
@@ -2132,7 +2725,7 @@
 
       var isArrowPending = arrowStart && arrowStart.type === 'bond' && arrowStart.id === bond.id;
       var group = document.createElementNS(ns, 'g');
-      group.setAttribute('class', 'bond' + (isArrowPending ? ' arrow-pending' : ''));
+      group.setAttribute('class', 'bond' + (isArrowPending ? ' arrow-pending' : '') + (isBondSelected(bond) ? ' selected' : ''));
       group.setAttribute('data-bond-id', bond.id);
       group.setAttribute('tabindex', '0');
       group.setAttribute('role', 'button');
@@ -2308,7 +2901,7 @@
       editorArrowHitsLayer.appendChild(hit);
 
       var group = document.createElementNS(ns, 'g');
-      group.setAttribute('class', 'reaction-arrow');
+      group.setAttribute('class', 'reaction-arrow' + (isArrowSelected(arrow) ? ' selected' : ''));
       group.setAttribute('data-arrow-id', arrow.id);
       group.setAttribute('tabindex', '0');
       group.setAttribute('role', 'button');
@@ -2625,10 +3218,61 @@
     });
   }
 
+  // 선택·이동 도구로 빈 곳을 끌면 사각형 범위 선택 (Shift면 기존 선택에 더함)
+  var marqueeEl = document.getElementById('marquee');
+  var marquee = null; // { start, additive, moved }
+
+  function marqueeRect(a, b) {
+    return { x: Math.min(a.x, b.x), y: Math.min(a.y, b.y), w: Math.abs(a.x - b.x), h: Math.abs(a.y - b.y) };
+  }
+
+  if (canvasBg) {
+    canvasBg.addEventListener('pointerdown', function (e) {
+      if (activeTool !== 'select' || e.button !== 0) return;
+      marquee = { start: clientToCanvasPoint(editorCanvas, e.clientX, e.clientY), additive: e.shiftKey, moved: false };
+      try {
+        canvasBg.setPointerCapture(e.pointerId);
+      } catch (err) {
+        // 캡처를 못 해도 캔버스 안에서 놓으면 그대로 동작
+      }
+    });
+
+    canvasBg.addEventListener('pointermove', function (e) {
+      if (!marquee) return;
+      var p = clientToCanvasPoint(editorCanvas, e.clientX, e.clientY);
+      if (!marquee.moved && Math.hypot(p.x - marquee.start.x, p.y - marquee.start.y) < 4) return;
+      marquee.moved = true;
+      var r = marqueeRect(marquee.start, p);
+      marqueeEl.setAttribute('x', r.x);
+      marqueeEl.setAttribute('y', r.y);
+      marqueeEl.setAttribute('width', r.w);
+      marqueeEl.setAttribute('height', r.h);
+      marqueeEl.style.display = '';
+    });
+  }
+
+  function finishMarquee(e) {
+    var m = marquee;
+    marquee = null;
+    marqueeEl.style.display = 'none';
+    if (!m.moved) {
+      if (!m.additive) clearSelection(); // 빈 곳을 그냥 클릭하면 선택 해제
+      return;
+    }
+    var r = marqueeRect(m.start, clientToCanvasPoint(editorCanvas, e.clientX, e.clientY));
+    var inside = atoms.filter(function (a) {
+      return a.x >= r.x && a.x <= r.x + r.w && a.y >= r.y && a.y <= r.y + r.h;
+    }).map(function (a) { return a.id; });
+    selectAtoms(inside, m.additive);
+  }
+
   // 빈 캔버스 클릭: 결합 도구면 그 방향으로 탄소를 이어 그리고, 화살표 도구면 대기 중인 선택을 취소
   if (canvasBg) {
     canvasBg.addEventListener('pointerup', function (e) {
       if (e.button !== 0) return;
+      if (activeTool === 'select' && marquee) {
+        finishMarquee(e);
+      }
       if (activeTool === 'bond') {
         drawBondToPoint(clientToCanvasPoint(editorCanvas, e.clientX, e.clientY), drawConstraints(e));
       }
@@ -2686,6 +3330,7 @@
     arrows = step.arrows;
     bondStartAtomId = null;
     arrowStart = null;
+    selectedAtomIds = {};
     renderAtoms();
     renderBonds();
     renderArrows();
@@ -2826,6 +3471,7 @@
     steps = [createEmptyStep()];
     loadStep(0);
     setActiveTool('select');
+    resetHistory();
   }
 
   if (newReactionBtn) {
@@ -2867,6 +3513,80 @@
       setTimeout(refreshSaveStatus, 0);
     });
   });
+
+  // ================= 에디터: 실행 취소 · 다시 실행 =================
+  // 조작이 끝날 때마다 모든 단계의 내용을 비교해서, 바뀌었으면 바뀌기 전 상태를 기록해 둔다.
+  // 그래서 원자·결합·화살표·전하·이동·단계 추가/삭제·붙여넣기 등 어떤 변경이든 따로 표시하지 않아도 되돌릴 수 있다
+  var HISTORY_LIMIT = 100;
+  var undoStack = [];
+  var redoStack = [];
+  var historyCurrent = null; // { json: 모든 단계(JSON), stepIndex: 그때 보고 있던 단계 }
+  var undoBtn = document.getElementById('undo-btn');
+  var redoBtn = document.getElementById('redo-btn');
+
+  function captureHistory() {
+    saveCurrentStepSnapshot();
+    return { json: JSON.stringify(steps), stepIndex: currentStepIndex };
+  }
+
+  function updateUndoButtons() {
+    undoBtn.disabled = !undoStack.length;
+    redoBtn.disabled = !redoStack.length;
+  }
+
+  function recordHistory() {
+    var now = captureHistory();
+    if (now.json === historyCurrent.json) {
+      historyCurrent.stepIndex = now.stepIndex; // 단계만 옮겨 다닌 건 기록하지 않고, 되돌릴 때 보여줄 단계만 갱신
+      return;
+    }
+    undoStack.push(historyCurrent);
+    if (undoStack.length > HISTORY_LIMIT) undoStack.shift();
+    redoStack = [];
+    historyCurrent = now;
+    updateUndoButtons();
+  }
+
+  // '새 반응'·'불러오기'처럼 다른 반응으로 바뀌면 그 전 기록은 버린다
+  function resetHistory() {
+    undoStack = [];
+    redoStack = [];
+    historyCurrent = captureHistory();
+    updateUndoButtons();
+  }
+
+  function restoreHistory(state) {
+    steps = JSON.parse(state.json);
+    loadStep(Math.min(state.stepIndex, steps.length - 1));
+    updateUndoButtons();
+  }
+
+  function undo() {
+    recordHistory(); // 아직 기록되지 않은 마지막 변경이 있으면 먼저 확정
+    if (!undoStack.length) return;
+    redoStack.push(historyCurrent);
+    historyCurrent = undoStack.pop();
+    restoreHistory(historyCurrent);
+  }
+
+  function redo() {
+    recordHistory();
+    if (!redoStack.length) return;
+    undoStack.push(historyCurrent);
+    historyCurrent = redoStack.pop();
+    restoreHistory(historyCurrent);
+  }
+
+  // 단계 설명을 한 글자마다 기록하지 않도록, 입력칸 안의 조작은 빼고 다 쓰고 나올 때(change) 한 번 기록한다
+  ['click', 'pointerup', 'keydown', 'contextmenu', 'drop', 'change'].forEach(function (type) {
+    document.addEventListener(type, function (e) {
+      if (type !== 'change' && isTypingTarget(e.target)) return;
+      setTimeout(recordHistory, 0);
+    });
+  });
+
+  undoBtn.addEventListener('click', undo);
+  redoBtn.addEventListener('click', redo);
 
   // 처음 저장하면 새 행을 추가하고, 그 뒤로는 같은 행을 덮어쓴다
   function saveReaction() {
@@ -3076,7 +3796,10 @@
         setSaveStatus('', ''); // '로그인해주세요' 같은 이전 계정 상태의 안내를 지운다
         savedReactions = []; // 이전 계정의 반응이 잠깐이라도 보이지 않게
         // 이 콜백 안에서 곧바로 DB 요청을 보내면 supabase-js가 멈출 수 있어 한 박자 미룬다
-        setTimeout(loadSavedReactions, 0);
+        setTimeout(function () {
+          loadSavedReactions();
+          loadDecks();
+        }, 0);
       }
     });
   }
@@ -3200,6 +3923,7 @@
     steps = loaded;
     loadStep(0);
     setActiveTool('select');
+    resetHistory();
 
     savedSignature = currentSignature();
     setSaveStatus('불러왔습니다: ' + (name || '이름 없는 반응') + '. 고친 뒤 저장하면 이 반응에 덮어씁니다.', 'ok');
@@ -3503,7 +4227,7 @@
     var lastIndex = has ? playCurrentReaction.steps.length - 1 : 0;
     if (playPrevBtn) playPrevBtn.disabled = !has || playCurrentStepIndex <= 0;
     if (playNextBtn) playNextBtn.disabled = !has || playCurrentStepIndex >= lastIndex;
-    if (playAutoplayBtn) playAutoplayBtn.disabled = !has;
+    if (playAutoplayBtn) playAutoplayBtn.disabled = !has || quizMode; // 퀴즈는 한 단계씩 직접 풀어야 하므로 자동재생 없음
   }
 
   function renderPlayStep() {
@@ -3514,6 +4238,7 @@
       if (playCanvasHint) playCanvasHint.style.display = '';
       if (playStepNumEl) playStepNumEl.textContent = '0 / 0';
       if (playStepDescEl) playStepDescEl.textContent = '반응을 선택해주세요.';
+      renderQuiz(null, null);
       updatePlayControlsDisabled();
       return;
     }
@@ -3521,12 +4246,21 @@
     var step = playCurrentReaction.steps[playCurrentStepIndex];
     if (playCanvasHint) playCanvasHint.style.display = 'none';
 
-    renderPlayBonds(step.bonds, step.atoms);
-    renderPlayAtoms(step.atoms, step.bonds);
-    renderPlayArrows(step.arrows, step.atoms, step.bonds);
+    // 퀴즈: 아직 '구조 보기'를 누르지 않은 단계는 구조를 가리고, 정답 화살표는 항상 숨긴다
+    var quiz = quizMode ? quizStateFor(playCurrentStepIndex) : null;
+    var covered = !!quiz && !quiz.revealed;
+    renderPlayBonds(covered ? [] : step.bonds, step.atoms);
+    renderPlayAtoms(covered ? [] : step.atoms, step.bonds);
+    renderPlayArrows(quiz ? [] : step.arrows, step.atoms, step.bonds);
+    renderQuiz(step, quiz);
 
     if (playStepNumEl) playStepNumEl.textContent = (playCurrentStepIndex + 1) + ' / ' + playCurrentReaction.steps.length;
-    if (playStepDescEl) playStepDescEl.textContent = step.description || '(설명이 없습니다)';
+    if (playStepDescEl) {
+      // 설명에는 정답(어디서 어디로 전자가 가는지)이 적혀 있는 경우가 많아, 퀴즈 중에는 풀고 난 뒤에 보여준다
+      if (quiz && !quiz.revealed) playStepDescEl.textContent = '(설명은 구조를 확인한 뒤에 보여요)';
+      else if (quiz && !quizDescriptionVisible(step, quiz)) playStepDescEl.textContent = '(설명은 채점하거나 정답을 본 뒤에 보여요)';
+      else playStepDescEl.textContent = step.description || '(설명이 없습니다)';
+    }
 
     updatePlayControlsDisabled();
   }
@@ -3570,6 +4304,7 @@
   }
 
   function toggleAutoplay() {
+    if (quizMode) return;
     if (isAutoplaying) {
       stopAutoplay();
       return;
@@ -3580,6 +4315,512 @@
     }
     startAutoplay();
   }
+
+  // ---- 퀴즈(복습) ----
+  // 단계마다 (1) 2단계부터는 구조를 가려 두고 먼저 예상해 보게 한 뒤 '구조 보기'로 확인(스스로 채점),
+  // (2) 정답 화살표를 숨기고 학생이 출발 → 도착을 클릭해 직접 그린 화살표를 정답과 비교해 채점한다
+  var quizMode = false;
+  var quizSteps = {}; // 단계 번호 → { revealed, userArrows, result, answerShown }
+  var quizPick = null; // 화살표 출발점만 고른 상태: { step, type, id }
+  // 원자 클릭 영역을 에디터(17)보다 작게: 45px 결합의 가운데를 넉넉히 눌러 '결합'을 고를 수 있도록
+  var QUIZ_ATOM_HIT_R = 13;
+  var quizToggle = document.getElementById('quiz-toggle');
+  var quizArrowsLayer = document.getElementById('quiz-arrows');
+  var quizHitsLayer = document.getElementById('quiz-hits');
+  var quizCover = document.getElementById('quiz-cover');
+  var quizPanel = document.getElementById('quiz-panel');
+  var quizInstructionEl = document.getElementById('quiz-instruction');
+  var quizResultEl = document.getElementById('quiz-result');
+  var quizRevealBtn = document.getElementById('quiz-reveal-btn');
+  var quizUndoBtn = document.getElementById('quiz-undo-btn');
+  var quizClearBtn = document.getElementById('quiz-clear-btn');
+  var quizGradeBtn = document.getElementById('quiz-grade-btn');
+  var quizAnswerBtn = document.getElementById('quiz-answer-btn');
+
+  function resetQuiz() {
+    quizSteps = {};
+    quizPick = null;
+  }
+
+  function quizStateFor(index) {
+    if (!quizSteps[index]) {
+      // 첫 단계는 출발 물질이라 예상할 것이 없으니 처음부터 보여준다
+      quizSteps[index] = { revealed: index === 0, userArrows: [], result: null, answerShown: false };
+    }
+    return quizSteps[index];
+  }
+
+  function quizDescriptionVisible(step, quiz) {
+    if (!quiz.revealed) return false;
+    return !step.arrows.length || !!quiz.result || quiz.answerShown;
+  }
+
+  function currentPick() {
+    return quizPick && quizPick.step === playCurrentStepIndex ? quizPick : null;
+  }
+
+  function arrowKey(fromType, from, toType, to) {
+    return fromType + ':' + from + '>' + toType + ':' + to;
+  }
+
+  // 정답과 출발·도착이 모두 같으면 정답, 출발·도착이 뒤바뀌었으면 '방향 반대', 나머지는 오답.
+  // 같은 정답 화살표를 두 번 그리면 두 번째는 오답으로 센다
+  function gradeQuiz(step, quiz) {
+    var answerKeys = step.arrows.map(function (a) { return arrowKey(a.fromType, a.from, a.toType, a.to); });
+    var matched = {};
+    var marks = quiz.userArrows.map(function (u) {
+      var i = answerKeys.indexOf(arrowKey(u.fromType, u.from, u.toType, u.to));
+      if (i !== -1 && !matched[i]) {
+        matched[i] = true;
+        return 'correct';
+      }
+      if (answerKeys.indexOf(arrowKey(u.toType, u.to, u.fromType, u.from)) !== -1) return 'reversed';
+      return 'wrong';
+    });
+    quiz.result = { marks: marks, correct: Object.keys(matched).length, total: answerKeys.length };
+  }
+
+  function quizResultText(result) {
+    var reversed = result.marks.filter(function (m) { return m === 'reversed'; }).length;
+    var wrong = result.marks.filter(function (m) { return m === 'wrong'; }).length;
+    if (result.correct === result.total && !reversed && !wrong) {
+      return '정답입니다! 화살표 ' + result.total + '개를 모두 맞혔어요.';
+    }
+    var text = '정답 화살표 ' + result.total + '개 중 ' + result.correct + '개를 맞혔어요.';
+    if (reversed) text += ' 주황색은 방향이 반대예요.';
+    if (wrong) text += ' 빨간색은 틀린 화살표예요.';
+    // 방향만 반대로 그린 것은 '빠진 것'으로 치지 않는다
+    if (result.correct + reversed < result.total) text += ' 빠진 화살표도 있어요.';
+    return text + ' 고쳐서 다시 채점하거나 \'정답 보기\'로 확인해 보세요.';
+  }
+
+  function appendQuizArrow(arrow, className, step) {
+    var p0 = playGetRefPoint(arrow.fromType, arrow.from, step.atoms, step.bonds);
+    var p1 = playGetRefPoint(arrow.toType, arrow.to, step.atoms, step.bonds);
+    if (!p0 || !p1) return;
+    var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('class', className);
+    path.setAttribute('d', buildArrowPath(p0, p1));
+    path.setAttribute('marker-end', 'url(#arrow-pair-head)');
+    quizArrowsLayer.appendChild(path);
+  }
+
+  // 원자·결합 위에 투명한 클릭 영역을 깐다 (탄소 꼭짓점은 화면에 거의 안 보여서 따로 넓은 영역이 필요)
+  function renderQuizHits(step) {
+    var ns = 'http://www.w3.org/2000/svg';
+    var pick = currentPick();
+    function bind(el, type, id) {
+      if (pick && pick.type === type && pick.id === id) el.classList.add('picked');
+      el.addEventListener('click', function () { quizPickRef(type, id); });
+      quizHitsLayer.appendChild(el);
+    }
+    step.bonds.forEach(function (b) {
+      var a1 = step.atoms.filter(function (a) { return a.id === b.atomId1; })[0];
+      var a2 = step.atoms.filter(function (a) { return a.id === b.atomId2; })[0];
+      if (!a1 || !a2) return;
+      var line = document.createElementNS(ns, 'line');
+      line.setAttribute('class', 'quiz-hit quiz-hit-bond');
+      line.setAttribute('x1', a1.x);
+      line.setAttribute('y1', a1.y);
+      line.setAttribute('x2', a2.x);
+      line.setAttribute('y2', a2.y);
+      bind(line, 'bond', b.id);
+    });
+    step.atoms.forEach(function (a) { // 결합보다 나중에(위에) 깔아서 원자 근처는 원자가 먼저 잡히게
+      var circle = document.createElementNS(ns, 'circle');
+      circle.setAttribute('class', 'quiz-hit quiz-hit-atom');
+      circle.setAttribute('cx', a.x);
+      circle.setAttribute('cy', a.y);
+      circle.setAttribute('r', QUIZ_ATOM_HIT_R);
+      bind(circle, 'atom', a.id);
+    });
+  }
+
+  function quizPickRef(type, id) {
+    var quiz = quizStateFor(playCurrentStepIndex);
+    var pick = currentPick();
+    if (!pick) {
+      quizPick = { step: playCurrentStepIndex, type: type, id: id };
+    } else if (pick.type === type && pick.id === id) {
+      quizPick = null; // 같은 곳을 다시 누르면 취소
+    } else {
+      quiz.userArrows.push({ fromType: pick.type, from: pick.id, toType: type, to: id });
+      quizPick = null;
+      quiz.result = null; // 화살표가 바뀌면 다시 채점해야 한다
+    }
+    renderPlayStep();
+  }
+
+  function renderQuiz(step, quiz) {
+    quizArrowsLayer.textContent = '';
+    quizHitsLayer.textContent = '';
+    quizCover.style.display = quiz && !quiz.revealed ? '' : 'none';
+    quizPanel.hidden = !quiz;
+    if (!quiz) return;
+
+    var drawing = quiz.revealed && step.arrows.length > 0;
+    quizRevealBtn.hidden = quiz.revealed;
+    [quizUndoBtn, quizClearBtn, quizGradeBtn, quizAnswerBtn].forEach(function (btn) { btn.hidden = !drawing; });
+    quizUndoBtn.disabled = !quiz.userArrows.length;
+    quizClearBtn.disabled = !quiz.userArrows.length;
+    quizGradeBtn.disabled = !quiz.userArrows.length;
+    quizAnswerBtn.textContent = quiz.answerShown ? '정답 숨기기' : '정답 보기';
+
+    if (!quiz.revealed) {
+      quizInstructionEl.textContent = '앞 단계의 화살표대로 전자가 움직이면 이 단계의 구조는 어떻게 될까요? 먼저 떠올려 본 뒤 확인하세요.';
+    } else if (!drawing) {
+      quizInstructionEl.textContent = '이 단계는 화살표가 없는 결과 구조예요. 예상한 구조와 같은지 비교해 보세요.';
+    } else if (currentPick()) {
+      quizInstructionEl.textContent = '이제 전자가 도착하는 원자나 결합을 클릭하세요. (같은 곳을 다시 누르면 취소)';
+    } else {
+      quizInstructionEl.textContent = '이 단계의 전자 이동을 화살표로 그려보세요. 전자가 출발하는 원자나 결합을 클릭한 뒤, 도착하는 원자나 결합을 클릭합니다.';
+    }
+
+    quizResultEl.textContent = quiz.result ? quizResultText(quiz.result) : '';
+    quizResultEl.dataset.state = quiz.result
+      ? (quiz.result.marks.every(function (m) { return m === 'correct'; }) && quiz.result.correct === quiz.result.total ? 'ok' : 'partial')
+      : '';
+
+    if (!drawing) return;
+    // 정답(점선)을 아래에, 내가 그린 화살표를 위에, 클릭 영역을 맨 위에 둔다
+    if (quiz.answerShown) step.arrows.forEach(function (a) { appendQuizArrow(a, 'quiz-answer', step); });
+    quiz.userArrows.forEach(function (u, i) {
+      appendQuizArrow(u, 'quiz-user' + (quiz.result ? ' ' + quiz.result.marks[i] : ''), step);
+    });
+    renderQuizHits(step);
+  }
+
+  function currentQuiz() {
+    return quizStateFor(playCurrentStepIndex);
+  }
+
+  // ---- 퀴즈 덱: 반응을 하나씩 골라 풀지 않고, 섞인 카드처럼 다음 반응으로 바로 넘어간다 ----
+  // '알았어요'는 그 카드를 끝내고, '다시 볼래요'는 덱 맨 뒤로 보내 나중에 다시 나오게 한다
+  var deck = null; // { queue: 남은 반응 id(맨 앞이 지금 카드), total, firstTry: 한 번에 안 카드 수, retried: { id: true } }
+  var deckBar = document.getElementById('deck-bar');
+  var deckProgressEl = document.getElementById('deck-progress');
+  var deckNameEl = document.getElementById('deck-name');
+  var deckAgainBtn = document.getElementById('deck-again-btn');
+  var deckKnownBtn = document.getElementById('deck-known-btn');
+  var deckRestartBtn = document.getElementById('deck-restart-btn');
+  var DEFAULT_PLAY_HINT = playCanvasHint.textContent;
+
+  function shuffle(list) {
+    for (var i = list.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = list[i];
+      list[i] = list[j];
+      list[j] = tmp;
+    }
+    return list;
+  }
+
+  // 고를 수 있는 반응: 예시 반응 + 내가 저장한 반응 (에디터에서 작성 중인 미완성 반응은 뺀다)
+  function deckPool() {
+    return SEED_REACTIONS.concat(savedReactions);
+  }
+
+  function findReactionById(id) {
+    return deckPool().filter(function (r) { return r.id === id; })[0] || null;
+  }
+
+  // 덱 선택 목록에서 고른 덱(전체 또는 내가 만든 덱)의 반응들을 섞어서 시작한다.
+  // 내가 만든 덱에 들어 있지만 지금 찾을 수 없는 반응(지워졌거나 아직 불러오는 중)은 빼고 알려준다
+  function startDeck() {
+    var chosen = selectedUserDeck();
+    var ids = chosen
+      ? chosen.reactionIds.filter(function (id) { return findReactionById(id); })
+      : deckPool().map(function (r) { return r.id; });
+    var missing = chosen ? chosen.reactionIds.length - ids.length : 0;
+    deck = { queue: shuffle(ids), total: ids.length, firstTry: 0, retried: {}, missing: missing };
+    showDeckCard();
+  }
+
+  function showDeckCard() {
+    resetQuiz();
+    playCurrentStepIndex = 0;
+    playCurrentReaction = deck.queue.length ? findReactionById(deck.queue[0]) : null;
+    renderDeck();
+    renderPlayStep();
+  }
+
+  function renderDeck() {
+    deckBar.hidden = !deck;
+    reactionSelect.hidden = !!deck; // 퀴즈 중에는 덱이 다음 반응을 정한다
+    if (!deck) {
+      playCanvasHint.textContent = DEFAULT_PLAY_HINT;
+      return;
+    }
+    var finished = !deck.queue.length;
+    var doneCount = deck.total - deck.queue.length;
+    var missingNote = deck.missing ? ' · 찾을 수 없는 반응 ' + deck.missing + '개 제외' : '';
+    deckAgainBtn.hidden = finished;
+    deckKnownBtn.hidden = finished;
+    deckRestartBtn.hidden = !finished || !deck.total;
+    if (!deck.total) {
+      deckProgressEl.textContent = '빈 덱' + missingNote;
+      deckNameEl.textContent = '이 덱에는 풀 수 있는 반응이 없어요. \'덱 편집\'에서 반응을 골라주세요.';
+      playCanvasHint.textContent = '덱에 반응을 추가하면 여기서 풀 수 있어요.';
+      return;
+    }
+    if (finished) {
+      deckProgressEl.textContent = '덱 완료';
+      deckNameEl.textContent = '반응 ' + deck.total + '개 중 ' + deck.firstTry + '개는 한 번에 알았어요.';
+      playCanvasHint.textContent = '모든 카드를 끝냈어요. 다시 섞어서 시작할 수 있어요.';
+      return;
+    }
+    deckProgressEl.textContent = '카드 ' + (doneCount + 1) + ' / ' + deck.total +
+      (deck.retried[deck.queue[0]] ? ' · 다시 보는 카드' : '') + missingNote;
+    deckNameEl.textContent = playCurrentReaction ? playCurrentReaction.name : '';
+    playCanvasHint.textContent = DEFAULT_PLAY_HINT;
+  }
+
+  deckKnownBtn.addEventListener('click', function () {
+    var id = deck.queue.shift();
+    if (!deck.retried[id]) deck.firstTry += 1;
+    showDeckCard();
+  });
+  deckAgainBtn.addEventListener('click', function () {
+    var id = deck.queue.shift();
+    deck.retried[id] = true;
+    deck.queue.push(id);
+    showDeckCard();
+  });
+  deckRestartBtn.addEventListener('click', startDeck);
+
+  // ---- 내가 만든 덱 (Supabase decks 테이블, 내 계정의 덱만 보임) ----
+  var ALL_DECK = 'all';
+  var userDecks = []; // { id, name, reactionIds }
+  var decksLoadSeq = 0;
+  var editingDeck = null; // 덱 편집 창에서 고치는 중인 덱 (새로 만들 때는 null)
+  var deckSelect = document.getElementById('deck-select');
+  var deckNewBtn = document.getElementById('deck-new-btn');
+  var deckEditBtn = document.getElementById('deck-edit-btn');
+  var deckDialog = document.getElementById('deck-dialog');
+  var deckForm = document.getElementById('deck-form');
+  var deckDialogTitle = document.getElementById('deck-dialog-title');
+  var deckNameInput = document.getElementById('deck-name-input');
+  var deckPickList = document.getElementById('deck-pick-list');
+  var deckMessageEl = document.getElementById('deck-message');
+  var deckDeleteBtn = document.getElementById('deck-delete-btn');
+  var deckSaveBtn = document.getElementById('deck-save-btn');
+
+  function selectedUserDeck() {
+    return userDecks.filter(function (d) { return d.id === deckSelect.value; })[0] || null;
+  }
+
+  function renderDeckSelect() {
+    var previous = deckSelect.value || ALL_DECK;
+    deckSelect.textContent = '';
+    var all = document.createElement('option');
+    all.value = ALL_DECK;
+    all.textContent = '전체 (예시 + 내 반응)';
+    deckSelect.appendChild(all);
+    userDecks.forEach(function (d) {
+      var opt = document.createElement('option');
+      opt.value = d.id;
+      opt.textContent = d.name + ' (' + d.reactionIds.length + '개)';
+      deckSelect.appendChild(opt);
+    });
+    deckSelect.value = userDecks.some(function (d) { return d.id === previous; }) ? previous : ALL_DECK;
+    deckEditBtn.disabled = !selectedUserDeck();
+  }
+
+  function deckErrorText(error) {
+    if (error && error.code === 'PGRST205') return '덱을 저장할 테이블이 아직 없어요. Supabase SQL Editor에서 README의 덱 SQL을 실행해주세요.';
+    return '문제가 생겼습니다: ' + (error && error.message ? error.message : '알 수 없는 오류');
+  }
+
+  function loadDecks() {
+    var seq = ++decksLoadSeq;
+    if (!sb || !currentUser) {
+      userDecks = [];
+      renderDeckSelect();
+      return Promise.resolve();
+    }
+    return sb.from('decks')
+      .select('id, name, reaction_ids')
+      .order('updated_at', { ascending: false })
+      .then(function (res) {
+        if (seq !== decksLoadSeq) return;
+        userDecks = res.error ? [] : (res.data || []).map(function (row) {
+          return { id: row.id, name: row.name || '이름 없는 덱', reactionIds: row.reaction_ids || [] };
+        });
+        renderDeckSelect();
+      }, function () {
+        if (seq === decksLoadSeq) renderDeckSelect();
+      });
+  }
+
+  function setDeckMessage(message, state) {
+    deckMessageEl.textContent = message;
+    deckMessageEl.dataset.state = state;
+  }
+
+  function appendPickGroup(label, reactions, checkedIds) {
+    var heading = document.createElement('p');
+    heading.className = 'deck-pick-group';
+    heading.textContent = label;
+    deckPickList.appendChild(heading);
+    if (!reactions.length) {
+      var empty = document.createElement('p');
+      empty.className = 'deck-pick-empty';
+      empty.textContent = '없음';
+      deckPickList.appendChild(empty);
+      return;
+    }
+    reactions.forEach(function (r) {
+      var item = document.createElement('label');
+      item.className = 'deck-pick-item';
+      var box = document.createElement('input');
+      box.type = 'checkbox';
+      box.value = r.id;
+      box.checked = checkedIds.indexOf(r.id) !== -1;
+      var name = document.createElement('span');
+      name.textContent = r.name;
+      item.appendChild(box);
+      item.appendChild(name);
+      deckPickList.appendChild(item);
+    });
+  }
+
+  function openDeckDialog(existing) {
+    if (!sb) {
+      window.alert('서버에 연결할 수 없어 덱을 만들 수 없습니다. 인터넷 연결을 확인해주세요.');
+      return;
+    }
+    if (!currentUser) {
+      openAuthDialog('login', false); // 덱은 계정에 저장하므로 먼저 로그인
+      return;
+    }
+    editingDeck = existing || null;
+    deckDialogTitle.textContent = existing ? '덱 편집' : '새 덱 만들기';
+    deckNameInput.value = existing ? existing.name : '';
+    deckDeleteBtn.hidden = !existing;
+    deckSaveBtn.disabled = false;
+    setDeckMessage('', '');
+    deckPickList.textContent = '';
+    var checked = existing ? existing.reactionIds : [];
+    appendPickGroup('예시 반응', SEED_REACTIONS, checked);
+    appendPickGroup('내가 저장한 반응', savedReactions, checked);
+    deckDialog.showModal();
+    deckNameInput.focus();
+  }
+
+  // 저장·삭제한 뒤 덱 목록을 다시 불러오고, 그 덱(삭제했으면 전체)으로 새로 시작한다
+  function afterDeckChange(selectId) {
+    return loadDecks().then(function () {
+      deckSelect.value = userDecks.some(function (d) { return d.id === selectId; }) ? selectId : ALL_DECK;
+      deckEditBtn.disabled = !selectedUserDeck();
+      deckDialog.close();
+      if (deck) startDeck();
+    });
+  }
+
+  deckForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = deckNameInput.value.trim();
+    var ids = Array.prototype.filter.call(deckPickList.querySelectorAll('input[type="checkbox"]'), function (box) {
+      return box.checked;
+    }).map(function (box) { return box.value; });
+    if (!name) {
+      setDeckMessage('덱 이름을 입력해주세요.', 'error');
+      deckNameInput.focus();
+      return;
+    }
+    if (!ids.length) {
+      setDeckMessage('반응을 하나 이상 골라주세요.', 'error');
+      return;
+    }
+    // user_id는 DB가 로그인한 사람의 id로 채운다 (기본값 auth.uid())
+    var payload = { name: name, reaction_ids: ids, updated_at: new Date().toISOString() };
+    var query = editingDeck
+      ? sb.from('decks').update(payload).eq('id', editingDeck.id).select('id')
+      : sb.from('decks').insert(payload).select('id');
+    deckSaveBtn.disabled = true;
+    setDeckMessage('저장하는 중…', 'pending');
+    query.then(function (res) {
+      deckSaveBtn.disabled = false;
+      if (res.error || !res.data || !res.data.length) {
+        setDeckMessage(deckErrorText(res.error), 'error');
+        return;
+      }
+      afterDeckChange(res.data[0].id);
+    }, function (err) {
+      deckSaveBtn.disabled = false;
+      setDeckMessage(deckErrorText(err), 'error');
+    });
+  });
+
+  deckDeleteBtn.addEventListener('click', function () {
+    if (!editingDeck) return;
+    if (!window.confirm('"' + editingDeck.name + '" 덱을 삭제할까요? 덱만 지워지고 반응은 그대로 남습니다.')) return;
+    sb.from('decks').delete().eq('id', editingDeck.id).then(function (res) {
+      if (res.error) {
+        setDeckMessage(deckErrorText(res.error), 'error');
+        return;
+      }
+      afterDeckChange(ALL_DECK);
+    }, function (err) {
+      setDeckMessage(deckErrorText(err), 'error');
+    });
+  });
+
+  document.getElementById('deck-cancel-btn').addEventListener('click', function () {
+    deckDialog.close();
+  });
+  deckNewBtn.addEventListener('click', function () {
+    openDeckDialog(null);
+  });
+  deckEditBtn.addEventListener('click', function () {
+    var d = selectedUserDeck();
+    if (d) openDeckDialog(d);
+  });
+  deckSelect.addEventListener('change', function () {
+    deckEditBtn.disabled = !selectedUserDeck();
+    startDeck();
+  });
+
+  renderDeckSelect();
+
+  quizToggle.addEventListener('change', function () {
+    quizMode = quizToggle.checked;
+    stopAutoplay();
+    resetQuiz();
+    if (quizMode) {
+      startDeck();
+      return;
+    }
+    // 퀴즈를 끄면 마지막으로 풀던 반응을 목록에서 고른 상태로 돌아간다
+    var last = playCurrentReaction;
+    deck = null;
+    renderDeck();
+    if (last) reactionSelect.value = last.id;
+    renderReactionOptions(true);
+  });
+  quizRevealBtn.addEventListener('click', function () {
+    currentQuiz().revealed = true;
+    renderPlayStep();
+  });
+  quizUndoBtn.addEventListener('click', function () {
+    currentQuiz().userArrows.pop();
+    currentQuiz().result = null;
+    renderPlayStep();
+  });
+  quizClearBtn.addEventListener('click', function () {
+    currentQuiz().userArrows = [];
+    currentQuiz().result = null;
+    quizPick = null;
+    renderPlayStep();
+  });
+  quizGradeBtn.addEventListener('click', function () {
+    gradeQuiz(playCurrentReaction.steps[playCurrentStepIndex], currentQuiz());
+    renderPlayStep();
+  });
+  quizAnswerBtn.addEventListener('click', function () {
+    currentQuiz().answerShown = !currentQuiz().answerShown;
+    renderPlayStep();
+  });
 
   // ---- Supabase에 저장된 반응 목록 ----
   var savedReactions = [];
@@ -3702,6 +4943,10 @@
     var editorEntry = getEditorEntry();
     if (editorEntry) appendOptionGroup('작성 중', [editorEntry], '');
 
+    // 퀴즈 덱을 푸는 중에는 목록만 새로 채우고, 지금 카드는 덱이 정한 그대로 둔다
+    // (저장 목록이 늦게 도착하거나 로그인이 바뀌어도 풀던 카드가 바뀌지 않게)
+    if (deck) return;
+
     var reactions = getAvailableReactions();
     var kept = reactions.filter(function (r) { return r.id === previousValue; })[0];
     var chosen = kept || reactions[0];
@@ -3709,6 +4954,7 @@
 
     if (!kept) {
       stopAutoplay();
+      resetQuiz();
       playCurrentStepIndex = 0;
     }
     var contentChanged = !playCurrentReaction || chosen.steps !== playCurrentReaction.steps;
@@ -3751,6 +4997,7 @@
   if (reactionSelect) {
     reactionSelect.addEventListener('change', function () {
       stopAutoplay();
+      resetQuiz();
       var reactions = getAvailableReactions();
       playCurrentReaction = reactions.filter(function (r) { return r.id === reactionSelect.value; })[0] || null;
       playCurrentStepIndex = 0;
@@ -3829,10 +5076,34 @@
       return;
     }
     if (e.key === 'Delete' || e.key === 'Backspace') {
-      if (deleteHoveredOrFocused()) e.preventDefault();
+      var sel = selectedIds();
+      if (sel.length) deleteAtoms(sel); // 선택한 것이 있으면 그것부터 지운다
+      else if (!deleteHoveredOrFocused()) return;
+      e.preventDefault();
       return;
     }
-    if (e.key === 'Escape') cancelPendingPick();
+    var delta = arrowKeyDelta(e);
+    if (delta && selectedIds().length) {
+      e.preventDefault();
+      nudgeSelection(delta.dx, delta.dy);
+      return;
+    }
+    if (e.key === 'Escape') {
+      cancelPendingPick();
+      clearSelection();
+    }
+  }
+
+  // Ctrl 조합: 되돌리기·다시 실행·전체 선택·복사·잘라내기·붙여넣기. 처리했으면 true
+  function handleEditorModShortcut(e) {
+    if (e.code === 'KeyZ' && !e.shiftKey) undo();
+    else if ((e.code === 'KeyZ' && e.shiftKey) || e.code === 'KeyY') redo();
+    else if (e.code === 'KeyA') selectAll();
+    else if (e.code === 'KeyC') return copySelection();
+    else if (e.code === 'KeyX') return cutSelection();
+    else if (e.code === 'KeyV') return pasteClipboard();
+    else return false;
+    return true;
   }
 
   function handlePlayShortcut(e) {
@@ -3858,7 +5129,12 @@
       saveReaction();
       return;
     }
-    if (mod || e.altKey || isTypingTarget(e.target)) return;
+    // 입력칸 안에서는 Ctrl+Z·C·V 등을 브라우저 기본 동작(글자 되돌리기·복사)에 맡긴다
+    if (e.altKey || isTypingTarget(e.target)) return;
+    if (mod) {
+      if (!panels.editor.hidden && handleEditorModShortcut(e)) e.preventDefault();
+      return;
+    }
     if (!panels.editor.hidden) handleEditorShortcut(e);
     else if (!panels.play.hidden) handlePlayShortcut(e);
   });
@@ -3868,6 +5144,7 @@
   steps = [createEmptyStep()];
   loadStep(0);
   setActiveTool('select');
+  resetHistory();
 })();
 </script>
 

@@ -11,8 +11,10 @@
   - 골격 구조식 규칙: 탄소는 꼭짓점으로만, 이종원자는 `OH`, `NH₂`처럼 수소 개수를 자동으로 붙여 표시합니다.
   - 형식전하에 맞춰 수소 개수가 바뀝니다 (NH₄⁺, BH₄⁻, 카보양이온 등).
   - **고정 길이·고정 각도**: 결합을 45px 길이로, 이미 있는 결합과 120°가 되는 방향으로 이어 그려서 지그재그 사슬이나 육각 고리를 일반적인 2D 구조식처럼 깔끔하게 그릴 수 있습니다.
+  - **편집**: 원자·분자·범위를 선택해서 함께 옮기거나 지우고, 복사·잘라내기·붙여넣기(`Ctrl+C`/`X`/`V`)와 실행 취소·다시 실행(`Ctrl+Z`/`Ctrl+Y`)을 쓸 수 있습니다.
 - **단계 관리** — 반응을 여러 단계로 나누고, 단계마다 설명을 붙입니다. 새 단계는 이전 단계의 구조를 복제해서 시작합니다.
 - **학습 모드** — 반응을 골라 단계별로 넘겨보거나 자동재생합니다. 화살표가 곡선을 따라 그려지는 애니메이션으로 전자의 이동을 보여줍니다. SN2·SN1 예시 반응이 들어 있습니다.
+  - **퀴즈로 복습하기**: 예시 반응과 저장한 반응을 섞은 플래시카드 덱으로 하나씩 풀어 나갑니다. 다음 단계의 구조(중간체·생성물)를 가려 두고 먼저 예상해 보게 하고, 화살표를 숨긴 뒤 직접 그린 화살표를 채점합니다(맞음 초록 · 방향 반대 주황 · 틀림 빨강, 정답 보기 가능). 한 반응을 풀면 '알았어요 → 다음' 또는 '다시 볼래요'(덱 뒤로 보내 다시 풀기)로 바로 넘어갑니다. 공부할 반응만 골라 **나만의 덱**을 만들어 계정에 저장해 둘 수 있습니다.
 - **로그인과 저장** — 이메일로 가입하면 만든 반응을 계정에 저장하고, 자기 반응만 볼 수 있습니다. 저장한 반응은 **불러오기**로 에디터에 다시 열어 고칠 수 있습니다.
 
 ## 사용 방법
@@ -22,7 +24,7 @@
 3. **전자쌍 화살표** 도구로 전자가 출발하는 원자·결합과 도착하는 원자·결합을 차례로 클릭합니다.
 4. **+ 단계 추가**로 다음 단계를 만들고 구조를 고칩니다.
 5. 반응 이름을 쓰고 **저장**합니다(로그인 필요). 나중에 고치려면 **불러오기**로 다시 열고 고친 뒤 저장하면 됩니다.
-6. 홈에서 **학습 모드**를 열어 반응을 고르고 재생합니다.
+6. 홈에서 **학습 모드**를 열어 반응을 고르고 재생합니다. **퀴즈로 복습하기**를 켜면 구조를 예상하고 화살표를 직접 그려 채점받을 수 있습니다.
 
 ## 단축키
 
@@ -31,8 +33,14 @@
 | 에디터 | `1` ~ `5` | 도구 바꾸기 (선택·이동 / 결합 / 삭제 / 화살표 / 형식전하) |
 | 에디터 | `C` `H` `O` `N` `S` `P` `F` `I` `B` | 원소 놓기. 원자 위에 마우스를 올리고 누르면 그 원자를 바꿈 |
 | 에디터 | `Shift` + `C` / `B` / `S` | Cl / Br / Si |
-| 에디터 | `Delete` | 마우스를 올린(또는 선택한) 원자·결합 지우기 |
-| 에디터 | `Esc` | 그리던 결합·화살표 멈추기 |
+| 에디터 | `Delete` | 선택한 것, 없으면 마우스를 올린 원자·결합 지우기 |
+| 에디터 | `Esc` | 선택 풀기, 그리던 결합·화살표 멈추기 |
+| 에디터 | `Ctrl` + `Z` / `Ctrl` + `Y` | 실행 취소 / 다시 실행 (`Ctrl` + `Shift` + `Z`도 다시 실행) |
+| 에디터 | `Ctrl` + `A` | 현재 단계 전체 선택 |
+| 에디터 | `Ctrl` + `C` / `X` / `V` | 복사 / 잘라내기 / 붙여넣기 (다른 단계·반응에도 붙여넣기 가능) |
+| 에디터 | 방향키 | 선택한 것 옮기기 (`Shift`로 크게) |
+| 에디터 | 클릭 / `Shift`+클릭 / 더블클릭 / 빈 곳 끌기 | 선택 / 여러 개 선택 / 분자 전체 선택 / 범위 선택 (선택·이동 도구) |
+| 에디터 | 탄소 우클릭 | 그 탄소의 수소 개수 보이기·숨기기 (선택·이동 도구) |
 | 에디터 | `Ctrl` + `S` | 저장 |
 | 에디터 | `Alt` + 클릭·드래그 | 길이·각도를 맞추지 않고 자유롭게 |
 | 학습 모드 | `←` `→` | 이전·다음 단계 |
@@ -83,6 +91,30 @@
      with check ((select auth.uid()) = user_id);
    create policy "own rows: update" on public.reactions for update to authenticated
      using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+
+   -- 내가 만든 퀴즈 덱 (덱에 넣은 반응은 앱 안의 id로 저장: 예시는 seed-…, 저장한 반응은 db-…)
+   create table public.decks (
+     id uuid primary key default gen_random_uuid(),
+     user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
+     name text not null default '',
+     reaction_ids text[] not null default '{}',
+     created_at timestamptz not null default now(),
+     updated_at timestamptz not null default now()
+   );
+   create index decks_user_id_idx on public.decks (user_id);
+
+   alter table public.decks enable row level security;
+   revoke all on public.decks from anon;
+   grant select, insert, update, delete on public.decks to authenticated;
+
+   create policy "own decks: read"   on public.decks for select to authenticated
+     using ((select auth.uid()) = user_id);
+   create policy "own decks: insert" on public.decks for insert to authenticated
+     with check ((select auth.uid()) = user_id);
+   create policy "own decks: update" on public.decks for update to authenticated
+     using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+   create policy "own decks: delete" on public.decks for delete to authenticated
+     using ((select auth.uid()) = user_id);
    ```
 
 2. **Authentication → Sign In / Providers → Email**에서 **Confirm email**을 끕니다. 무료 요금제의 기본 메일은 프로젝트 팀원에게만 발송되기 때문입니다.
