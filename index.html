@@ -769,6 +769,43 @@
     color: var(--ink-muted);
   }
 
+  /* ---------- 학습 모드: 내 반응에 추가 / 제거 ---------- */
+  .play-mine-btn {
+    appearance: none;
+    padding: 0.5rem 0.85rem;
+    border: 1px solid var(--play-accent);
+    border-radius: 8px;
+    background: var(--play-accent);
+    color: #fff;
+    font-size: 0.88rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .play-mine-btn[hidden] { display: none; }
+  .play-mine-btn:hover:not(:disabled) { filter: brightness(1.08); }
+  .play-mine-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .play-mine-btn:disabled { opacity: 0.6; cursor: default; }
+
+  .play-mine-btn.remove {
+    border-color: var(--danger);
+    background: var(--bg-panel);
+    color: var(--danger);
+  }
+
+  .play-mine-btn.remove:hover:not(:disabled) { background: var(--danger-soft); filter: none; }
+
+  .play-action-status {
+    margin: -0.4rem 0 0.9rem;
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+  }
+
+  .play-action-status:empty { display: none; }
+  .play-action-status[data-state="ok"] { color: var(--play-accent); }
+  .play-action-status[data-state="error"] { color: var(--danger); }
+
   /* ---------- 퀴즈(복습) ---------- */
   .quiz-toggle {
     display: inline-flex;
@@ -1961,8 +1998,10 @@
 
     <div class="play-toolbar">
       <select id="reaction-select" aria-label="반응 선택"></select>
+      <button type="button" class="play-mine-btn" id="play-mine-btn" hidden></button>
       <label class="quiz-toggle"><input type="checkbox" id="quiz-toggle"> 퀴즈로 복습하기</label>
     </div>
+    <p class="play-action-status" id="play-action-status" role="status" aria-live="polite"></p>
 
     <div class="deck-bar" id="deck-bar" hidden>
       <div class="deck-choose">
@@ -4556,6 +4595,7 @@
   var boardPosts = []; // { id, userId, author, title, description, createdAt, steps }
   var boardLoadSeq = 0;
   var openedPosts = []; // '학습 모드에서 보기'로 연 글 — 학습 모드 목록에 따로 묶어 보여준다
+  var OPENED_POSTS_LIMIT = 5;
   var boardListEl = document.getElementById('board-list');
   var boardStatusEl = document.getElementById('board-status');
   var boardSearchEl = document.getElementById('board-search');
@@ -4733,8 +4773,11 @@
 
   // 학습 모드에서 보기: 퀴즈 덱을 푸는 중이면 덱이 반응을 정하므로 퀴즈를 끄고 이 반응을 연다
   function openPostInPlay(post) {
-    var entry = { id: 'post-' + post.id, name: post.title + ' (' + post.author + ')', steps: post.steps };
-    if (!openedPosts.some(function (r) { return r.id === entry.id; })) openedPosts.push(entry);
+    var entry = { id: 'post-' + post.id, name: post.title + ' (' + post.author + ')', title: post.title, steps: post.steps };
+    // 많이 열어 봐도 목록이 길어지지 않게, 가장 최근에 연 5개만 (맨 위가 가장 최근)
+    openedPosts = openedPosts.filter(function (r) { return r.id !== entry.id; });
+    openedPosts.unshift(entry);
+    openedPosts.length = Math.min(openedPosts.length, OPENED_POSTS_LIMIT);
     if (quizMode) {
       quizToggle.checked = false;
       quizToggle.dispatchEvent(new Event('change'));
@@ -5146,6 +5189,7 @@
       if (playStepDescEl) playStepDescEl.textContent = '반응을 선택해주세요.';
       renderQuiz(null, null);
       updatePlayControlsDisabled();
+      updateMineButton();
       return;
     }
 
@@ -5169,6 +5213,7 @@
     }
 
     updatePlayControlsDisabled();
+    updateMineButton();
   }
 
   function stopAutoplay() {
@@ -5221,6 +5266,93 @@
     }
     startAutoplay();
   }
+
+  // ---- 학습 모드: 보고 있는 반응을 내 반응에 추가하거나(게시판 글) 내 반응에서 제거(내가 저장한 반응) ----
+  var playMineBtn = document.getElementById('play-mine-btn');
+  var playActionStatusEl = document.getElementById('play-action-status');
+  // 이번 방문에서 내 반응에 추가한 게시판 글 → 만들어진 내 반응의 DB id. 같은 글을 두 번 추가하지 않게 하고,
+  // 그 내 반응을 제거하면 다시 추가할 수 있게 지운다
+  var addedPosts = {};
+
+  function setPlayActionStatus(message, state) {
+    playActionStatusEl.textContent = message;
+    playActionStatusEl.dataset.state = state;
+  }
+
+  function updateMineButton() {
+    var r = playCurrentReaction;
+    var kind = !r || deck || !sb ? '' : r.id.indexOf('post-') === 0 ? 'post' : r.id.indexOf('db-') === 0 ? 'mine' : '';
+    playMineBtn.hidden = !kind;
+    if (kind === 'post') {
+      playMineBtn.className = 'play-mine-btn';
+      playMineBtn.textContent = addedPosts[r.id] ? '내 반응에 추가됨' : '내 반응에 추가하기';
+      playMineBtn.disabled = !!addedPosts[r.id];
+    } else if (kind === 'mine') {
+      playMineBtn.className = 'play-mine-btn remove';
+      playMineBtn.textContent = '내 반응에서 제거';
+      playMineBtn.disabled = false;
+    }
+  }
+
+  function addPostToMine(entry) {
+    if (!currentUser) {
+      setPlayActionStatus('내 반응에 추가하려면 먼저 로그인해주세요.', 'error');
+      openAuthDialog('login', false);
+      return;
+    }
+    playMineBtn.disabled = true;
+    setPlayActionStatus('추가하는 중…', '');
+    // user_id는 DB가 로그인한 사람의 id로 채운다. 단계 데이터는 복사해서 넣어 원글과 따로 움직인다
+    var payload = { name: entry.title, steps: JSON.parse(JSON.stringify(entry.steps)), updated_at: new Date().toISOString() };
+    sb.from('reactions').insert(payload).select('id').then(function (res) {
+      if (res.error || !res.data || !res.data.length) {
+        playMineBtn.disabled = false;
+        setPlayActionStatus('추가하지 못했습니다: ' + (res.error ? res.error.message : '알 수 없는 오류'), 'error');
+        return;
+      }
+      addedPosts[entry.id] = res.data[0].id;
+      updateMineButton();
+      setPlayActionStatus('내 반응에 추가했어요. 목록의 \'저장된 반응\'과 퀴즈 덱에서 볼 수 있어요.', 'ok');
+      loadSavedReactions();
+    }, function (err) {
+      playMineBtn.disabled = false;
+      setPlayActionStatus('추가하지 못했습니다: ' + (err && err.message ? err.message : '알 수 없는 오류'), 'error');
+    });
+  }
+
+  function removeMine(entry) {
+    if (!window.confirm('"' + entry.name + '"을(를) 내 반응에서 제거할까요? 되돌릴 수 없습니다.')) return;
+    var rowId = entry.id.slice(3); // 'db-' 다음이 DB의 id
+    playMineBtn.disabled = true;
+    // .select()로 실제로 지워진 행을 돌려받아, 권한 규칙 때문에 아무것도 안 지워진 경우도 알아챈다
+    sb.from('reactions').delete().eq('id', rowId).select('id').then(function (res) {
+      playMineBtn.disabled = false;
+      if (res.error || !res.data || !res.data.length) {
+        var noRight = !res.error || res.error.code === '42501';
+        setPlayActionStatus(noRight
+          ? '제거하지 못했습니다. 삭제 권한이 아직 없어요 — Supabase에서 README의 \'내 반응 삭제\' SQL을 실행해주세요.'
+          : '제거하지 못했습니다: ' + res.error.message, 'error');
+        return;
+      }
+      // 에디터에 열려 있던 반응이면, 다음 저장은 지워진 행을 덮어쓰지 않고 새로 저장되게
+      if (currentReaction.id === rowId) currentReaction.id = null;
+      Object.keys(addedPosts).forEach(function (postId) {
+        if (addedPosts[postId] === rowId) delete addedPosts[postId];
+      });
+      setPlayActionStatus('"' + entry.name + '"을(를) 내 반응에서 제거했어요.', 'ok');
+      loadSavedReactions();
+    }, function (err) {
+      playMineBtn.disabled = false;
+      setPlayActionStatus('제거하지 못했습니다: ' + (err && err.message ? err.message : '알 수 없는 오류'), 'error');
+    });
+  }
+
+  playMineBtn.addEventListener('click', function () {
+    var r = playCurrentReaction;
+    if (!r) return;
+    if (r.id.indexOf('post-') === 0) addPostToMine(r);
+    else if (r.id.indexOf('db-') === 0) removeMine(r);
+  });
 
   // ---- 퀴즈(복습) ----
   // 단계마다 (1) 2단계부터는 구조를 가려 두고 먼저 예상해 보게 한 뒤 '구조 보기'로 확인(스스로 채점),
@@ -5905,6 +6037,7 @@
     reactionSelect.addEventListener('change', function () {
       stopAutoplay();
       resetQuiz();
+      setPlayActionStatus('', '');
       var reactions = getAvailableReactions();
       playCurrentReaction = reactions.filter(function (r) { return r.id === reactionSelect.value; })[0] || null;
       playCurrentStepIndex = 0;

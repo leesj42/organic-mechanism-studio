@@ -16,7 +16,7 @@
 - **단계 관리** — 반응을 여러 단계로 나누고, 단계마다 설명을 붙입니다. 새 단계는 이전 단계의 구조를 복제해서 시작합니다.
 - **학습 모드** — 반응을 골라 단계별로 넘겨보거나 자동재생합니다. 화살표가 곡선을 따라 그려지는 애니메이션으로 전자의 이동을 보여줍니다. SN2·SN1 예시 반응이 들어 있습니다.
   - **퀴즈로 복습하기**: 예시 반응과 저장한 반응을 섞은 플래시카드 덱으로 하나씩 풀어 나갑니다. 다음 단계의 구조(중간체·생성물)를 가려 두고 먼저 예상해 보게 하고, 화살표를 숨긴 뒤 직접 그린 화살표를 채점합니다(맞음 초록 · 방향 반대 주황 · 틀림 빨강, 정답 보기 가능). 한 반응을 풀면 '알았어요 → 다음' 또는 '다시 볼래요'(덱 뒤로 보내 다시 풀기)로 바로 넘어갑니다. 공부할 반응만 골라 **나만의 덱**을 만들어 계정에 저장해 둘 수 있습니다.
-- **반응 게시판** — 다른 사람이 올린 반응을 구조 미리보기와 함께 둘러보고(로그인 없이도 가능), 학습 모드로 공부하거나 에디터로 가져와 고쳐 내 반응으로 저장할 수 있습니다. 에디터의 '게시판에 올리기'로 내 반응을 닉네임과 함께 공유합니다(올린 순간의 모습이 저장되고, 내 글은 삭제 가능).
+- **반응 게시판** — 다른 사람이 올린 반응을 구조 미리보기와 함께 둘러보고(로그인 없이도 가능), 학습 모드로 공부하거나 에디터로 가져와 고쳐 내 반응으로 저장할 수 있습니다. 에디터의 '게시판에 올리기'로 내 반응을 닉네임과 함께 공유합니다(올린 순간의 모습이 저장되고, 내 글은 삭제 가능). 학습 모드에서 게시판 글을 보다가 **내 반응에 추가하기**로 내 반응에 넣고, 필요 없어진 내 반응은 **내 반응에서 제거**로 지울 수 있습니다.
 - **로그인과 저장** — 이메일로 가입하면 만든 반응을 계정에 저장하고, 자기 반응만 볼 수 있습니다. 저장한 반응은 **불러오기**로 에디터에 다시 열어 고칠 수 있습니다.
 
 ## 사용 방법
@@ -86,7 +86,7 @@
 
    alter table public.reactions enable row level security;
    revoke all on public.reactions from anon;
-   grant select, insert, update on public.reactions to authenticated;
+   grant select, insert, update on public.reactions to authenticated; -- delete는 아래에서
 
    create policy "own rows: read"   on public.reactions for select to authenticated
      using ((select auth.uid()) = user_id);
@@ -94,6 +94,11 @@
      with check ((select auth.uid()) = user_id);
    create policy "own rows: update" on public.reactions for update to authenticated
      using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+
+   -- 내 반응 삭제 (학습 모드의 '내 반응에서 제거')
+   grant delete on public.reactions to authenticated;
+   create policy "own rows: delete" on public.reactions for delete to authenticated
+     using ((select auth.uid()) = user_id);
 
    -- 내가 만든 퀴즈 덱 (덱에 넣은 반응은 앱 안의 id로 저장: 예시는 seed-…, 저장한 반응은 db-…)
    create table public.decks (
